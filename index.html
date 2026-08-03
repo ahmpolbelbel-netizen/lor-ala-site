@@ -3,46 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Доктор LOR — Алматы — Специализированный кабинет</title>
+    <title>Доктор ЛОР — Алматы — Специализированный кабинет</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; line-height: 1.5; }
         .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Шапка */
         header { background-color: #ffffff; border-b: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
         .header-content { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 16px 0; gap: 16px; }
         @media (min-width: 640px) { .header-content { flex-direction: row; } }
-        .logo-title { text-decoration: none; font-size: 24px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: -0.5px; }
+        .logo-title { text-decoration: none; font-size: 24px; font-weight: 900; color: #009ca0; text-transform: uppercase; letter-spacing: -0.5px; }
         .logo-sub { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        
+        /* Контакты в шапке */
         .contact-block { text-align: center; }
         @media (min-width: 640px) { .contact-block { text-align: right; } }
         .phone-wrapper { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background-color: #f1f5f9; padding: 8px 16px; border-radius: 12px; border: 1px solid #e2e8f0; transition: all 0.2s ease; }
         .phone-wrapper:hover { background-color: #e2e8f0; transform: translateY(-1px); }
         .phone-link { font-size: 16px; font-weight: 700; color: #0f172a; }
-        .whatsapp-indicator { font-size: 11px; font-weight: 600; color: #16a34a; background-color: #dcfce7; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px; }
-        .hero { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: #ffffff; padding: 60px 20px; text-align: center; }
+        .whatsapp-indicator { font-size: 11px; font-weight: 600; color: #009ca0; background-color: #e0f2fe; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+        
+        /* Бирюзовый главный баннер как на lor-nsk.ru */
+        .hero { background: linear-gradient(135deg, #009ca0 0%, #008488 100%); color: #ffffff; padding: 60px 20px; text-align: center; }
         .hero h1 { font-size: 28px; font-weight: 800; tracking-tight: -0.5px; line-height: 1.2; margin-bottom: 16px; max-width: 800px; margin-left: auto; margin-right: auto; }
         @media (min-width: 768px) { .hero h1 { font-size: 42px; } }
-        .hero p { color: #dbeafe; font-size: 16px; max-width: 600px; margin: 0 auto; opacity: 0.9; }
+        .hero p { color: #e0f2fe; font-size: 16px; max-width: 600px; margin: 0 auto; opacity: 0.9; }
+        
+        /* Карточка адреса */
         .section-title { font-size: 24px; font-weight: 700; color: #0f172a; text-align: center; margin: 48px 0 24px; }
         .branch-card-single { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); max-width: 600px; margin: 0 auto 48px; text-align: center; }
-        .branch-icon { width: 48px; height: 48px; background-color: #eff6ff; color: #2563eb; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 16px; font-size: 20px; }
+        .branch-icon { width: 48px; height: 48px; background-color: #e0f7f8; color: #009ca0; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 16px; font-size: 20px; }
         .branch-name { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-        .branch-address { font-size: 16px; color: #2563eb; font-weight: 600; margin-bottom: 20px; }
+        .branch-address { font-size: 16px; color: #009ca0; font-weight: 600; margin-bottom: 20px; }
+        
+        /* Кнопка WhatsApp */
         .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #22c55e; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 14px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3); transition: all 0.2s ease; margin-bottom: 24px; width: 100%; max-width: 320px; }
         .action-button-wp:hover { background-color: #16a34a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4); }
+        
         .branch-hours { border-top: 1px solid #f1f5f9; padding-top: 20px; font-size: 14px; color: #475569; display: block; text-align: center; }
         .branch-hours p { margin-bottom: 8px; }
         .bold-text { font-weight: 600; color: #0f172a; }
+        
+        /* Таблица цен */
         .prices-section { background-color: #f1f5f9; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 48px 0; }
         .prices-container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
         .prices-sub { font-size: 14px; color: #64748b; text-align: center; margin-top: -24px; margin-bottom: 32px; }
-        .category-title { font-size: 15px; font-weight: 700; color: #4f46e5; text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 12px 4px; }
+        .category-title { font-size: 15px; font-weight: 700; color: #009ca0; text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 12px 4px; }
         .prices-table { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .price-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; gap: 16px; border-bottom: 1px solid #f1f5f9; }
         .price-row:last-child { border-bottom: none; }
         .price-name { font-size: 14px; font-weight: 500; color: #334155; }
         @media (min-width: 640px) { .price-name { font-size: 15px; } }
-        .price-val { font-size: 15px; font-weight: 700; color: #10b981; white-space: nowrap; }
+        .price-val { font-size: 15px; font-weight: 700; color: #009ca0; white-space: nowrap; }
+        
         footer { background-color: #ffffff; border-top: 1px solid #e2e8f0; text-align: center; padding: 32px 20px; font-size: 12px; color: #64748b; }
         footer p { margin-bottom: 8px; }
         .disclaimer { max-width: 450px; margin: 0 auto; opacity: 0.75; font-style: italic; }
@@ -52,7 +66,7 @@
     <header>
         <div class="max-width-container header-content">
             <div>
-                <a href="#" class="logo-title">Доктор LOR</a>
+                <a href="#" class="logo-title">Доктор ЛОР</a>
                 <p class="logo-sub">Специализированный оториноларингологический кабинет</p>
             </div>
             <div class="contact-block">
@@ -107,7 +121,7 @@
 
             <div class="category-title">Процедуры для горла и ушей</div>
             <div class="prices-table">
-                <div class="price-row"><span class="price-name">Тонзиллор + фонофорез (1 процедура)</span><span class="price-val">4 500 ₸</span></div>
+                <div class="price-row"><span class="price-name">Тонзиллор + фонофорез (1Doc процедура)</span><span class="price-val">4 500 ₸</span></div>
                 <div class="price-row"><span class="price-name">Удаление серной пробки под видеоконтролем (1 ухо)</span><span class="price-val">3 500 ₸</span></div>
                 <div class="price-row"><span class="price-name">Промывание уха / туалет уха / введение лекарств на турунде</span><span class="price-val">2 000 ₸</span></div>
                 <div class="price-row"><span class="price-name">Фонофорез на ухо</span><span class="price-val">2 000 ₸</span></div>
@@ -125,7 +139,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2026 Доктор LOR — Алматы. Все права защищены.</p>
+        <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
         <p class="disclaimer">Имеются противопоказания, необходима консультация специалиста.</p>
     </footer>
 </body>
