@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиника Доктор ЛОР — Алматы — Специализированный кабинет</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Segoe UI", Arial, sans-serif; background-color: #ffffff; color: #333333; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+        
+        /* Главный контейнер для шапки */
+        .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        header { background-color: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; }
+        .logo-block { display: flex; flex-direction: column; align-items: flex-start; }
+        .logo-img { height: 64px; display: block; width: auto; }
+        .logo-sub { font-size: 11px; color: #777777; margin-top: 4px; line-height: 1.3; }
+        .nav-menu { display: flex; gap: 24px; list-style: none; }
+        .nav-menu a { color: #009ca0; text-decoration: none; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-menu a:hover { color: #007377; }
+        
+        /* Кнопки WhatsApp */
+        .whatsapp-btn-header { display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 10px 18px; border-radius: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.2s; }
+        .whatsapp-btn-header:hover { background-color: #20ba5a; }
+        .whatsapp-btn-header svg { fill: #ffffff; width: 18px; height: 18px; }
+        
+        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; padding: 14px 24px; border-radius: 8px; transition: background-color 0.2s; margin-top: 15px; width: 100%; max-width: 280px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
+        .action-button-wp:hover { background-color: #20ba5a; }
+        .action-button-wp svg { fill: #ffffff; width: 18px; height: 18px; }
+        
+        /* НАЙДЕННЫЙ БАЛАНС: Текстовый блок расширен до 1050px — шире прежнего, но с легкими аккуратными полями */
+        .text-section { max-width: 1050px; margin: 0 auto; padding: 0 20px 40px 20px; }
+        .main-title-center { font-size: 42px; font-weight: bold; color: #009ca0; text-align: center; margin: 50px 0 35px; }
+        .info-paragraph { font-size: 17px; color: #333333; margin-bottom: 20px; text-align: left; }
+        
+        /* Стиль оригинального списка цен */
+        .price-list-original { list-style-type: none; margin: 15px 0 25px 20px; }
+        .price-list-original li { font-size: 17px; color: #333333; margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .price-list-original li::before { content: "•"; color: #333333; font-weight: bold; position: absolute; left: 0; }
+        
+        .diseases-card { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-left: 5px solid #009ca0; border-radius: 8px; padding: 24px; margin: 35px 0; }
+        .diseases-title { font-size: 16px; font-weight: bold; color: #111111; margin-bottom: 16px; }
+        .diseases-list { list-style-type: none; }
+        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 15px; color: #333333; }
+        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
+        
+        .section-title { font-size: 28px; font-weight: bold; color: #111111; text-align: center; margin: 50px 0 25px; }
+        .branch-card-single { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto 50px; text-align: center; }
+        .branch-icon { font-size: 24px; margin-bottom: 12px; }
+        .branch-name { font-size: 18px; font-weight: bold; color: #111111; margin-bottom: 6px; }
+        .branch-address { font-size: 18px; color: #009ca0; font-weight: bold; margin-bottom: 20px; }
+        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 13px; color: #666666; }
+        .bold-text { font-weight: bold; color: #111111; }
+        
+        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; }
+        footer p { margin-bottom: 8px; }
+        footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="max-width-container header-content">
+            <div class="logo-block">
+                <a href="#" class="logo-link">
+                    <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
+                </a>
+                <p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#prices">Услуги и цены</a></li>
+                <li><a href="#address">Адрес</a></li>
+                <li><a href="diseases.html">О БОЛЕЗНЯХ</a></li>
+            </ul>
+            <a href="https://wa.me" target="_blank" class="whatsapp-btn-header">
+                <svg viewBox="0 0 24 24" xmlns="http://w3.org">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                <span>+7 (707) 213-10-10</span>
+            </a>
+        </div>
+    </header>
