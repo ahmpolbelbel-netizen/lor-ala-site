@@ -4,121 +4,158 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Доктор ЛОР — Сеть клиник оториноларингологии</title>
-    <!-- Tailwind CSS CDN -->
-<script src="https://tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+    <style>
+        /* Чистый CSS — стили встроены прямо в файл сайта */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #334155; line-height: 1.5; }
+        .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Шапка */
+        header { background-color: #ffffff; border-b: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .header-content { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 16px 0; gap: 16px; }
+        @media (min-width: 640px) { .header-content { flex-direction: row; } }
+        .logo-title { text-decoration: none; font-size: 24px; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: -0.5px; }
+        .logo-sub { font-size: 12px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        .contact-block { text-align: center; }
+        @media (min-width: 640px) { .contact-block { text-align: right; } }
+        .phone-link { font-size: 20px; font-weight: 700; color: #0f172a; text-decoration: none; transition: color 0.2s; }
+        .phone-link:hover { color: #2563eb; }
+        .status-badge { font-size: 12px; color: #059669; font-weight: 500; margin-top: 4px; }
+        
+        /* Главный баннер */
+        .hero { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: #ffffff; padding: 60px 20px; text-align: center; }
+        .hero h1 { font-size: 28px; font-weight: 800; tracking-tight: -0.5px; line-height: 1.2; margin-bottom: 16px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 768px) { .hero h1 { font-size: 42px; } }
+        .hero p { color: #dbeafe; font-size: 16px; max-width: 600px; margin: 0 auto; opacity: 0.9; }
+        @media (min-width: 768px) { .hero p { font-size: 18px; } }
 
-    <!-- Шапка сайта (Header) -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        /* Филиалы */
+        .section-title { font-size: 24px; font-weight: 700; color: #0f172a; text-align: center; margin: 48px 0 32px; }
+        .grid-branches { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 48px; }
+        @media (min-width: 768px) { .grid-branches { grid-template-columns: repeat(3, 1fr); } }
+        .branch-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .branch-icon { width: 40px; height: 40px; background-color: #eff6ff; color: #2563eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 16px; }
+        .branch-name { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .branch-address { font-size: 14px; color: #475569; margin-bottom: 16px; }
+        .branch-hours { border-top: 1px solid #f1f5f9; padding-top: 16px; font-size: 13px; color: #64748b; }
+        .branch-hours p { margin-bottom: 6px; }
+        .bold-text { font-weight: 600; color: #475569; }
+
+        /* Цены */
+        .prices-section { background-color: #f1f5f9; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; padding: 48px 0; }
+        .prices-container { max-width: 768px; margin: 0 auto; padding: 0 20px; }
+        .prices-sub { font-size: 14px; color: #64748b; text-align: center; margin-top: -24px; margin-bottom: 32px; }
+        .prices-table { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .price-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; gap: 16px; border-bottom: 1px solid #f1f5f9; }
+        .price-row:last-child { border-bottom: none; }
+        .price-name { font-size: 14px; font-weight: 500; color: #334155; }
+        @media (min-width: 640px) { .price-name { font-size: 16px; } }
+        .price-val { font-size: 14px; font-weight: 700; color: #2563eb; white-space: nowrap; }
+        @media (min-width: 640px) { .price-val { font-size: 16px; } }
+
+        /* Подвал */
+        footer { background-color: #ffffff; border-top: 1px solid #e2e8f0; text-align: center; padding: 32px 20px; font-size: 12px; color: #64748b; }
+        footer p { margin-bottom: 8px; }
+        .disclaimer { max-width: 450px; margin: 0 auto; opacity: 0.75; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка сайта -->
+    <header>
+        <div class="max-width-container header-content">
             <div>
-                <a href="#" class="text-2xl font-black tracking-tight text-blue-600 uppercase">Доктор ЛОР</a>
-                <p class="text-xs text-slate-500 font-medium mt-0.5">Сеть специализированных кабинетов</p>
+                <a href="#" class="logo-title">Доктор ЛОР</a>
+                <p class="logo-sub">Сеть специализированных кабинетов</p>
             </div>
-            <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-right">
-                <div>
-                    <a href="tel:+73832929400" class="text-xl font-bold text-slate-900 hover:text-blue-600 transition">+7 (383) 29-29-400</a>
-                    <p class="text-xs text-emerald-600 font-medium flex items-center justify-center sm:justify-end gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Приём без записи
-                    </p>
-                </div>
-                <a href="#prices" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-md shadow-blue-600/10">
-                    Услуги и цены
-                </a>
+            <div class="contact-block">
+                <a href="tel:+73832929400" class="phone-link">+7 (383) 29-29-400</a>
+                <p class="status-badge">● Приём без записи</p>
             </div>
         </div>
     </header>
 
     <!-- Главный баннер -->
-    <section class="bg-gradient-to-br from-blue-600 via-indigo-600 to-indigo-700 text-white py-16 px-4">
-        <div class="max-w-4xl mx-auto text-center space-y-6">
-            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                Специализированная помощь в области оториноларингологии
-            </h1>
-            <p class="text-blue-100 text-base md:text-lg max-w-2xl mx-auto leading-relaxed opacity-90">
-                Работаем с 1996 года в Новосибирске. Четыре кабинета с полным спектром амбулаторных услуг для взрослых и детей. Приём ведётся без предварительной записи.
-            </p>
-        </div>
+    <section class="hero">
+        <h1>Специализированная помощь в области оториноларингологии</h1>
+        <p>Работаем с 1996 года. Кабинеты с полным спектром амбулаторных услуг для взрослых и детей. Приём ведётся без предварительной записи.</p>
     </section>
 
     <!-- Блок: Адреса филиалов -->
-    <section class="max-w-6xl mx-auto px-4 py-16">
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-900 text-center mb-10">Наши филиалы и контакты</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <main class="max-width-container">
+        <h2 class="section-title">Наши филиалы и контакты</h2>
+        <div class="grid-branches">
             <!-- Филиал 1 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4 text-blue-600 font-bold">М</div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2">м. Площадь Ленина</h3>
-                <p class="text-sm text-slate-600 mb-4">ул. Мичурина, 3</p>
-                <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-4">
-                    <p><span class="font-semibold text-slate-700">Пн - Пт:</span> 8:30 - 20:00</p>
-                    <p><span class="font-semibold text-slate-700">Сб - Вс:</span> 10:00 - 16:00</p>
-                    <p class="pt-2"><span class="font-semibold text-slate-700">Тел:</span> +7 (383) 222-51-93</p>
+            <div class="branch-card">
+                <div class="branch-icon">М</div>
+                <h3 class="branch-name">м. Площадь Ленина</h3>
+                <p class="branch-address">ул. Мичурина, 3</p>
+                <div class="branch-hours">
+                    <p><span class="bold-text">Пн - Пт:</span> 8:30 - 20:00</p>
+                    <p><span class="bold-text">Сб - Вс:</span> 10:00 - 16:00</p>
+                    <p style="margin-top: 8px;"><span class="bold-text">Тел:</span> +7 (383) 222-51-93</p>
                 </div>
             </div>
             <!-- Филиал 2 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4 text-blue-600 font-bold">М</div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2">м. Студенческая</h3>
-                <p class="text-sm text-slate-600 mb-4">пр. К. Маркса, 43/1</p>
-                <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-4">
-                    <p><span class="font-semibold text-slate-700">Пн - Пт:</span> 8:30 - 20:00</p>
-                    <p><span class="font-semibold text-slate-700">Сб:</span> 10:00 - 15:00, Вс: Выходной</p>
-                    <p class="pt-2"><span class="font-semibold text-slate-700">Тел:</span> +7 (383) 315-21-94</p>
+            <div class="branch-card">
+                <div class="branch-icon">М</div>
+                <h3 class="branch-name">м. Студенческая</h3>
+                <p class="branch-address">пр. К. Маркса, 43/1</p>
+                <div class="branch-hours">
+                    <p><span class="bold-text">Пн - Пт:</span> 8:30 - 20:00</p>
+                    <p><span class="bold-text">Сб:</span> 10:00 - 15:00, Вс: Выходной</p>
+                    <p style="margin-top: 8px;"><span class="bold-text">Тел:</span> +7 (383) 315-21-94</p>
                 </div>
             </div>
             <!-- Филиал 3 -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
-                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4 text-blue-600 font-bold">М</div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2">м. Заельцовская</h3>
-                <p class="text-sm text-slate-600 mb-4">ул. Д. Ковальчук, 260/2</p>
-                <div class="space-y-1.5 text-xs text-slate-500 border-t border-slate-100 pt-4">
-                    <p><span class="font-semibold text-slate-700">Пн - Пт:</span> 8:30 - 20:00</p>
-                    <p><span class="font-semibold text-slate-700">Сб:</span> 10:00 - 15:00, Вс: Выходной</p>
-                    <p class="pt-2"><span class="font-semibold text-slate-700">Тел:</span> +7 (383) 29-29-400</p>
+            <div class="branch-card">
+                <div class="branch-icon">М</div>
+                <h3 class="branch-name">м. Заельцовская</h3>
+                <p class="branch-address">ул. Д. Ковальчук, 260/2</p>
+                <div class="branch-hours">
+                    <p><span class="bold-text">Пн - Пт:</span> 8:30 - 20:00</p>
+                    <p><span class="bold-text">Сб:</span> 10:00 - 15:00, Вс: Выходной</p>
+                    <p style="margin-top: 8px;"><span class="bold-text">Тел:</span> +7 (383) 29-29-400</p>
                 </div>
             </div>
         </div>
-    </section>
+    </main>
 
     <!-- Блок: Прайс-лист -->
-    <section id="prices" class="bg-slate-100 border-y border-slate-200 py-16 px-4">
-        <div class="max-w-3xl mx-auto">
-            <h2 class="text-2xl md:text-3xl font-bold text-slate-900 text-center mb-4">Услуги и цены</h2>
-            <p class="text-sm text-slate-500 text-center mb-10">Цены значительно ниже большинства частных клиник города</p>
+    <section class="prices-section">
+        <div class="prices-container">
+            <h2 class="section-title" style="margin-top: 0; margin-bottom: 12px;">Услуги и цены</h2>
+            <p class="prices-sub">Цены значительно ниже большинства частных клиник</p>
             
-            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <div class="divide-y divide-slate-100">
-                    <div class="p-4 sm:p-5 flex justify-between items-center gap-4 hover:bg-slate-50 transition">
-                        <span class="font-medium text-slate-800 text-sm sm:text-base">Первичная консультация врача-оториноларинголога</span>
-                        <span class="font-bold text-blue-600 shrink-0 text-sm sm:text-base">1 800 ₽</span>
-                    </div>
-                    <div class="p-4 sm:p-5 flex justify-between items-center gap-4 hover:bg-slate-50 transition">
-                        <span class="font-medium text-slate-800 text-sm sm:text-base">Повторная консультация по текущему заболеванию</span>
-                        <span class="font-bold text-blue-600 shrink-0 text-sm sm:text-base">1 200 ₽</span>
-                    </div>
-                    <div class="p-4 sm:p-5 flex justify-between items-center gap-4 hover:bg-slate-50 transition">
-                        <span class="font-medium text-slate-800 text-sm sm:text-base">Лечение на аппарате «Тонзиллор» (включая фонофорез)</span>
-                        <span class="font-bold text-blue-600 shrink-0 text-sm sm:text-base">650 ₽</span>
-                    </div>
-                    <div class="p-4 sm:p-5 flex justify-between items-center gap-4 hover:bg-slate-50 transition">
-                        <span class="font-medium text-slate-800 text-sm sm:text-base">Промывание носа методом перемещения («Кукушка»)</span>
-                        <span class="font-bold text-blue-600 shrink-0 text-sm sm:text-base">от 850 ₽</span>
-                    </div>
-                    <div class="p-4 sm:p-5 flex justify-between items-center gap-4 hover:bg-slate-50 transition">
-                        <span class="font-medium text-slate-800 text-sm sm:text-base">Тимпанометрия / Исследование слуха</span>
-                        <span class="font-bold text-blue-600 shrink-0 text-sm sm:text-base">от 800 ₽</span>
-                    </div>
+            <div class="prices-table">
+                <div class="price-row">
+                    <span class="price-name">Первичная консультация врача-оториноларинголога</span>
+                    <span class="price-val">1 800 ₽</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-name">Повторная консультация по текущему заболеванию</span>
+                    <span class="price-val">1 200 ₽</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-name">Лечение на аппарате «Тонзиллор» (включая фонофорез)</span>
+                    <span class="price-val">650 ₽</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-name">Промывание носа методом перемещения («Кукушка»)</span>
+                    <span class="price-val">от 850 ₽</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-name">Тимпанометрия / Исследование слуха</span>
+                    <span class="price-val">от 800 ₽</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Подвал (Footer) -->
-    <footer class="bg-white border-t border-slate-200 text-center py-8 text-xs text-slate-500 space-y-2">
-        <p>&copy; 2026 Доктор ЛОР. Структура сайта полностью скопирована.</p>
-        <p class="max-w-md mx-auto px-4 opacity-75">Имеются противопоказания, необходима консультация специалиста.</p>
+    <!-- Подвал -->
+    <footer>
+        <p>&copy; 2026 Доктор ЛОР. Копия структуры сайта.</p>
+        <p class="disclaimer">Имеются противопоказания, необходима консультация специалиста.</p>
     </footer>
 
 </body>
