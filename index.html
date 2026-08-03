@@ -6,7 +6,7 @@
     <title>Клиника Доктор ЛОР — Алматы</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Segoe UI", Arial, sans-serif; background-color: #ffffff; color: #333333; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        body { font-family: "Segoe UI", Arial, sans-serif; background-color: #ffffff; color: #333333; line-height: 1.6; -webkit-font-smoothing: antialiased; }
         .max-width-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
         header { background-color: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
         .header-content { display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; }
@@ -17,43 +17,30 @@
         .nav-menu a { color: #009ca0; text-decoration: none; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .nav-menu a:hover { color: #007377; }
         
-        /* Кнопка WhatsApp в шапке */
-        .whatsapp-btn-header { display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 10px 18px; border-radius: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.2s, transform 0.1s; }
-        .whatsapp-btn-header:hover { background-color: #20ba5a; transform: translateY(-1px); }
+        /* Кнопки WhatsApp */
+        .whatsapp-btn-header { display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 10px 18px; border-radius: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.2s; }
+        .whatsapp-btn-header:hover { background-color: #20ba5a; }
         .whatsapp-btn-header svg { fill: #ffffff; width: 18px; height: 18px; }
-        
-        /* Кнопка WhatsApp в карточке адреса */
-        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; padding: 14px 24px; border-radius: 10px; transition: background-color 0.2s, transform 0.1s; margin: 15px 0 20px; width: 100%; max-width: 320px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
-        .action-button-wp:hover { background-color: #20ba5a; transform: translateY(-1px); }
+        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; padding: 14px 24px; border-radius: 10px; transition: background-color 0.2s; margin: 15px 0; width: 100%; max-width: 320px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
+        .action-button-wp:hover { background-color: #20ba5a; }
         .action-button-wp svg { fill: #ffffff; width: 20px; height: 20px; }
         
-        .main-title-center { font-size: 36px; font-weight: bold; color: #009ca0; text-align: center; margin: 50px 0 35px; letter-spacing: -0.5px; }
-        .text-section { max-width: 800px; margin: 0 auto; padding-bottom: 40px; }
-        .info-paragraph { font-size: 15px; color: #333333; margin-bottom: 20px; text-align: left; }
-        .diseases-card { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-left: 5px solid #009ca0; border-radius: 8px; padding: 24px; margin: 35px 0; }
-        .diseases-title { font-size: 16px; font-weight: bold; color: #111111; margin-bottom: 16px; }
-        .diseases-list { list-style-type: none; }
-        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 14px; color: #333333; }
-        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
-        .prices-section { background-color: #ffffff; padding-bottom: 50px; }
-        .prices-container { max-width: 800px; margin: 0 auto; }
-        .category-title { font-size: 14px; font-weight: bold; color: #009ca0; text-transform: uppercase; letter-spacing: 0.5px; margin: 25px 0 10px 0; }
-        .prices-table { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; gap: 20px; border-bottom: 1px solid #f1f5f9; }
-        .price-row:last-child { border-bottom: none; }
-        .price-name { font-size: 14px; color: #333333; }
-        .price-val { font-size: 14px; font-weight: bold; color: #009ca0; white-space: nowrap; }
-        .section-title { font-size: 24px; font-weight: bold; color: #111111; text-align: center; margin: 50px 0 25px; }
+        /* Крупный текст как в оригинале */
+        .main-title-center { font-size: 42px; font-weight: bold; color: #009ca0; text-align: center; margin: 50px 0 35px; }
+        .text-section { max-width: 850px; margin: 0 auto; padding-bottom: 40px; }
+        .info-paragraph { font-size: 17px; color: #333333; margin-bottom: 18px; text-align: justify; }
+        
+        /* Список цен прямо в тексте */
+        .price-list-original { list-style-type: none; margin: 15px 0 25px 20px; }
+        .price-list-original li { font-size: 17px; color: #333333; margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .price-list-original li::before { content: "•"; color: #000000; font-weight: bold; position: absolute; left: 0; }
+        
+        .section-title { font-size: 28px; font-weight: bold; color: #111111; text-align: center; margin: 40px 0 20px; }
         .branch-card-single { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto 50px; text-align: center; }
-        .branch-icon { font-size: 24px; margin-bottom: 12px; }
-        .branch-name { font-size: 18px; font-weight: bold; color: #111111; margin-bottom: 6px; }
-        .branch-address { font-size: 16px; color: #009ca0; font-weight: bold; margin-bottom: 10px; }
-        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 13px; color: #666666; }
-        .bold-text { font-weight: bold; color: #111111; }
-        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 13px; }
-        footer p { margin-bottom: 8px; opacity: 0.9; }
+        .branch-address { font-size: 18px; color: #009ca0; font-weight: bold; margin-bottom: 10px; }
+        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; margin-top: 40px; }
+        footer p { margin-bottom: 8px; }
         footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
-        .disclaimer { max-width: 600px; margin: 20px auto 0; opacity: 0.6; font-style: italic; font-size: 11px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -68,9 +55,7 @@
             <ul class="nav-menu">
                 <li><a href="#prices">Услуги и цены</a></li>
                 <li><a href="#address">Адрес</a></li>
-                <li><a href="#diseases">О болезнях</a></li>
             </ul>
-            <!-- Ссылка с встроенным текстом приветствия -->
             <a href="https://wa.me" target="_blank" class="whatsapp-btn-header">
                 <svg viewBox="0 0 24 24" xmlns="http://w3.org">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -79,61 +64,32 @@
             </a>
         </div>
     </header>
+
     <div class="max-width-container text-section">
         <h1 class="main-title-center">Клиника Доктор ЛОР</h1>
-        <p class="info-paragraph">Сеть ЛОР кабинетов «Доктор ЛОР» основана в 1996 году в г. Новосибирске и на сегодняшний день включает в себя четыре кабинета по оказанию специализированной амбулаторной помощи в области оториноларингологии с полным спектром услуг. Приём ведётся <strong>без предварительной записи</strong>.</p>
-        <p class="info-paragraph">Цены на услуги в сети «Доктор ЛОР» значительно ниже, чем у большинства частных клинок нашего профиля. Все остальные цены примерно такого же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
+        
+        <p class="info-paragraph">Сеть лор кабинетов Доктор ЛОР основана в 1996 году в г. Новосибирске и на сегодняшний день включает в себя четыре кабинета по оказанию специализированной амбулаторной помощи в области оториноларингологии с полным спектром услуг. Приём ведётся <strong>без предварительной записи</strong>.</p>
+        
+        <p class="info-paragraph" style="font-weight: bold; color: #555;">Перед посещением клиники обязательно уточните в единой справочной режим работы интересующего Вас подразделения.</p>
+        
+        <p class="info-paragraph">Цены на услуги в сети Доктор ЛОР значительно ниже, чем у большинства частных клиник нашего профиля. Проиллюстрировать это можно выдержкой из прейскуранта:</p>
+        <ul id="prices" class="price-list-original">
+            <li>Первичная консультация - 4000 ₸.</li>
+            <li>Повторная консультация по поводу данного случая заболевания - 3000 ₸.</li>
+            <li>Лечение на аппарате "Тонзиллор" (фонофорез включён в стоимость) - 4500 ₸. (1 сеанс)</li>
+            <li>Промывание придаточных пазух носа ("кукушка") - 3000 ₸. (1 сеанс)</li>
+            <li>Фонофорез - 2000 ₸. (1 сеанс)</li>
+        </ul>
+
+        <p class="info-paragraph">Все остальные цены примерно такого-же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
         <p class="info-paragraph">Несмотря на подорожание медикаментов, расходных материалов, оборудования, инструментария, мы удерживаем цены на приемлемом для большинства населения уровне.</p>
-        <div id="diseases" class="diseases-card">
-            <h3 class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующими заболеваниями:</h3>
-            <ul class="diseases-list">
-                <li>Нарушение носового дыхания любой этиологии (за исключением выраженного искривления перегородки носа), гаймориты, риниты;</li>
-                <li>Заболевания лимфаденоидного глоточного кольца у детей, аденоидиты;</li>
-                <li>Тонзиллит, фарингит;</li>
-                <li>Негнойные и гнойные заболевания среднего уха.</li>
-            </ul>
-        </div>
     </div>
-    <section id="prices" class="prices-section">
-        <div class="prices-container">
-            <h2 class="section-title" style="margin-bottom: 20px;">Услуги и цены</h2>
-            <div class="category-title">Консультации</div>
-            <div class="prices-table">
-                <div class="price-row"><span class="price-name">Первичная консультация ЛОР-врача</span><span class="price-val">4 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Повторная консультация ЛОР-врача (по поводу данного случая заболевания)</span><span class="price-val">3 000 ₸</span></div>
-            </div>
-            <div class="category-title">Процедуры для носа ("Кукушка")</div>
-            <div class="prices-table">
-                <div class="price-row"><span class="price-name">Промывание придаточных пазух носа ("кукушка") (1 сеанс)</span><span class="price-val">3 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа ("кукушка")</span><span class="price-val">3 500 ₸</span></div>
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос</span><span class="price-val">4 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос и ухо</span><span class="price-val">4 500 ₸</span></div>
-            </div>
-            <div class="category-title">Процедуры для горла и ушей</div>
-            <div class="prices-table">
-                <div class="price-row"><span class="price-name">Лечение на аппарате "Тонзиллор" (фонофорез включён в стоимость) (1 сеанс)</span><span class="price-val">4 500 ₸</span></div>
-                <div class="price-row"><span class="price-name">Удаление серной пробки под видеоконтролем (1 ухо)</span><span class="price-val">3 500 ₸</span></div>
-                <div class="price-row"><span class="price-name">Промывание уха / туалет уха / введение лекарств на турунде</span><span class="price-val">2 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Фонофорез (1 сеанс)</span><span class="price-val">2 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Видеоэндоскопия ушей</span><span class="price-val">2 000 ₸</span></div>
-            </div>
-            <div class="category-title">Курсы лечения</div>
-            <div class="prices-table">
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа — курс 10 раз (единоразовая оплата)</span><span class="price-val">24 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос — курс 10 раз (единоразовая оплата)</span><span class="price-val">28 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос и ухо — курс 10 раз (единоразовая оплата)</span><span class="price-val">32 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Тонзиллор + фонофорез — курс 10 раз</span><span class="price-val">35 000 ₸</span></div>
-            </div>
-        </div>
-    </section>
+
     <main id="address" class="max-width-container">
-        <h2 class="section-title">Наш адрес и запись</h2>
+        <h2 class="section-title">Наш адрес в Алматы</h2>
         <div class="branch-card-single">
-            <div class="branch-icon">📍</div>
-            <h3 class="branch-name">Кабинет в Алматы</h3>
-            <p class="branch-address">улица Розыбакиева, 95</p>
+            <p class="branch-address">📍 улица Розыбакиева, 95</p>
             
-            <!-- ВОЗВРАЩЕННАЯ БОЛЬШАЯ КНОПКА WHATSAPP С ТЕКСТОМ ПРИВЕТСТВИЯ -->
             <a href="https://wa.me" target="_blank" class="action-button-wp">
                 <svg viewBox="0 0 24 24" xmlns="http://w3.org">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -142,15 +98,15 @@
             </a>
             
             <div class="branch-hours">
-                <p style="margin-bottom: 6px;"><span class="bold-text">График работы:</span> Приём ведётся <strong>без предварительной записи</strong></p>
+                <p><span class="bold-text">График работы:</span> Живая очередь, без записи</p>
                 <p><span class="bold-text">Для взрослых и детей</span></p>
             </div>
         </div>
     </main>
+
     <footer>
-        <p>Телефон кабинета в Алматы: +7 (707) 213-10-10</p>
+        <p>Телефон в Алматы: +7 (707) 213-10-10</p>
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
-        <div class="disclaimer">Имеются противопоказания, необходима консультация специалиста. </div>
     </footer>
 </body>
 </html>
