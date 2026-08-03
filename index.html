@@ -7,69 +7,73 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #ffffff; color: #334155; line-height: 1.5; }
-        .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .max-width-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         
-        /* Белая шапка с бирюзовыми элементами */
-        header { background-color: #ffffff; border-b: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
-        .header-content { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 12px 0; gap: 16px; }
-        @media (min-width: 768px) { .header-content { flex-direction: row; } }
+        /* Новая крупная шапка сайта */
+        header { background-color: #ffffff; border-b: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); position: sticky; top: 0; z-index: 50; }
+        .header-content { display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 20px 0; gap: 20px; }
+        @media (min-width: 768px) { .header-content { flex-direction: row; gap: 32px; } }
         
         .logo-block { display: flex; flex-direction: column; align-items: center; }
         @media (min-width: 768px) { .logo-block { align-items: flex-start; } }
-        .logo-img { height: 40px; display: block; width: auto; }
-        .logo-sub { font-size: 11.5px; color: #64748b; font-weight: 500; margin-top: 6px; max-width: 250px; text-align: justify; text-align-last: justify; line-height: 1.3; }
+        /* Крупный логотип */
+        .logo-img { height: 50px; display: block; width: auto; }
+        /* Подпись встает строго вровень с краями увеличенного логотипа */
+        .logo-sub { font-size: 12.5px; color: #64748b; font-weight: 500; margin-top: 6px; max-width: 290px; text-align: justify; text-align-last: justify; line-height: 1.4; }
         
-        /* Меню навигации в шапке */
-        .nav-menu { display: flex; gap: 20px; list-style: none; }
-        .nav-menu a { color: #009ca0; text-decoration: none; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.2s; }
+        /* Крупное меню навигации */
+        .nav-menu { display: flex; gap: 28px; list-style: none; flex-wrap: wrap; justify-content: center; }
+        .nav-menu a { color: #009ca0; text-decoration: none; font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; transition: color 0.2s; }
         .nav-menu a:hover { color: #007377; }
         
-        /* Контакты */
+        /* Крупные контакты справа */
         .contact-block { text-align: center; }
         @media (min-width: 768px) { .contact-block { text-align: right; } }
-        .phone-wrapper { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #009ca0; font-size: 15px; font-weight: 700; }
-        .whatsapp-indicator { font-size: 11px; font-weight: 600; color: #009ca0; background-color: #e0f7f8; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px; }
+        .phone-wrapper { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #009ca0; transition: color 0.2s; }
+        .phone-wrapper:hover { color: #007377; }
+        .phone-link { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+        .whatsapp-indicator { font-size: 11px; font-weight: 700; color: #009ca0; background-color: #e0f7f8; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
         
         /* Текстовые блоки */
-        .main-title-center { font-size: 26px; font-weight: 800; color: #009ca0; text-align: center; margin: 40px 0 24px; }
-        .text-section { padding: 20px 0 40px; max-width: 800px; margin: 0 auto; }
-        .info-paragraph { font-size: 15px; color: #475569; margin-bottom: 16px; line-height: 1.7; text-align: justify; }
+        .main-title-center { font-size: 32px; font-weight: 800; color: #009ca0; text-align: center; margin: 56px 0 28px; }
+        .text-section { padding: 20px 0 40px; max-width: 850px; margin: 0 auto; }
+        .info-paragraph { font-size: 16px; color: #475569; margin-bottom: 20px; line-height: 1.75; text-align: justify; }
         
         /* Карточка заболеваний */
-        .diseases-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #009ca0; border-radius: 12px; padding: 24px; margin: 32px 0; }
-        .diseases-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+        .diseases-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 5px solid #009ca0; border-radius: 14px; padding: 28px; margin: 40px 0; }
+        .diseases-title { font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 20px; }
         .diseases-list { list-style-type: none; }
-        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 14px; color: #475569; }
-        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
+        .diseases-list li { position: relative; padding-left: 24px; margin-bottom: 12px; font-size: 15px; color: #475569; line-height: 1.6; }
+        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 24px; position: absolute; left: 0; top: -4px; }
         
-        /* Элементы адреса и кнопка */
-        .section-title { font-size: 24px; font-weight: 700; color: #0f172a; text-align: center; margin: 48px 0 24px; scroll-margin-top: 80px; }
-        .branch-card-single { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 32px; max-width: 600px; margin: 0 auto 48px; text-align: center; }
-        .branch-icon { width: 48px; height: 48px; background-color: #e0f7f8; color: #009ca0; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 16px; font-size: 20px; }
-        .branch-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-        .branch-address { font-size: 16px; color: #009ca0; font-weight: 600; margin-bottom: 20px; }
-        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #22c55e; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; padding: 12px 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); transition: all 0.2s ease; margin-bottom: 20px; width: 100%; max-width: 280px; }
+        /* Элементы адреса и кнопки */
+        .section-title { font-size: 26px; font-weight: 800; color: #0f172a; text-align: center; margin: 56px 0 28px; scroll-margin-top: 110px; }
+        .branch-card-single { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 36px; max-width: 600px; margin: 0 auto 56px; text-align: center; }
+        .branch-icon { width: 52px; height: 52px; background-color: #e0f7f8; color: #009ca0; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 20px; font-size: 22px; }
+        .branch-name { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+        .branch-address { font-size: 17px; color: #009ca0; font-weight: 600; margin-bottom: 24px; }
+        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #22c55e; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 16px; padding: 14px 28px; border-radius: 14px; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); transition: all 0.2s ease; margin-bottom: 24px; width: 100%; max-width: 300px; }
         .action-button-wp:hover { background-color: #16a34a; transform: translateY(-1px); }
-        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 14px; color: #475569; display: block; text-align: center; }
-        .branch-hours p { margin-bottom: 6px; }
+        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 14px; color: #475569; display: block; text-align: center; }
+        .branch-hours p { margin-bottom: 8px; }
         .bold-text { font-weight: 600; color: #0f172a; }
         
         /* Цены секция */
-        .prices-section { background-color: #ffffff; padding: 16px 0 48px; scroll-margin-top: 80px; }
-        .prices-container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
-        .category-title { font-size: 14px; font-weight: 700; color: #009ca0; text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 12px 4px; }
-        .prices-table { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        .price-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; gap: 16px; border-bottom: 1px solid #f1f5f9; }
+        .prices-section { background-color: #ffffff; padding: 20px 0 56px; scroll-margin-top: 110px; }
+        .prices-container { max-width: 850px; margin: 0 auto; padding: 0 20px; }
+        .category-title { font-size: 15px; font-weight: 700; color: #009ca0; text-transform: uppercase; letter-spacing: 0.6px; margin: 32px 0 14px 4px; }
+        .prices-table { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 24px; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; gap: 20px; border-bottom: 1px solid #f1f5f9; }
         .price-row:last-child { border-bottom: none; }
-        .price-name { font-size: 14px; font-weight: 500; color: #334155; }
-        .price-val { font-size: 14px; font-weight: 700; color: #009ca0; white-space: nowrap; }
+        .price-name { font-size: 15px; font-weight: 500; color: #334155; }
+        .price-val { font-size: 15px; font-weight: 700; color: #009ca0; white-space: nowrap; }
         
-        /* Сплошной бирюзовый подвал (Footer) во всю ширину как на картинке */
-        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 13px; border-top: 1px solid #008488; }
-        footer .logo-footer-img { height: 40px; width: auto; display: block; margin: 0 auto 16px; filter: brightness(0) invert(1); }
-        footer p { margin-bottom: 8px; opacity: 0.9; }
+        /* Сплошной бирюзовый подвал */
+        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 48px 20px; font-size: 14px; border-top: 1px solid #008488; }
+        footer .logo-footer-img { height: 45px; width: auto; display: block; margin: 0 auto 20px; filter: brightness(0) invert(1); }
+        footer p { margin-bottom: 10px; opacity: 0.9; }
         footer a { color: #ffffff; text-decoration: none; font-weight: 700; }
-        .disclaimer { max-width: 500px; margin: 16px auto 0; opacity: 0.7; font-style: italic; font-size: 11px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px; }
+        .disclaimer { max-width: 550px; margin: 20px auto 0; opacity: 0.7; font-style: italic; font-size: 12px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; }
     </style>
 </head>
 <body>
@@ -83,7 +87,6 @@
                 <p class="logo-sub">Специализированный оториноларингологический кабинет</p>
             </div>
             
-            <!-- Ссылки навигации строго по ТЗ -->
             <ul class="nav-menu">
                 <li><a href="#prices">Услуги и цены</a></li>
                 <li><a href="#address">Адрес</a></li>
@@ -92,6 +95,8 @@
             
             <div class="contact-block">
                 <a href="https://wa.me" target="_blank" class="phone-wrapper">
+                    <!-- Добавили красивую бирюзовую телефонную трубку перед крупным номером -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #009ca0;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     <span class="phone-link">+7 (707) 213-10-10</span>
                 </a>
                 <br><span class="whatsapp-indicator">Приём без записи</span>
@@ -107,8 +112,8 @@
         <p class="info-paragraph">Цены на услуги в сети «Доктор ЛОР» значительно ниже, чем у большинства частных клиник нашего профиля. Все остальные цены примерно такого же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
         <p class="info-paragraph">Несмотря на подорожание медикаментов, расходных материалов, оборудования, инструментария, мы удерживаем цены на приемлемом для большинства населения уровне.</p>
 
-        <div id="diseases" class="diseases-card" style="scroll-margin-top: 80px;">
-            <h3 class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующими заболеваниями:</h3>
+        <div id="diseases" class="diseases-card" style="scroll-margin-top: 110px;">
+            <h3 class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующие заболеваниями:</h3>
             <ul class="diseases-list">
                 <li>Нарушение носового дыхания любой этиологии (за исключением выраженного искривления перегородки носа), гаймориты, риниты;</li>
                 <li>Заболевания лимфаденоидного глоточного кольца у детей, аденоидиты;</li>
@@ -135,11 +140,11 @@
 
     <section id="prices" class="prices-section">
         <div class="prices-container">
-            <h2 class="section-title" style="margin-bottom: 24px; font-weight: 800;">Услуги и цены</h2>
+            <h2 class="section-title" style="margin-bottom: 28px; font-weight: 800;">Услуги и цены</h2>
             
             <div class="category-title">Консультации</div>
             <div class="prices-table">
-                <div class="price-row"><span class="price-name">Первичная консультация ЛОР-врача</span><span class="price-val">4 000 ₸</span></div>
+                <div class="price-row"><span class="price-name">ПервичнаяBox консультация ЛОР-врача</span><span class="price-val">4 000 ₸</span></div>
                 <div class="price-row"><span class="price-name">Повторная консультация ЛОР-врача (по поводу данного случая заболевания)</span><span class="price-val">3 000 ₸</span></div>
             </div>
 
@@ -170,10 +175,9 @@
         </div>
     </section>
 
-    <!-- Сплошной бирюзовый подвал как на скриншоте -->
     <footer>
         <img src="logo.png" alt="Доктор ЛОР" class="logo-footer-img">
-        <p>Телефон кабинета в Алматы: <a href="https://wa.me">+7 (707) 213-10-10</a></p>
+        <p>Телефон кабинета в Алматы: <a href="https://wa.me" target="_blank">+7 (707) 213-10-10</a></p>
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
         <div class="disclaimer">Имеются противопоказания, необходима консультация специалиста.</div>
     </footer>
