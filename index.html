@@ -24,11 +24,22 @@
         .phone-link { font-size: 16px; font-weight: 700; color: #0f172a; }
         .whatsapp-indicator { font-size: 11px; font-weight: 600; color: #009ca0; background-color: #e0f2fe; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px; }
         
-        /* Бирюзовый главный баннер как на lor-nsk.ru */
+        /* Главный баннер */
         .hero { background: linear-gradient(135deg, #009ca0 0%, #008488 100%); color: #ffffff; padding: 60px 20px; text-align: center; }
         .hero h1 { font-size: 28px; font-weight: 800; tracking-tight: -0.5px; line-height: 1.2; margin-bottom: 16px; max-width: 800px; margin-left: auto; margin-right: auto; }
         @media (min-width: 768px) { .hero h1 { font-size: 42px; } }
-        .hero p { color: #e0f2fe; font-size: 16px; max-width: 600px; margin: 0 auto; opacity: 0.9; }
+        .hero p { color: #e0f2fe; font-size: 16px; max-width: 700px; margin: 0 auto; opacity: 0.95; line-height: 1.6; }
+        
+        /* Блоки с текстом */
+        .text-section { padding: 48px 0; max-width: 800px; margin: 0 auto; }
+        .info-paragraph { font-size: 16px; color: #475569; margin-bottom: 20px; line-height: 1.7; text-align: justify; }
+        
+        /* Заболевания карточка */
+        .diseases-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #009ca0; border-radius: 12px; padding: 24px; margin: 32px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .diseases-title { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+        .diseases-list { list-style-type: none; }
+        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 15px; color: #475569; }
+        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
         
         /* Карточка адреса */
         .section-title { font-size: 24px; font-weight: 700; color: #0f172a; text-align: center; margin: 48px 0 24px; }
@@ -79,12 +90,29 @@
         </div>
     </header>
     <section class="hero">
-        <h1>Высококвалифицированная ЛОР-помощь в Алматы</h1>
-        <p>Полный спектр амбулаторных услуг и процедур для взрослых и детей. Профессиональное оборудование и бережное лечение.</p>
+        <h1>Специализированная ЛОР-помощь в Алматы</h1>
+        <p>Сеть ЛОР кабинетов «Доктор ЛОР» основана в 1996 году в г. Новосибирске и на сегодняшний день включает в себя четыре кабинета по оказанию специализированной амбулаторной помощи в области оториноларингологии с полным спектром услуг. Приём ведётся <strong>без предварительной записи</strong>.</p>
     </section>
 
-    <main class="max-width-container">
-        <h2 class="section-title">Наш адрес и запись</h2>
+    <div class="max-width-container text-section">
+        <p class="info-paragraph">Цены на услуги в сети «Доктор ЛОР» значительно ниже, чем у большинства частных клиник нашего профиля. Все остальные цены примерно такого же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
+        
+        <p class="info-paragraph">Несмотря на подорожание медикаментов, расходных материалов, оборудования, инструментария, мы удерживаем цены на приемлемом для большинства населения уровне.</p>
+
+        <!-- Карточка заболеваний из вашего текста -->
+        <div class="diseases-card">
+            <h3 class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующими заболеваниями:</h3>
+            <ul class="diseases-list">
+                <li>Нарушение носового дыхания любой этиологии (за исключением выраженного искривления перегородки носа), гаймориты, риниты;</li>
+                <li>Заболевания лимфаденоидного глоточного кольца у детей, аденоидиты;</li>
+                <li>Тонзиллит, фарингит;</li>
+                <li>Негнойные и гнойные заболевания среднего уха.</li>
+            </ul>
+        </div>
+    </div>
+
+    <main class="max-width-container" style="margin-top: 0;">
+        <h2 class="section-title" style="margin-top: 0;">Наш адрес и запись</h2>
         <div class="branch-card-single">
             <div class="branch-icon">📍</div>
             <h3 class="branch-name">Кабинет в Алматы</h3>
@@ -94,7 +122,7 @@
                 Написать в WhatsApp
             </a>
             <div class="branch-hours">
-                <p><span class="bold-text">График работы:</span> Приём без предварительной записи</p>
+                <p><span class="bold-text">График работы:</span> Приём ведётся <strong>без предварительной записи</strong></p>
                 <p><span class="bold-text">Для взрослых и детей</span></p>
             </div>
         </div>
@@ -103,17 +131,17 @@
     <section class="prices-section">
         <div class="prices-container">
             <h2 class="section-title" style="margin-top: 0; margin-bottom: 12px;">Услуги и цены</h2>
-            <p class="prices-sub">Актуальный прейскурант цен на медицинские услуги</p>
+            <p class="prices-sub">Выдержка из прейскуранта на медицинские услуги</p>
             
             <div class="category-title">Консультации</div>
             <div class="prices-table">
                 <div class="price-row"><span class="price-name">Первичная консультация ЛОР-врача</span><span class="price-val">4 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Повторная консультация ЛОР-врача (в рамках одного случая)</span><span class="price-val">3 000 ₸</span></div>
+                <div class="price-row"><span class="price-name">Повторная консультация ЛОР-врача (по поводу данного случая заболевания)</span><span class="price-val">3 000 ₸</span></div>
             </div>
 
             <div class="category-title">Процедуры для носа ("Кукушка")</div>
             <div class="prices-table">
-                <div class="price-row"><span class="price-name">Промывание носа ("кукушка")</span><span class="price-val">3 000 ₸</span></div>
+                <div class="price-row"><span class="price-name">Промывание придаточных пазух носа ("кукушка") (1 сеанс)</span><span class="price-val">3 000 ₸</span></div>
                 <div class="price-row"><span class="price-name">Анемизация + промывание носа ("кукушка")</span><span class="price-val">3 500 ₸</span></div>
                 <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос</span><span class="price-val">4 000 ₸</span></div>
                 <div class="price-row"><span class="price-name">Анемизация + промывание носа + фонофорез на нос и ухо</span><span class="price-val">4 500 ₸</span></div>
@@ -121,10 +149,10 @@
 
             <div class="category-title">Процедуры для горла и ушей</div>
             <div class="prices-table">
-                <div class="price-row"><span class="price-name">Тонзиллор + фонофорез (1Doc процедура)</span><span class="price-val">4 500 ₸</span></div>
+                <div class="price-row"><span class="price-name">Лечение на аппарате "Тонзиллор" (фонофорез включён в стоимость) (1 сеанс)</span><span class="price-val">4 500 ₸</span></div>
                 <div class="price-row"><span class="price-name">Удаление серной пробки под видеоконтролем (1 ухо)</span><span class="price-val">3 500 ₸</span></div>
                 <div class="price-row"><span class="price-name">Промывание уха / туалет уха / введение лекарств на турунде</span><span class="price-val">2 000 ₸</span></div>
-                <div class="price-row"><span class="price-name">Фонофорез на ухо</span><span class="price-val">2 000 ₸</span></div>
+                <div class="price-row"><span class="price-name">Фонофорез (1 сеанс)</span><span class="price-val">2 000 ₸</span></div>
                 <div class="price-row"><span class="price-name">Видеоэндоскопия ушей</span><span class="price-val">2 000 ₸</span></div>
             </div>
 
