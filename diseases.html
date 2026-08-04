@@ -1,6 +1,81 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <style>
+ /* Контейнер одного заболевания */
+.accordion-item {
+  background: #fdfdfd;
+  border: 1px solid #eef2f5;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Шапка: текст и кнопка на одной линии */
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Круглая зеленая кнопка */
+.accordion-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #00a19c; /* Зеленый цвет как на скрине */
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+/* Рисуем плюс с помощью псевдоэлементов (чтобы он был ровным) */
+.accordion-icon::before,
+.accordion-icon::after {
+  content: '';
+  position: absolute;
+  background-color: white;
+  transition: transform 0.3s ease;
+}
+/* Горизонтальная палочка */
+.accordion-icon::before {
+  width: 16px;
+  height: 2px;
+}
+/* Вертикальная палочка */
+.accordion-icon::after {
+  width: 2px;
+  height: 16px;
+}
+
+/* Скрытый блок с текстом по умолчанию */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: max-height 0.3s ease-out, padding 0.3s ease;
+  background-color: #ffffff;
+}
+
+/* --- СОСТОЯНИЕ КОГДА РАСКРЫТО (Active) --- */
+
+/* Показываем текст при активации */
+.accordion-item.active .accordion-content {
+  max-height: 1000px; /* Достаточная высота для анимации текста */
+  padding: 10px 20px 25px 20px;
+}
+
+/* Превращаем плюс в крестик: поворачиваем иконку на 45 градусов */
+.accordion-item.active .accordion-icon {
+  transform: rotate(45deg);
+  background-color: #00a19c; /* При желании можно поменять цвет крестика */
+}
+</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Клиника Доктор ЛОР — Алматы — Специализированный кабинет</title>
