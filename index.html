@@ -71,6 +71,50 @@
         footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; }
         footer p { margin-bottom: 8px; }
         footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
+            /* ========================================== */
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ (для экранов до 768px) */
+        /* ========================================== */
+        @media (max-width: 768px) {
+            /* Шапка сайта: выстраиваем логотип, меню и кнопку вертикально по центру */
+            .header-content { 
+                flex-direction: column; 
+                gap: 15px; 
+                padding: 15px 0px; 
+            }
+            
+            /* Выравниваем логотип и подпись по центру */
+            .logo-block { 
+                align-items: center; 
+                text-align: center; 
+            }
+            
+            /* Делаем меню адаптивным: ссылки переносятся на новые строки */
+            .nav-menu { 
+                flex-wrap: wrap; 
+                justify-content: center; 
+                gap: 12px 20px; 
+            }
+            
+            /* Уменьшаем огромный центральный заголовок, чтобы он не разбивался на слоги */
+            .main-title-center { 
+                font-size: 26px; 
+                margin: 30px 0 20px; 
+                padding-top: 10px; 
+                padding-bottom: 10px; 
+            }
+            
+            /* Уменьшаем размер подзаголовков секций */
+            .section-title { 
+                font-size: 22px; 
+                margin: 35px 0 15px; 
+            }
+            
+            /* Делаем оригинальный список цен чуть компактнее на телефоне */
+            .price-list-original { 
+                margin-left: 10px; 
+            }
+        }
+
     </style>
 </head>
 <body>
