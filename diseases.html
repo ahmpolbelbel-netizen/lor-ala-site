@@ -150,6 +150,139 @@
         footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; }
         footer p { margin-bottom: 8px; }
         footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
+        /* ========================================== */
+/* МОБИЛЬНАЯ АДАПТАЦИЯ (для экранов до 768px) */
+/* ========================================== */
+@media (max-width: 768px) {
+    /* 1. Предотвращение горизонтального скролла */
+    body {
+        overflow-x: hidden;
+    }
+    
+    .max-width-container, .text-section {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
+    /* 2. Шапка сайта и логотип */
+    .header-content { 
+        flex-direction: column !important; 
+        gap: 16px; 
+        padding: 16px 15px !important; 
+    }
+    
+    .logo-block { 
+        align-items: center !important; 
+        text-align: center !important; 
+        width: 100%;
+    }
+    
+    .logo-img {
+        max-width: 100%;
+        height: auto;
+        max-height: 50px; /* Уменьшаем высоту логотипа на мобильных */
+    }
+    
+    /* Меню навигации */
+    .nav-menu { 
+        flex-wrap: wrap; 
+        justify-content: center !important; 
+        gap: 12px 16px; 
+        width: 100%;
+    }
+    
+    .nav-menu a {
+        font-size: 13px;
+    }
+
+    /* Кнопка WhatsApp в шапке */
+    .whatsapp-btn-header {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+    
+    /* 3. Типографика и заголовки */
+    .diseases-section h1 {
+        font-size: 28px; /* Уменьшаем огромный заголовок заболеваний */
+        margin-bottom: 15px;
+        padding: 0 10px;
+    }
+
+    .main-title-center { 
+        font-size: 24px; 
+        margin: 25px 0 20px; 
+        line-height: 1.3;
+    }
+    
+    .section-title { 
+        font-size: 22px; 
+        margin: 30px 0 15px; 
+    }
+
+    .info-paragraph {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    /* Дополнительно для выравнивания текстов внутри аккордеона на мобильных */
+    .accordion-content p {
+        text-align: left; /* На смартфонах justify (по ширине) выглядит плохо из-за больших пробелов */
+    }
+    
+    /* 4. Адаптация аккордеонов заболеваний */
+    .accordion-item {
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-bottom: 12px;
+    }
+
+    .accordion-header {
+        padding: 15px; /* Уменьшаем внутренние отступы */
+    }
+
+    .accordion-header h2, 
+    .accordion-header span {
+        font-size: 16px !important; /* Корректируем размер шрифта названия болезни */
+        line-height: 1.3;
+        padding-right: 10px;
+    }
+
+    .accordion-icon {
+        width: 32px;  /* Чуть уменьшаем круглую кнопку с плюсом */
+        height: 32px;
+        flex-shrink: 0; /* Запрещаем кнопке сжиматься, если текст длинный */
+    }
+
+    .accordion-item .accordion-content h3 {
+        font-size: 18px; /* Заголовки внутри раскрытого блока */
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+    
+    /* 5. Карточки и списки */
+    .price-list-original { 
+        margin-left: 10px; 
+    }
+
+    .diseases-card {
+        padding: 16px;
+        margin: 20px 10px;
+    }
+
+    .branch-card-single {
+        padding: 20px;
+        width: auto;
+        max-width: 100%;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    
+    .action-button-wp {
+        max-width: 100%;
+    }
+}
+
     </style>
 </head>
 <body>
