@@ -79,15 +79,43 @@
                 <span>+7 (707) 213-10-10</span>
             </a>
         </div>
-    </header>
-    <main class="main-content">
-        <section class="diseases-section">
-            <h1>О заболеваниях ЛОР-органов</h1>
-            <p>Здесь будет ваше подробное описание болезней, симптомов и методов лечения...</p>
+   </header>
+<main class="main-content">
+    <section class="diseases-section">
+        <h1>О заболеваниях ЛОР-органов</h1>
+        <p>Здесь будет ваше подробное описание болезней, симптомов и методов лечения...</p>
+        
+        <!-- ВСТАВЛЯЕМ HTML-СТРУКТУРУ АККОРДЕОНА СЮДА -->
+        <div class="accordion-item">
+            <!-- Шапка, на которую кликают -->
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h2>Аденоиды и аденоидит</h2>
+                <!-- Кнопка, которая будет менять плюс на крестик -->
+                <span class="accordion-icon"></span>
+            </div>
             
-            <!-- Сюда можно добавить еще заголовков (h2, h3) и абзацев (p) -->
-        </section>
-    </main>
+            <!-- Скрытый контент -->
+            <div class="accordion-content">
+                <h3>Аденоиды — определение</h3>
+                <p>Аденоиды - патологическое разрастание глоточной миндалины...</p>
+                
+                <h3>Симптомы</h3>
+                <p>Нарушение носового дыхания. Из-за затрудненного носового дыхания дети часто спят с открытым ртом...</p>
+            </div>
+        </div>
+        <!-- Конец структуры аккордеона -->
+
+    </section>
+</main>
+
+<!-- ВСТАВЛЯЕМ JAVASCRIPT-СКРИПТ -->
+<!-- Лучше всего разместить его в самом низу страницы, перед закрывающим тегом </body> -->
+<script>
+function toggleAccordion(header) {
+  const item = header.parentElement;
+  item.classList.toggle('active');
+}
+</script>
 <h2 class="section-title" id="address">Наш адрес в Алматы</h2>
         <div class="branch-card-single">
             <div class="branch-icon">📍</div>
