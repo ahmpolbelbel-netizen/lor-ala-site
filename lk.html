@@ -71,13 +71,22 @@
                 // Инициализируем клиента строго внутри функции после нажатия кнопки
                 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                // Запрос к таблице в Сингапуре
-                const { data, error } = await supabaseClient
-                    .from('patients_sync')
-                    .select('*')
-                    .eq('id', parseInt(id))
-                    .ilike('patient_name', `%${cleanBirthDate}%`)
-                    .order('record_code', { ascending: false });
+               // Запрос к таблице в Сингапуре без сложных цепочек функций
+const result = await supabaseClient.from('patients_sync').select('*');
+let data = result;
+const error = result.error;
+
+// Сами фильтруем полученные строки прямо в браузере по ID и Дате рождения
+if (data && data.length > 0) {
+    data = data.filter(record => {
+        const matchId = parseInt(record.id) === parseInt(id);
+        const matchDate = record.patient_name && record.patient_name.includes(cleanBirthDate);
+        return matchId && matchDate;
+    });
+    // Сортируем: свежие приемы сверху
+    data.sort((a, b) => b.record_code - a.record_code);
+}
+
 
                 if (error) {
                     errorDiv.innerText = "Ошибка базы данных: " + error.message;
