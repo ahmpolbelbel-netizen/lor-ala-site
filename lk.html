@@ -53,15 +53,16 @@
 
     <script>
         // === ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ БЛОКНОТА КЛЮЧЕЙ ===
-        const SUPABASE_URL = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_URL_ИЗ_БЛОКНОТА";
-        const SUPABASE_KEY = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_KEY_ИЗ_БЛОКНОТА";
+const SUPABASE_URL = "ваша_ссылка"; // Оставьте тут вашу реальную ссылку!
+const SUPABASE_KEY = "ваш_ключ";   // Оставьте тут ваш реальный ключ!
 
-        // Инициализируем подключение к облаку Supabase
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Функция входа
+async function login() {
+    // Перенесли строчку внутрь функции для исправления ошибки порядка загрузки
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Функция входа
-        async function login() {
-            const id = document.getElementById('patient-id').value;
+    const id = document.getElementById('patient-id').value;
+
             const birthDate = document.getElementById('birth-date').value.trim().replace(/\./g, ''); // убираем точки из даты, чтобы искать слитно
 
             const errorDiv = document.getElementById('login-error');
