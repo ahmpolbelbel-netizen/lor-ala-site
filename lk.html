@@ -112,15 +112,30 @@
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
 
-                    data.forEach(record => {
-                        const card = document.createElement('div');
-                        card.className = 'record-card';
-                        card.innerHTML = `
-                            <div class="record-date">Прием от ${record.doc_date} (${record.doc_time})</div>
-                            <div class="record-text"><pre>${record.doc_text}</pre></div>
-                        `;
-                        listDiv.appendChild(card);
-                    });
+                   data.forEach(record => {
+    let cleanText = record.doc_text || "";
+
+    // Ищем, где в тексте начинается блок процедур или назначений
+    const pos = cleanText.indexOf("Процедуры в ЛОР-кабинете");
+
+    if (pos !== -1) {
+        // Отрезаем всё, что было до этой фразы
+        cleanText = cleanText.substring(pos);
+    } else {
+        // Если блока процедур нет, пробуем отрезать до медикаментов
+        const posMed = cleanText.indexOf("Медикаментозная терапия");
+        if (posMed !== -1) cleanText = cleanText.substring(posMed);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'record-card';
+    card.innerHTML = `
+        <div class="record-date">Прием от ${record.doc_date} (${record.doc_time})</div>
+        <div class="record-text"><pre>${cleanText}</pre></div>
+    `;
+    listDiv.appendChild(card);
+});
+
                 } else {
                     errorDiv.innerText = "Пациент не найден. Проверьте ID или Дату рождения.";
                 }
