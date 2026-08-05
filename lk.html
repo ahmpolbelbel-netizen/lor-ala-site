@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет пациента | Доктор ЛОР</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #0070f3; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #0070f3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        .error { color: red; text-align: center; margin-top: 15px; font-weight: bold; }
+        .record-card { border-left: 4px solid #0070f3; background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 4px; }
+        .record-date { font-weight: bold; color: #555; margin-bottom: 5px; }
+        .hidden { display: none; }
+        .logout-btn { background-color: #ff3b30; margin-top: 20px; }
+        .logout-btn:hover { background-color: #d32f2f; }
+        pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+    </style>
+
+    <!-- Подключаем официальную библиотеку Supabase напрямую из интернета -->
+    <script src="https://jsdelivr.net"></script>
+</head>
+<body>
+
+    <!-- ФОРМА ВХОДА -->
+    <div id="login-block" class="container">
+        <h2>Вход в личный кабинет</h2>
+        <div class="form-group">
+            <label for="patient-id">Номер пациента (ID):</label>
+            <input type="number" id="patient-id" placeholder="Например: 63">
+        </div>
+        <div class="form-group">
+            <label for="birth-date">Дата рождения:</label>
+            <input type="text" id="birth-date" placeholder="Например: 03.03.2006">
+        </div>
+        <button onclick="login()">Войти</button>
+        <div id="login-error" class="error"></div>
+    </div>
+
+    <!-- ОКНО ЛИЧНОГО КАБИНЕТА (Оно скрыто до успешного входа) -->
+    <div id="cabinet-block" class="container hidden">
+        <h2 id="patient-title">Медкарта пациента</h2>
+        <div id="records-list">
+            <!-- Сюда будут подгружаться приемы из базы данных -->
+        </div>
+        <button class="logout-btn" onclick="logout()">Выйти из кабинета</button>
+    </div>
+
+    <script>
+        // === ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ БЛОКНОТА КЛЮЧЕЙ ===
+        const SUPABASE_URL = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_URL_ИЗ_БЛОКНОТА";
+        const SUPABASE_KEY = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_KEY_ИЗ_БЛОКНОТА";
+
+        // Инициализируем подключение к облаку Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Функция входа
+        async function login() {
+            const id = document.getElementById('patient-id').value;
+            const birthDate = document.getElementById('birth-date').value.trim().replace(/\./g, ''); // убираем точки из даты, чтобы искать слитно
+
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.innerText = "";
+
+            if (!id || !birthDate) {
+                errorDiv.innerText = "Пожалуйста, заполните все поля.";
+                return;
+            }
+
+            try {
+                // Делаем запрос к нашей таблице patients_sync в Сингапуре
+                // Ищем строки, где совпадает ID, а в поле имени содержится слитная дата рождения (например, 03032006)
+                const { data, error } = await supabaseClient
+                    .from('patients_sync')
+                    .select('*')
+                    .eq('id', id)
+                    .ilike('patient_name', `%${birthDate}%`)
+                    .order('record_code', { ascending: false }); // Сортируем: свежие приемы будут сверху
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    // Пациент найден! Показываем кабинет
+                    document.getElementById('login-block').classList.add('hidden');
+                    document.getElementById('cabinet-block').classList.remove('hidden');
+                    
+                    // Выводим ФИО (отсекаем дату рождения из строки, если нужно, или выводим целиком)
+                    document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name;
+
+                    // Очищаем список приемов и выводим новые
+                    const listDiv = document.getElementById('records-list');
+                    listDiv.innerHTML = "";
+
+                    data.forEach(record => {
+                        const card = document.createElement('div');
+                        card.className = 'record-card';
+                        card.innerHTML = `
+                            <div class="record-date">Прием от ${record.doc_date} (${record.doc_time})</div>
+                            <div class="record-text"><pre>${record.doc_text}</pre></div>
+                        `;
+                        listDiv.appendChild(card);
+                    });
+
+                } else {
+                    errorDiv.innerText = "Пациент с такими данными не найден. Проверьте ID или Дату рождения.";
+                }
+
+            } catch (err) {
+                errorDiv.innerText = "Ошибка подключения к базе данных: " + err.message;
+            }
+        }
+
+        // Функция выхода
+        function logout() {
+            document.getElementById('cabinet-block').classList.add('hidden');
+            document.getElementById('login-block').classList.remove('hidden');
+            document.getElementById('patient-id').value = "";
+            document.getElementById('birth-date').value = "";
+        }
+    </script>
+</body>
+</html>
