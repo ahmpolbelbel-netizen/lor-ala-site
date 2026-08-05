@@ -188,15 +188,27 @@
         max-width: 100%; /* Карточка занимает всю ширину экрана за вычетом отступов */
     }
     
-    /* Кнопка действия внутри контента */
+       /* Кнопка действия внутри контента */
     .action-button-wp {
-        max-width: 100%; /* На мобильном кнопка растягивается во всю ширину экрана для удобного нажатия пальцем */
+        max-width: 100%; 
     }
-     
+} /* <- Здесь скобка должна закрывать мобильный блок */
 
+/* СТИЛИ ДЛЯ ТАБЛИЦЫ ПРАЙС-ЛИСТА */
+/* ========================================== */
+
+/* 1. Делаем основной текст (названия услуг) строго чёрным */
+.price-table tbody td {
+    color: #000000 !important;
 }
 
-    </style>
+/* 2. Сохраняем бирюзовый цвет для комментариев со скидками */
+.price-table tbody td .price-discount {
+    color: #009ca0 !important; 
+}
+
+</style>
+
 </head>
     <style>
 .price-table-wrapper { width: 100% !important; overflow-x: auto !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; display: block !important; margin-top: 20px; }
