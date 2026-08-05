@@ -259,10 +259,15 @@
             </ul>
         </div>
 <!-- СЕКЦИЯ ПРАЙС-ЛИСТА -->
-<div class="price-container">
-    <h2 class="price-main-title" id="prices">Прайс-лист на услуги</h2>
+<div class="price-container" style="position: relative;">
+    
+    <!-- Невидимый якорь со смещением вверх -->
+    <a id="prices" style="display: block; position: absolute; top: -90px; visibility: hidden;"></a>
+    
+    <h2 class="price-main-title">Прайс-лист на услуги</h2>
     
     <div class="price-table-wrapper">
+
         <table class="price-table">
             <thead>
                 <tr>
