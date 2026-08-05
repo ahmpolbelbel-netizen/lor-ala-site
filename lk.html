@@ -115,24 +115,22 @@
    data.forEach(record => {
     let text = record.doc_text || "";
     
-    // Ищем, где в тексте начинается слово Диагноз
+    // Находим точное начало слова "Диагноз:"
     const startDiag = text.indexOf("Диагноз:");
     
     if (startDiag !== -1) {
-        // Ищем конец строки или абзаца, где написан сам диагноз
-        // Проверяем все варианты переносов строк, которые генерирует Word
-        let endDiag = text.indexOf("\n\n", startDiag);
-        if (endDiag === -1) endDiag = text.indexOf("\r\n\r\n", startDiag);
+        // Ищем самый первый символ возврата каретки (конец строки) ПОСЛЕ слова Диагноз
+        let endDiag = text.indexOf("\r", startDiag);
         if (endDiag === -1) endDiag = text.indexOf("\n", startDiag);
 
         if (endDiag !== -1 && endDiag > startDiag) {
-            // Вырезаем кусок от слова "Диагноз:" до конца этого абзаца
+            // Вырезаем текст от "Диагноз:" до конца этой строки
             const beforeDiag = text.substring(0, startDiag);
             const afterDiag = text.substring(endDiag);
-            text = beforeDiag + "[Диагноз скрыт]" + afterDiag;
+            text = beforeDiag + afterDiag;
         } else {
-            // Если переносов строк нет, просто убираем слово Диагноз до конца текста
-            text = text.substring(0, startDiag) + "\n[Диагноз скрыт]";
+            // Если это была последняя строка в документе
+            text = text.substring(0, startDiag);
         }
     }
 
@@ -144,6 +142,7 @@
     `;
     listDiv.appendChild(card);
 });
+
 
 
 
