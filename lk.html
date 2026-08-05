@@ -21,9 +21,7 @@
         .logout-btn:hover { background-color: #d32f2f; }
         pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
     </style>
-
-    <!-- Подключаем библиотеку Supabase -->
-<script src="supabase.js"></script>
+    <script src="supabase.js"></script>
 </head>
 <body>
 
@@ -32,7 +30,7 @@
         <h2>Вход в личный кабинет</h2>
         <div class="form-group">
             <label for="patient-id">Номер пациента (ID):</label>
-            <input type="number" id="patient-id" placeholder="Например: 63">
+            <input type="number" id="patient-id" placeholder="Например: 1">
         </div>
         <div class="form-group">
             <label for="birth-date">Дата рождения:</label>
@@ -50,9 +48,9 @@
     </div>
 
     <script>
-        // === ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ БЛОКНОТА КЛЮЧЕЙ ===
-        const SUPABASE_URL = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_URL_ИЗ_БЛОКНОТА";
-        const SUPABASE_KEY = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_KEY_ИЗ_БЛОКНОТА";
+        // Вставьте ваши данные СТРОГО внутрь кавычек, без пробелов до и после!
+        const SUPABASE_URL = "СЮДА_ВАШУ_ССЫЛКУ";
+        const SUPABASE_KEY = "СЮДА_ВАШ_КЛЮЧ";
 
         async function login() {
             const errorDiv = document.getElementById('login-error');
@@ -60,7 +58,7 @@
 
             const id = document.getElementById('patient-id').value;
             const rawBirthDate = document.getElementById('birth-date').value.trim();
-            const cleanBirthDate = rawBirthDate.replace(/\./g, ''); // превращаем "01.04.2000" в "01042000"
+            const cleanBirthDate = rawBirthDate.replace(/\./g, ''); 
 
             if (!id || !cleanBirthDate) {
                 errorDiv.innerText = "Пожалуйста, заполните все поля.";
@@ -68,38 +66,32 @@
             }
 
             try {
-                // Инициализируем клиента строго внутри функции после нажатия кнопки
                 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-               // Запрос к таблице в Сингапуре без сложных цепочек функций
-const result = await supabaseClient.from('patients_sync').select('*');
-let data = result;
-const error = result.error;
-
-// Сами фильтруем полученные строки прямо в браузере по ID и Дате рождения
-if (data && data.length > 0) {
-    data = data.filter(record => {
-        const matchId = parseInt(record.id) === parseInt(id);
-        const matchDate = record.patient_name && record.patient_name.includes(cleanBirthDate);
-        return matchId && matchDate;
-    });
-    // Сортируем: свежие приемы сверху
-    data.sort((a, b) => b.record_code - a.record_code);
-}
-
-
-                if (error) {
-                    errorDiv.innerText = "Ошибка базы данных: " + error.message;
+                const result = await supabaseClient.from('patients_sync').select('*');
+                
+                let data = result;
+                if (result.error) {
+                    errorDiv.innerText = "Ошибка бд: " + result.error.message;
                     return;
                 }
 
                 if (data && data.length > 0) {
-                    // Пациент найден
+                    // Фильтруем данные
+                    data = data.filter(record => {
+                        const matchId = parseInt(record.id) === parseInt(id);
+                        const matchDate = record.patient_name && record.patient_name.includes(cleanBirthDate);
+                        return matchId && matchDate;
+                    });
+                }
+
+                if (data && data.length > 0) {
+                    // Сортируем приемы
+                    data.sort((a, b) => b.record_code - a.record_code);
+
                     document.getElementById('login-block').classList.add('hidden');
                     document.getElementById('cabinet-block').classList.remove('hidden');
                     
-                    // Берем имя из первой найденной строчки
-                    document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name;
+                    document.getElementById('patient-title').innerText = "Медкарта пациента ID: " + id;
 
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
@@ -114,15 +106,15 @@ if (data && data.length > 0) {
                         listDiv.appendChild(card);
                     });
                 } else {
-                    errorDiv.innerText = "Пациент с такими данными не найден. Проверьте ID или Дату рождения.";
+                    errorDiv.innerText = "Пациент не найден. Проверьте ID или Дату рождения.";
                 }
 
             } catch (err) {
-                errorDiv.innerText = "Критическая ошибка системы: " + err.message;
+                errorDiv.innerText = "Ошибка системы: " + err.message;
             }
         }
 
-        function logout() {
+        常规function logout() {
             document.getElementById('cabinet-block').classList.add('hidden');
             document.getElementById('login-block').classList.remove('hidden');
             document.getElementById('patient-id').value = "";
