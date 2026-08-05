@@ -22,7 +22,7 @@
         pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
     </style>
 
-    <!-- Подключаем официальную библиотеку Supabase напрямую из интернета -->
+    <!-- Подключаем библиотеку Supabase -->
     <script src="https://jsdelivr.net"></script>
 </head>
 <body>
@@ -36,64 +36,62 @@
         </div>
         <div class="form-group">
             <label for="birth-date">Дата рождения:</label>
-            <input type="text" id="birth-date" placeholder="Например: 03.03.2006">
+            <input type="text" id="birth-date" placeholder="Например: 01.04.2000">
         </div>
         <button onclick="login()">Войти</button>
         <div id="login-error" class="error"></div>
     </div>
 
-    <!-- ОКНО ЛИЧНОГО КАБИНЕТА (Оно скрыто до успешного входа) -->
+    <!-- ОКНО ЛИЧНОГО КАБИНЕТА -->
     <div id="cabinet-block" class="container hidden">
         <h2 id="patient-title">Медкарта пациента</h2>
-        <div id="records-list">
-            <!-- Сюда будут подгружаться приемы из базы данных -->
-        </div>
+        <div id="records-list"></div>
         <button class="logout-btn" onclick="logout()">Выйти из кабинета</button>
     </div>
 
     <script>
         // === ВСТАВЬТЕ СЮДА ВАШИ ДАННЫЕ ИЗ БЛОКНОТА КЛЮЧЕЙ ===
-const SUPABASE_URL = "ваша_ссылка"; // Оставьте тут вашу реальную ссылку!
-const SUPABASE_KEY = "ваш_ключ";   // Оставьте тут ваш реальный ключ!
+        const SUPABASE_URL = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_URL_ИЗ_БЛОКНОТА";
+        const SUPABASE_KEY = "ЗАМЕНИТЕ_НА_ВАШ_SUPABASE_KEY_ИЗ_БЛОКНОТА";
 
-// Функция входа
-async function login() {
-    // Перенесли строчку внутрь функции для исправления ошибки порядка загрузки
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const id = document.getElementById('patient-id').value;
-
-            const birthDate = document.getElementById('birth-date').value.trim().replace(/\./g, ''); // убираем точки из даты, чтобы искать слитно
-
+        async function login() {
             const errorDiv = document.getElementById('login-error');
             errorDiv.innerText = "";
 
-            if (!id || !birthDate) {
+            const id = document.getElementById('patient-id').value;
+            const rawBirthDate = document.getElementById('birth-date').value.trim();
+            const cleanBirthDate = rawBirthDate.replace(/\./g, ''); // превращаем "01.04.2000" в "01042000"
+
+            if (!id || !cleanBirthDate) {
                 errorDiv.innerText = "Пожалуйста, заполните все поля.";
                 return;
             }
 
             try {
-                // Делаем запрос к нашей таблице patients_sync в Сингапуре
-                // Ищем строки, где совпадает ID, а в поле имени содержится слитная дата рождения (например, 03032006)
+                // Инициализируем клиента строго внутри функции после нажатия кнопки
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+                // Запрос к таблице в Сингапуре
                 const { data, error } = await supabaseClient
                     .from('patients_sync')
                     .select('*')
-                    .eq('id', id)
-                    .ilike('patient_name', `%${birthDate}%`)
-                    .order('record_code', { ascending: false }); // Сортируем: свежие приемы будут сверху
+                    .eq('id', parseInt(id))
+                    .ilike('patient_name', `%${cleanBirthDate}%`)
+                    .order('record_code', { ascending: false });
 
-                if (error) throw error;
+                if (error) {
+                    errorDiv.innerText = "Ошибка базы данных: " + error.message;
+                    return;
+                }
 
                 if (data && data.length > 0) {
-                    // Пациент найден! Показываем кабинет
+                    // Пациент найден
                     document.getElementById('login-block').classList.add('hidden');
                     document.getElementById('cabinet-block').classList.remove('hidden');
                     
-                    // Выводим ФИО (отсекаем дату рождения из строки, если нужно, или выводим целиком)
+                    // Берем имя из первой найденной строчки
                     document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name;
 
-                    // Очищаем список приемов и выводим новые
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
 
@@ -106,22 +104,21 @@ async function login() {
                         `;
                         listDiv.appendChild(card);
                     });
-
                 } else {
                     errorDiv.innerText = "Пациент с такими данными не найден. Проверьте ID или Дату рождения.";
                 }
 
             } catch (err) {
-                errorDiv.innerText = "Ошибка подключения к базе данных: " + err.message;
+                errorDiv.innerText = "Критическая ошибка системы: " + err.message;
             }
         }
 
-        // Функция выхода
         function logout() {
             document.getElementById('cabinet-block').classList.add('hidden');
             document.getElementById('login-block').classList.remove('hidden');
             document.getElementById('patient-id').value = "";
             document.getElementById('birth-date').value = "";
+            document.getElementById('login-error').innerText = "";
         }
     </script>
 </body>
