@@ -112,29 +112,27 @@
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
 
-    data.forEach(record => {
+   data.forEach(record => {
     let text = record.doc_text || "";
     
-    // Находим, где начинается слово Диагноз
+    // Ищем, где в тексте начинается слово Диагноз
     const startDiag = text.indexOf("Диагноз:");
     
-    // Находим, где начинается следующий блок (Процедуры или Лекарства)
-    let endDiag = text.indexOf("Процедуры в ЛОР-кабинете");
-    if (endDiag === -1) {
-        endDiag = text.indexOf("Медикаментозная терапия");
-    }
-    
-    // Если нашли и начало диагноза, и начало следующих назначений
-    if (startDiag !== -1 && endDiag !== -1 && endDiag > startDiag) {
-        // Вырезаем кусок от "Диагноз:" до начала процедур и заменяем его пустой строкой
-        const beforeDiag = text.substring(0, startDiag);
-        const afterDiag = text.substring(endDiag);
-        text = beforeDiag + afterDiag;
-    } else if (startDiag !== -1 && endDiag === -1) {
-        // Если это тестовая запись без процедур, просто убираем строку со словом Диагноз до конца абзаца
-        const nextLine = text.indexOf("\n", startDiag);
-        if (nextLine !== -1) {
-            text = text.substring(0, startDiag) + text.substring(nextLine);
+    if (startDiag !== -1) {
+        // Ищем конец строки или абзаца, где написан сам диагноз
+        // Проверяем все варианты переносов строк, которые генерирует Word
+        let endDiag = text.indexOf("\n\n", startDiag);
+        if (endDiag === -1) endDiag = text.indexOf("\r\n\r\n", startDiag);
+        if (endDiag === -1) endDiag = text.indexOf("\n", startDiag);
+
+        if (endDiag !== -1 && endDiag > startDiag) {
+            // Вырезаем кусок от слова "Диагноз:" до конца этого абзаца
+            const beforeDiag = text.substring(0, startDiag);
+            const afterDiag = text.substring(endDiag);
+            text = beforeDiag + "[Диагноз скрыт]" + afterDiag;
+        } else {
+            // Если переносов строк нет, просто убираем слово Диагноз до конца текста
+            text = text.substring(0, startDiag) + "\n[Диагноз скрыт]";
         }
     }
 
@@ -146,6 +144,7 @@
     `;
     listDiv.appendChild(card);
 });
+
 
 
                 } else {
