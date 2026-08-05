@@ -112,27 +112,19 @@
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
 
-   data.forEach(record => {
+  data.forEach(record => {
     let text = record.doc_text || "";
     
-    // Находим точное начало слова "Диагноз:"
-    const startDiag = text.indexOf("Диагноз:");
+    // Разбиваем весь текст на отдельные строчки
+    let lines = text.split(/[\r\n]+/);
     
-    if (startDiag !== -1) {
-        // Ищем самый первый символ возврата каретки (конец строки) ПОСЛЕ слова Диагноз
-        let endDiag = text.indexOf("\r", startDiag);
-        if (endDiag === -1) endDiag = text.indexOf("\n", startDiag);
-
-        if (endDiag !== -1 && endDiag > startDiag) {
-            // Вырезаем текст от "Диагноз:" до конца этой строки
-            const beforeDiag = text.substring(0, startDiag);
-            const afterDiag = text.substring(endDiag);
-            text = beforeDiag + afterDiag;
-        } else {
-            // Если это была последняя строка в документе
-            text = text.substring(0, startDiag);
-        }
-    }
+    // Фильтруем: оставляем только те строчки, которые НЕ начинаются со слова "Диагноз:"
+    let cleanLines = lines.filter(line => {
+        return !line.trim().startsWith("Диагноз:");
+    });
+    
+    // Собираем текст обратно в единый документ
+    text = cleanLines.join("\n");
 
     const card = document.createElement('div');
     card.className = 'record-card';
@@ -142,6 +134,7 @@
     `;
     listDiv.appendChild(card);
 });
+
 
 
 
