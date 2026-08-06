@@ -233,30 +233,38 @@
                 <li><a href="#address">Адрес</a></li>
                 <li><a href="diseases.html">О БОЛЕЗНЯХ</a></li>
             </ul>
-        <!-- Единый горизонтальный блок связи и навигации в фирменном бирюзовом стиле -->
+       <!-- Единый горизонтальный блок связи и навигации в фирменном бирюзовом стиле -->
 <div style="display: flex; align-items: center; gap: 12px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none;">
     
-    <!-- 1. ИНТЕРАКТИВНАЯ БИРЮЗОВАЯ ИКОНКА СВЯЗИ (БЕЗ НОМЕРА) -->
+    <!-- 1. ИНТЕРАКТИВНАЯ БИРЮЗОВАЯ ИКОНКА СВЯЗИ -->
     <div style="position: relative; z-index: 110;">
         <details style="list-style: none;">
-            <!-- Внешний вид кнопки: фирменный бирюзовый круг, только логотип WhatsApp -->
+            <!-- Внешний вид кнопки: фирменный бирюзовый круг, логотип WhatsApp -->
             <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #007a87; color: #ffffff; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; list-style: none; outline: none; box-shadow: 0 2px 5px rgba(0,122,135,0.2); transition: background-color 0.2s;">
                 <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 22px; height: 22px; fill: currentColor;">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                 </svg>
             </summary>
             
-            <!-- Всплывающее меню больших кнопок связи (Теперь полностью белое с бирюзовыми элементами) -->
+            <!-- Всплывающее меню кнопок связи -->
             <div style="position: absolute; left: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
-                <!-- 1. Кнопка звонка (Белый фон, бирюзовый текст и рамка) -->
+                
+                <!-- 1. Кнопка звонка (Выровнена по высоте, иконка бирюзовая) -->
                 <a href="tel:+77072131010" 
-                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                   📞 Позвонить в клинику
+                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 15px; height: 15px; fill: #007a87; flex-shrink: 0;">
+                        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/>
+                    </svg>
+                    Позвонить в клинику
                 </a>
-                <!-- 2. Кнопка WhatsApp (Белый фон, бирюзовый текст и рамка) -->
+
+                <!-- 2. Кнопка WhatsApp (Выровнена, текст в одну строчку, фирменный зеленый логотип) -->
                 <a href="https://wa.me" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                   <span style="color: #24bc00; font-size: 16px;">💬</span> Написать в WhatsApp
+                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #24bc00; flex-shrink: 0;">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Написать в WhatsApp
                 </a>
             </div>
         </details>
@@ -270,14 +278,14 @@
                 📍 МАРШРУТ
             </summary>
             
-            <!-- Всплывающее меню навигаторов (Тоже белое, в едином стиле клиники) -->
+            <!-- Всплывающее меню навигаторов -->
             <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 190px;">
-                <!-- Кнопка 2ГИС (Белый фон, бирюзовый текст и рамка) -->
+                <!-- Кнопка 2ГИС -->
                 <a href="https://2gis.kz" target="_blank"
                    style="display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                    <span style="color: #24bc00; font-size: 14px;">🟢</span> Открыть в 2ГИС
                 </a>
-                <!-- Кнопка Яндекс Навигатор (Белый фон, бирюзовый текст и рамка) -->
+                <!-- Кнопка Яндекс Навигатор -->
                 <a href="https://yandex.kz" target="_blank"
                    style="display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                    <span style="color: #ff3333; font-size: 14px;">🔴</span> Яндекс Навигатор
@@ -287,6 +295,7 @@
     </div>
 
 </div>
+
 
     </header>
 
