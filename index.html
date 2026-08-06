@@ -244,11 +244,11 @@
 
 /* ЭТОТ БЛОК ВКЛЮЧИТСЯ ТОЛЬКО НА СМАРТФОНАХ */
 @media (max-width: 768px) {
-    /* 1. Скрываем десктопные кнопки связи и навигацию */
-    /* (Здесь мы цепляемся за уникальные z-index из вашего прошлых сообщений) */
+    /* 1. Жестко скрываем круглые кнопки и вылезшие текстовые ссылки навигации */
     div[style*="z-index: 110"], 
     div[style*="z-index: 100"],
-    .desktop-navigation { 
+    .desktop-navigation,
+    .nav-menu { 
         display: none !important; 
     }
 
@@ -262,6 +262,7 @@
         display: flex !important;
     }
 }
+
 
 </style>
 
