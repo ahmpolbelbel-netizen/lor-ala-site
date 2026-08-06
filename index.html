@@ -564,5 +564,38 @@
         <p>Телефон в Алматы: +7 (707) 213-10-10</p>
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
     </footer>
+        <!-- Скрипт для работы мобильного меню "Доктор ЛОР" -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.getElementById('lorMenuBtn');
+    const mobileMenu = document.getElementById('lorMobileMenu');
+
+    // Проверяем, что элементы успешно нашлись на странице
+    if (menuBtn && mobileMenu) {
+        menuBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Предотвращаем баги со случайным закрытием
+            
+            // Переключаем класс видимости меню
+            mobileMenu.classList.toggle('is-open');
+            
+            // Меням значок "гамбургер" на "крестик"
+            if (mobileMenu.classList.contains('is-open')) {
+                menuBtn.innerHTML = '✕';
+            } else {
+                menuBtn.innerHTML = '☰';
+            }
+        });
+
+        // Если меню открыто и пользователь кликнул мимо него — закрываем
+        document.addEventListener('click', function(e) {
+            if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
+                mobileMenu.classList.remove('is-open');
+                menuBtn.innerHTML = '☰';
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>
