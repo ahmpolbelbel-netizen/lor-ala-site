@@ -5,63 +5,529 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Личный кабинет пациента | Доктор ЛОР</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #0070f3; text-align: center; margin-bottom: 25px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background-color: #0070f3; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #0056b3; }
-        .error { color: red; text-align: center; margin-top: 15px; font-weight: bold; }
-        .record-card { border-left: 4px solid #0070f3; background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 4px; }
-        .record-date { font-weight: bold; color: #555; margin-bottom: 5px; }
-        .hidden { display: none; }
-        .logout-btn { background-color: #ff3b30; margin-top: 20px; }
-        .logout-btn:hover { background-color: #d32f2f; }
-        pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .max-width-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 4px solid #009ca0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+            position: relative;
+        }
+
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-img {
+            height: 64px;
+            width: auto;
+            display: block;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: #777777;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #009ca0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu a:hover {
+            color: #007377;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007a87;
+            color: #ffffff;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,122,135,0.2);
+            transition: background-color 0.2s;
+        }
+
+        .circle-btn:hover {
+            background-color: #006570;
+        }
+
+        .circle-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        details { position: relative; }
+        details summary { list-style: none; }
+        details summary::-webkit-details-marker { display: none; }
+
+        .dropdown-panel {
+            position: absolute;
+            top: 52px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 220px;
+            z-index: 100;
+        }
+
+        .dropdown-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .dropdown-panel a:hover {
+            background-color: #f0fafa;
+        }
+
+        .lor-burger-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #007a87;
+            cursor: pointer;
+            line-height: 1;
+            padding: 5px 10px;
+            z-index: 999;
+        }
+
+        .lor-mobile-drawer {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #eaeaea;
+            padding: 24px 16px;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 998;
+        }
+
+        .lor-mobile-drawer.is-open {
+            display: flex;
+        }
+
+        .lor-mobile-drawer a {
+            color: #007a87;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-phone {
+            font-size: 18px !important;
+            margin-top: 8px;
+            font-family: sans-serif;
+        }
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 240px;
+            margin-top: 10px;
+        }
+
+        .mobile-actions a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* ===== CONTENT ===== */
+        .text-section {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px 60px 20px;
+        }
+
+        .main-title-center {
+            font-size: 32px;
+            font-weight: 500;
+            color: #009ca0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-top: 1px solid #009ca0;
+            border-bottom: 1px solid #009ca0;
+            padding: 15px 0;
+        }
+
+        .cabinet-card {
+            background: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d0d7de;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #009ca0;
+            box-shadow: 0 0 0 3px rgba(0,156,160,0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background-color: #009ca0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: #007a87;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #c0392b;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .record-card {
+            border-left: 5px solid #009ca0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            margin-top: 16px;
+            border-radius: 8px;
+        }
+
+        .record-date {
+            font-weight: bold;
+            color: #009ca0;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .record-text pre {
+            white-space: pre-wrap;
+            font-family: inherit;
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #222;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            background-color: #009ca0;
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 768px) {
+            body { overflow-x: hidden; }
+
+            .max-width-container,
+            .text-section {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                padding: 16px 0;
+            }
+
+            .logo-block {
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-img {
+                max-height: 50px;
+                height: auto;
+            }
+
+            .nav-menu,
+            .header-actions {
+                display: none !important;
+            }
+
+            .lor-burger-button {
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 20px;
+            }
+
+            .main-title-center {
+                font-size: 24px;
+                margin-bottom: 20px;
+                padding: 12px 0;
+            }
+
+            .cabinet-card {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <header>
+        <div class="max-width-container header-content">
+            <div class="logo-block">
+                <a href="index.html">
+                    <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
+                </a>
+                <p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
+            </div>
 
-    <!-- ФОРМА ВХОДА -->
-    <div id="login-block" class="container">
-        <h2>Вход в личный кабинет</h2>
-        <div class="form-group">
-            <label for="patient-id">Номер пациента (ID):</label>
-            <input type="number" id="patient-id" placeholder="Например: 1">
+            <button class="lor-burger-button" id="lorMenuBtn" aria-label="Меню">☰</button>
+
+            <ul class="nav-menu">
+                <li><a href="index.html#prices">Услуги и цены</a></li>
+                <li><a href="index.html#address">Адрес</a></li>
+                <li><a href="diseases.html">О болезнях</a></li>
+            </ul>
+
+            <div class="header-actions">
+                <details>
+                    <summary class="circle-btn" title="Связаться">
+                        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </summary>
+                    <div class="dropdown-panel" style="left: 0;">
+                        <a href="tel:+77072131010">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/></svg>
+                            Позвонить в клинику
+                        </a>
+                        <a href="https://wa.me/77072131010" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Написать в WhatsApp
+                        </a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary class="circle-btn" title="Маршрут">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    </summary>
+                    <div class="dropdown-panel" style="right: 0;">
+                        <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            Маршрут 2ГИС
+                        </a>
+                        <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;"><path d="M21 3L3 10.53v.97l6.84 2.66L12.5 21h.97L21 3z"/></svg>
+                            Яндекс Навигатор
+                        </a>
+                    </div>
+                </details>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="birth-date">Дата рождения:</label>
-            <input type="text" id="birth-date" placeholder="Например: 01.04.2000">
+
+        <!-- Mobile menu -->
+        <div class="lor-mobile-drawer" id="lorMobileMenu">
+            <a href="index.html#prices">Услуги и цены</a>
+            <a href="index.html#address">Адрес</a>
+            <a href="diseases.html">О болезнях</a>
+            <a href="tel:+77072131010" class="mobile-phone">+7 (707) 213-10-10</a>
+            <div class="mobile-actions">
+                <a href="tel:+77072131010">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0; margin-right: 8px;"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/></svg>
+                    Позвонить в клинику
+                </a>
+                <a href="https://wa.me/77072131010" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0; margin-right: 8px;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Написать в WhatsApp
+                </a>
+                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0; margin-right: 8px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    Открыть в 2ГИС
+                </a>
+                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0; margin-right: 8px;"><path d="M21 3L3 10.53v.97l6.84 2.66L12.5 21h.97L21 3z"/></svg>
+                    Яндекс Навигатор
+                </a>
+            </div>
         </div>
-        <button onclick="login()">Войти</button>
-        <div id="login-error" class="error"></div>
+    </header>
+
+    <div class="text-section">
+        <h1 class="main-title-center">Личный кабинет пациента</h1>
+
+        <!-- Форма входа -->
+        <div id="login-block" class="cabinet-card">
+            <div class="form-group">
+                <label for="patient-id">Номер пациента (ID):</label>
+                <input type="number" id="patient-id" placeholder="Например: 1">
+            </div>
+            <div class="form-group">
+                <label for="birth-date">Дата рождения:</label>
+                <input type="text" id="birth-date" placeholder="Например: 01.04.2000">
+            </div>
+            <button class="btn-primary" onclick="login()">Войти</button>
+            <div id="login-error" class="error"></div>
+        </div>
+
+        <!-- Кабинет -->
+        <div id="cabinet-block" class="cabinet-card hidden">
+            <h2 id="patient-title" style="color:#009ca0; text-align:center; margin-bottom:20px; font-size:22px;">Медкарта пациента</h2>
+            <div id="records-list"></div>
+            <button class="btn-logout" onclick="logout()">Выйти из кабинета</button>
+        </div>
     </div>
 
-    <!-- ОКНО ЛИЧНОГО КАБИНЕТА -->
-    <div id="cabinet-block" class="container hidden">
-        <h2 id="patient-title">Медкарта пациента</h2>
-        <div id="records-list"></div>
-        <button class="logout-btn" onclick="logout()">Выйти из кабинета</button>
-    </div>
+    <footer>
+        <p>Телефон в Алматы: +7 (707) 213-10-10</p>
+        <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
+    </footer>
 
     <script>
-        // КЛЮЧИ УСТАНОВЛЕНЫ СТРОГО НА СВОИ МЕСТА БЕЗ ЛИШНИХ ПРОБЕЛОВ
         const RAW_URL = "https://dptaczshbxmgtybmbnuw.supabase.co";
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
-
-        // Автоматическая очистка строк от скрытых символов при копировании
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
 
         async function login() {
             const errorDiv = document.getElementById('login-error');
             errorDiv.innerText = "";
-
             const id = document.getElementById('patient-id').value;
             const rawBirthDate = document.getElementById('birth-date').value.trim();
-            const cleanBirthDate = rawBirthDate.replace(/\./g, ''); 
+            const cleanBirthDate = rawBirthDate.replace(/\./g, '');
 
             if (!id || !cleanBirthDate) {
                 errorDiv.innerText = "Пожалуйста, заполните все поля.";
@@ -69,9 +535,7 @@
             }
 
             try {
-                // Прямой сетевой запрос к таблице в обход сторонних библиотек
                 const targetUrl = SUPABASE_URL + "/rest/v1/patients_sync?select=*&id=eq." + parseInt(id);
-                
                 const response = await fetch(targetUrl, {
                     method: "GET",
                     headers: {
@@ -88,61 +552,43 @@
                 let data = await response.json();
 
                 if (data && data.length > 0) {
-                    // Фильтруем данные по слитной дате рождения (например, 01042000)
                     data = data.filter(record => {
                         return record.patient_name && record.patient_name.includes(cleanBirthDate);
                     });
                 }
 
                 if (data && data.length > 0) {
-                    // Сортируем: свежие медицинские протоколы будут сверху
                     data.sort((a, b) => b.record_code - a.record_code);
 
                     document.getElementById('login-block').classList.add('hidden');
                     document.getElementById('cabinet-block').classList.remove('hidden');
-                    
-                    if (data && data[0] && data[0].patient_name) {
-    // Берём ФИО из первого приёма и отрезаем дату рождения, чтобы на экране было чистое имя
-    document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name.replace(/[0-9]/g, '').trim();
-} else {
-    document.getElementById('patient-title').innerText = "Медкарта пациента ID: " + id;
-}
 
+                    if (data[0] && data[0].patient_name) {
+                        document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name.replace(/[0-9]/g, '').trim();
+                    } else {
+                        document.getElementById('patient-title').innerText = "Медкарта пациента ID: " + id;
+                    }
 
                     const listDiv = document.getElementById('records-list');
                     listDiv.innerHTML = "";
 
-  data.forEach(record => {
-    let text = record.doc_text || "";
-    
-    // Разбиваем весь текст на отдельные строчки
-    let lines = text.split(/[\r\n]+/);
-    
-    // Фильтруем: оставляем только те строчки, которые НЕ начинаются со слова "Диагноз:"
-    let cleanLines = lines.filter(line => {
-        return !line.trim().startsWith("Диагноз:");
-    });
-    
-    // Собираем текст обратно в единый документ
-    text = cleanLines.join("\n");
+                    data.forEach(record => {
+                        let text = record.doc_text || "";
+                        let lines = text.split(/[\r\n]+/);
+                        let cleanLines = lines.filter(line => !line.trim().startsWith("Диагноз:"));
+                        text = cleanLines.join("\n");
 
-    const card = document.createElement('div');
-    card.className = 'record-card';
-    card.innerHTML = `
-        <div class="record-date">Прием от ${record.doc_date} (${record.doc_time})</div>
-        <div class="record-text"><pre>${text}</pre></div>
-    `;
-    listDiv.appendChild(card);
-});
-
-
-
-
-
+                        const card = document.createElement('div');
+                        card.className = 'record-card';
+                        card.innerHTML = `
+                            <div class="record-date">Приём от ${record.doc_date} (${record.doc_time})</div>
+                            <div class="record-text"><pre>${text}</pre></div>
+                        `;
+                        listDiv.appendChild(card);
+                    });
                 } else {
-                    errorDiv.innerText = "Пациент не найден. Проверьте ID или Дату рождения.";
+                    errorDiv.innerText = "Пациент не найден. Проверьте ID или дату рождения.";
                 }
-
             } catch (err) {
                 errorDiv.innerText = "Ошибка сети: " + err.message;
             }
@@ -155,6 +601,35 @@
             document.getElementById('birth-date').value = "";
             document.getElementById('login-error').innerText = "";
         }
+
+        // Мобильное меню
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuBtn = document.getElementById('lorMenuBtn');
+            const mobileMenu = document.getElementById('lorMobileMenu');
+
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('is-open');
+                    menuBtn.innerHTML = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
+                        mobileMenu.classList.remove('is-open');
+                        menuBtn.innerHTML = '☰';
+                    }
+                });
+
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.remove('is-open');
+                        menuBtn.innerHTML = '☰';
+                    });
+                });
+            }
+        });
     </script>
 </body>
 </html>
