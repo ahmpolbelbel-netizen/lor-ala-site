@@ -233,37 +233,38 @@
                 <li><a href="#address">Адрес</a></li>
                 <li><a href="diseases.html">О БОЛЕЗНЯХ</a></li>
             </ul>
-            <!-- Общий контейнер связи и навигации -->
-<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+           <!-- Единый блок контактов и навигации в одном стиле -->
+<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
     
-    <!-- Ваша оригинальная кнопка WhatsApp (код полностью сохранен) -->
-    <a href="https://wa.me" target="_blank" class="whatsapp-btn-header">
-        <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 20px; height: 20px; fill: currentColor;">
+    <!-- Кнопка WhatsApp (Фирменная, узнаваемая, в виде аккуратной плашки) -->
+    <a href="https://wa.me" target="_blank" 
+       style="display: inline-flex; align-items: center; gap: 8px; background-color: #24bc00; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 14px; box-shadow: 0 2px 4px rgba(36,188,0,0.15);">
+        <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 18px; height: 18px; fill: currentColor;">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
         </svg>
         <span>+7 (707) 213-10-10</span>
     </a>
 
-           <!-- Интерактивное меню маршрутов (Вариант с кнопками при клике) -->
-    <div style="margin-top: 6px; text-align: right; padding-right: 17px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; position: relative; z-index: 100;">
+    <!-- Интерактивная плашка Маршрута (Строгая, в тон меню сайта) -->
+    <div style="position: relative; z-index: 100;">
         <details style="user-select: none;">
-            <!-- Кнопка, на которую нажимают (Заголовок меню) -->
-            <summary style="font-size: 13px; color: #000000; font-weight: bold; letter-spacing: 0.3px; cursor: pointer; list-style: none; outline: none;">
+            <!-- Заголовок кнопки (По форме повторяет плашку WhatsApp, но цвет спокойный серый) -->
+            <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #f5f5f5; color: #555555; padding: 6px 14px; border-radius: 20px; font-weight: bold; font-size: 11px; letter-spacing: 0.5px; cursor: pointer; list-style: none; outline: none; border: 1px solid #e0e0e0; transition: all 0.2s;">
                 📍 ПОСТРОИТЬ МАРШРУТ
             </summary>
             
-            <!-- Всплывающий блок с большими кнопками (открывается строго под надписью) -->
-            <div style="position: absolute; right: 17px; top: 22px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 8px; width: 180px;">
+            <!-- Всплывающее меню (Появляется строго снизу плашки) -->
+            <div style="position: absolute; right: 0; top: 32px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 8px; width: 170px;">
                 
-                <!-- Большая кнопка 2ГИС -->
-                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; background-color: #24bc00; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center;">
+                <!-- Кнопка 2ГИС -->
+                <a href="ВАША_РАБОЧАЯ_ССЫЛКА_2ГИС" target="_blank"
+                   style="display: flex; align-items: center; justify-content: center; background-color: #24bc00; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">
                    🟢 Открыть в 2ГИС
                 </a>
 
-                <!-- Большая кнопка Яндекс -->
-                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: black; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <!-- Кнопка Яндекс -->
+                <a href="ВАША_РАБОЧАЯ_ССЫЛКА_ЯНДЕКС" target="_blank"
+                   style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: black; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #e0e0e0;">
                    🔴 Яндекс Навигатор
                 </a>
                 
@@ -271,9 +272,8 @@
         </details>
     </div>
 
+</div>
 
-
-        </div>
     </header>
 
     <div class="text-section">
