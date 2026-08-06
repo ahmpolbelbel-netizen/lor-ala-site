@@ -206,6 +206,62 @@
 .price-table tbody td .price-discount {
     color: #009ca0 !important; 
 }
+/* ==========================================
+   БЕЗОПАСНЫЙ БЛОК ДЛЯ МОБИЛЬНОГО МЕНЮ 
+   (Вставить в самый конец ваших стилей)
+   ========================================== */
+
+/* Кнопка-триггер (три полоски / крестик) */
+.lor-burger-button {
+    display: none; /* На компьютерах кнопка полностью скрыта */
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #007a87;
+    cursor: pointer;
+    line-height: 1;
+    padding: 5px 10px;
+    z-index: 999;
+}
+
+/* Контейнер, где будут лежать мобильные ссылки */
+.lor-mobile-drawer {
+    display: none; /* По умолчанию скрыто */
+    position: absolute;
+    top: 100%; /* Открывается ровно под шапкой */
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-top: 1px solid #eaeaea;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    z-index: 998;
+}
+
+/* ЭТОТ БЛОК ВКЛЮЧИТСЯ ТОЛЬКО НА СМАРТФОНАХ */
+@media (max-width: 768px) {
+    /* 1. Скрываем десктопные кнопки связи и навигацию */
+    /* (Здесь мы цепляемся за уникальные z-index из вашего прошлых сообщений) */
+    div[style*="z-index: 110"], 
+    div[style*="z-index: 100"],
+    .desktop-navigation { 
+        display: none !important; 
+    }
+
+    /* 2. Показываем кнопку меню на телефонах */
+    .lor-burger-button {
+        display: block !important;
+    }
+
+    /* 3. Показываем меню, когда скрипт добавит ему класс 'is-open' */
+    .lor-mobile-drawer.is-open {
+        display: flex !important;
+    }
+}
 
 </style>
 
