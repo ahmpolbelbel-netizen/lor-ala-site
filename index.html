@@ -244,15 +244,33 @@
         <span>+7 (707) 213-10-10</span>
     </a>
 
-        <!-- Минималистичная ссылка-якорь к блоку карты (Вариант 3) -->
-    <div style="margin-top: 6px; text-align: right; padding-right: 5px;">
-        <a href="#address" 
-           style="font-size: 13px; color: #000000; font-weight: bold; text-decoration: none; font-family: -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0.3px; transition: color 0.2s;"
-           onmouseover="this.style.color='#24bc00'" 
-           onmouseout="this.style.color='#000000'">
-           📍 ПОСТРОИТЬ МАРШРУТ
-        </a>
+           <!-- Интерактивное меню маршрутов (Вариант с кнопками при клике) -->
+    <div style="margin-top: 6px; text-align: right; padding-right: 17px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; position: relative; z-index: 100;">
+        <details style="user-select: none;">
+            <!-- Кнопка, на которую нажимают (Заголовок меню) -->
+            <summary style="font-size: 13px; color: #555555; font-weight: bold; letter-spacing: 0.3px; cursor: pointer; list-style: none; outline: none;">
+                📍 ПОСТРОИТЬ МАРШРУТ
+            </summary>
+            
+            <!-- Всплывающий блок с большими кнопками (открывается строго под надписью) -->
+            <div style="position: absolute; right: 17px; top: 22px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 12px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 8px; width: 180px;">
+                
+                <!-- Большая кнопка 2ГИС -->
+                <a href="ВАША_РАБОЧАЯ_ССЫЛКА_2ГИС" target="_blank"
+                   style="display: flex; align-items: center; justify-content: center; background-color: #24bc00; color: white; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center;">
+                   🟢 Открыть в 2ГИС
+                </a>
+
+                <!-- Большая кнопка Яндекс -->
+                <a href="ВАША_РАБОЧАЯ_ССЫЛКА_ЯНДЕКС" target="_blank"
+                   style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: black; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                   🔴 Яндекс Навигатор
+                </a>
+                
+            </div>
+        </details>
     </div>
+
 
 
         </div>
