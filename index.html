@@ -270,29 +270,39 @@
         </details>
     </div>
 
-    <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА -->
+      <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА (ВАРИАНТ 2) -->
     <div style="position: relative; z-index: 100;">
         <details style="list-style: none;">
-            <!-- Внешний вид кнопки: белая плашка с бирюзовой контурной рамкой -->
-            <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #ffffff; color: #007a87; padding: 11px 18px; border-radius: 24px; font-weight: bold; font-size: 13px; letter-spacing: 0.3px; cursor: pointer; list-style: none; outline: none; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: all 0.2s;">
+            <!-- Прозрачная кнопка: только бирюзовый текст и маркер, без рамки и фона -->
+            <summary style="display: inline-flex; align-items: center; gap: 6px; background-color: transparent; color: #007a87; padding: 11px 0; font-weight: bold; font-size: 13px; letter-spacing: 0.3px; cursor: pointer; list-style: none; outline: none; border: none; transition: opacity 0.2s;">
                 📍 МАРШРУТ
             </summary>
             
-            <!-- Всплывающее меню навигаторов -->
-            <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 190px;">
-                <!-- Кнопка 2ГИС -->
+            <!-- Всплывающее меню навигаторов (В точном стиле кнопок связи) -->
+            <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
+                
+                <!-- Кнопка 2ГИС (Выровнена, текст по центру, бирюзовый векторный логотип) -->
                 <a href="https://2gis.kz" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                   <span style="color: #24bc00; font-size: 14px;">🟢</span> Открыть в 2ГИС
+                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <svg viewBox="0 0 32 32" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;">
+                        <path d="M16 0C7.16 0 0 7.16 0 16s7.16 16 16 16 16-7.16 16-16S24.84 0 16 0zm-2.4 22.4H9.3V9.6h4.3c2.4 0 3.8 1.3 3.8 3.2 0 1.3-.7 2.2-1.9 2.7 1.4.4 2.2 1.5 2.2 3.1 0 2.2-1.5 3.8-4.1 3.8zm6.9 0h-2.5V9.6h2.5v12.8z"/>
+                    </svg>
+                    Открыть в 2ГИС
                 </a>
-                <!-- Кнопка Яндекс Навигатор -->
+                
+                <!-- Кнопка Яндекс Навигатор (Выровнена, текст по центру, бирюзовый векторный логотип) -->
                 <a href="https://yandex.kz" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #ffffff; color: #007a87; padding: 11px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                   <span style="color: #ff3333; font-size: 14px;">🔴</span> Яндекс Навигатор
+                   style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.03 14.27H9.11V7.12h1.83v2.85h.06c.33-.57.85-.97 1.54-.97 1.39 0 2.21 1.09 2.21 2.69v4.58h-1.83v-4.22c0-.91-.42-1.39-1.09-1.39-.77 0-1.29.56-1.29 1.45v4.16z"/>
+                    </svg>
+                    Яндекс Навигатор
                 </a>
+
             </div>
         </details>
     </div>
+
 
 </div>
 
