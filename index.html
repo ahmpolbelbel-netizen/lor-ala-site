@@ -270,18 +270,21 @@
         </details>
     </div>
 
-      <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА (ВАРИАНТ 2) -->
+        <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА (ИДЕАЛЬНЫЙ КРУГ) -->
     <div style="position: relative; z-index: 100;">
         <details style="list-style: none;">
-            <!-- Прозрачная кнопка: только бирюзовый текст и маркер, без рамки и фона -->
-            <summary style="display: inline-flex; align-items: center; gap: 6px; background-color: transparent; color: #007a87; padding: 11px 0; font-weight: bold; font-size: 13px; letter-spacing: 0.3px; cursor: pointer; list-style: none; outline: none; border: none; transition: opacity 0.2s;">
-                📍 МАРШРУТ
+            <!-- Внешний вид кнопки: идеальный бирюзовый круг, как у связи, только со значком локации -->
+            <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #007a87; color: #ffffff; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; list-style: none; outline: none; box-shadow: 0 2px 5px rgba(0,122,135,0.2); transition: background-color 0.2s;">
+                <!-- Аккуратный векторный значок булавки карты (геометка) -->
+                <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 20px; height: 20px; fill: currentColor;">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
             </summary>
             
-            <!-- Всплывающее меню навигаторов (В точном стиле кнопок связи) -->
+            <!-- Всплывающее меню навигаторов -->
             <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
                 
-                <!-- Кнопка 2ГИС (Выровнена, текст по центру, бирюзовый векторный логотип) -->
+                <!-- Кнопка 2ГИС -->
                 <a href="https://2gis.kz" target="_blank"
                    style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <svg viewBox="0 0 32 32" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;">
@@ -290,7 +293,7 @@
                     Открыть в 2ГИС
                 </a>
                 
-                <!-- Кнопка Яндекс Навигатор (Выровнена, текст по центру, бирюзовый векторный логотип) -->
+                <!-- Кнопка Яндекс Навигатор -->
                 <a href="https://yandex.kz" target="_blank"
                    style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                     <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;">
@@ -302,6 +305,7 @@
             </div>
         </details>
     </div>
+
 
 
 </div>
