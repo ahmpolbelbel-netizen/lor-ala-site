@@ -6,444 +6,649 @@
     <title>Клиника Доктор ЛОР — Алматы — Специализированный кабинет</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background-color: #ffffff; color: #000000; line-height: 1.7; -webkit-font-smoothing: antialiased; }
-        
-        /* Главный контейнер для шапки */
-        .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        
-        header { background-color: #ffffff; position: sticky; top: 0; z-index: 50; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 24px 0px; border-bottom: 4px solid #009ca0; }
-        .logo-block { display: flex; flex-direction: column; align-items: flex-start; }
-        .logo-img { height: 64px; display: block; width: auto; }
-        .logo-sub { font-size: 11px; color: #777777; margin-top: 4px; line-height: 1.3; }
-        .nav-menu { display: flex; gap: 24px; list-style: none; }
-        .nav-menu a { color: #009ca0; text-decoration: none; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-menu a:hover { color: #007377; }
-        
-        /* Кнопки WhatsApp */
-        .whatsapp-btn-header { display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 10px 18px; border-radius: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.2s; }
-        .whatsapp-btn-header:hover { background-color: #20ba5a; }
-        .whatsapp-btn-header svg { fill: #ffffff; width: 18px; height: 18px; }
-        
-        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; padding: 14px 24px; border-radius: 8px; transition: background-color 0.2s; margin-top: 15px; width: 100%; max-width: 280px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
-        .action-button-wp:hover { background-color: #20ba5a; }
-        .action-button-wp svg { fill: #ffffff; width: 18px; height: 18px; }
-        
-        /* НАЙДЕННЫЙ БАЛАНС: Текстовый блок расширен до 1050px — шире прежнего, но с легкими аккуратными полями */
-        .text-section { max-width: 1050px; margin: 0 auto; padding: 0 20px 40px 20px; }
-        .main-title-center { 
-            font-size: 42px; 
-            font-weight: 500; 
-            color: #009ca0; 
-            text-align: center; 
-            margin: 50px 0 35px; 
-            border-top: 1px solid #009ca0; 
-            border-bottom: 1px solid #009ca0; 
-            padding-top: 15px; 
-            padding-bottom: 15px; 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
         }
-        .info-paragraph { font-size: 17px; 
-                         color: #000000; 
-                         margin-bottom: 20px; 
-                         text-align: left;
-                         font-weight: 300;
-                        letter-spacing: 0.2px;}
-        .info-paragraph strong { font-weight: 700 !important; }
-        /* Стиль оригинального списка цен */
-        .price-list-original { list-style-type: none; margin: 15px 0 25px 20px; }
-        .price-list-original li { font-size: 17px; color: #000000; margin-bottom: 8px; position: relative; padding-left: 15px; }
-        .price-list-original li::before { content: "•"; color: #000000; font-weight: bold; position: absolute; left: 0; }
-        
-        .diseases-card { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-left: 5px solid #009ca0; border-radius: 8px; padding: 24px; margin: 35px 0; }
-        .diseases-title { font-size: 16px; font-weight: bold; color: #000000; margin-bottom: 16px; }
-        .diseases-list { list-style-type: none; }
-        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 15px; color: #000000; }
-        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
-        
-        .section-title { font-size: 28px; font-weight: bold; color: #000000; text-align: center; margin: 50px 0 25px; }
-        .branch-card-single { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto 50px; text-align: center; }
-        .branch-icon { font-size: 24px; margin-bottom: 12px; }
-        .branch-name { font-size: 18px; font-weight: bold; color: #000000; margin-bottom: 6px; }
-        .branch-address { font-size: 18px; color: #009ca0; font-weight: bold; margin-bottom: 20px; }
-        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 13px; color: #666666; }
-        .bold-text { font-weight: bold; color: #000000; }
-        
-        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; }
-        footer p { margin-bottom: 8px; }
-        footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
-          /* Адаптация прайса для мобильных телефонов */
-    .price-container {
-        padding: 0 10px !important;
-        margin: 25px auto;
-    }
-    
-    .price-main-title {
-        font-size: 22px;
-        margin-bottom: 15px;
-    }
 
-    .price-table th, 
-    .price-table td {
-        padding: 12px 14px; /* Уменьшаем отступы, чтобы вместить больше текста */
-        font-size: 14px;
-    }
+        .max-width-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .price-value {
-        width: 100px;
-        font-size: 15px;
-    }
+        header {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 4px solid #009ca0;
+        }
 
-    .price-discount {
-        font-size: 12px;
-    }
-  
-       /* ========================================== */
-/* МОБИЛЬНАЯ АДАПТАЦИЯ (для экранов до 768px) */
-/* ========================================== */
-@media (max-width: 768px) {
-    /* 1. Глобальные фиксы для предотвращения горизонтальной прокрутки */
-    body {
-        overflow-x: hidden;
-    }
-    
-    .max-width-container, .text-section {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-    }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+            position: relative;
+        }
 
-    /* 2. Шапка сайта: выстраиваем элементы вертикально */
-    .header-content { 
-        flex-direction: column; 
-        gap: 16px; 
-        padding: 16px 0; 
-    }
-    
-    /* Центрируем логотип и делаем его адаптивным */
-    .logo-block { 
-        align-items: center; 
-        text-align: center; 
-        width: 100%;
-    }
-    
-    .logo-img {
-        max-width: 100%;
-        height: auto; /* Защита от деформации картинки */
-        max-height: 50px; /* Немного уменьшаем для мобильных */
-    }
-    
-    /* Адаптивное меню */
-    .nav-menu { 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 12px 16px; 
-        width: 100%;
-    }
-    
-    .nav-menu a {
-        font-size: 13px; /* Слегка уменьшаем шрифт ссылок */
-    }
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-    /* Кнопка WhatsApp в шапке на мобильных */
-    .whatsapp-btn-header {
-        width: 100%;
-        max-width: 280px;
-        justify-content: center;
-    }
-    
-    /* 3. Оптимизация типографики под экраны телефонов */
-    .main-title-center { 
-        font-size: 24px; 
-        margin: 25px 0 20px; 
-        padding: 12px 0; 
-        line-height: 1.3;
-    }
-    
-    .section-title { 
-        font-size: 22px; 
-        margin: 30px 0 15px; 
-    }
+        .logo-img {
+            height: 64px;
+            width: auto;
+            display: block;
+        }
 
-    .info-paragraph {
-        font-size: 16px;
-        line-height: 1.5;
-    }
-    
-    /* 4. Списки и карточки */
-    .price-list-original { 
-        margin-left: 5px; 
-    }
-    
-    .price-list-original li {
-        font-size: 16px;
-    }
+        .logo-sub {
+            font-size: 11px;
+            color: #777777;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
 
-    .diseases-card {
-        padding: 16px;
-        margin: 20px 0;
-    }
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
 
-    .branch-card-single {
-        padding: 20px;
-        width: 100%;
-        max-width: 100%; /* Карточка занимает всю ширину экрана за вычетом отступов */
-    }
-    
-       /* Кнопка действия внутри контента */
-    .action-button-wp {
-        max-width: 100%; 
-    }
-} /* <- Здесь скобка должна закрывать мобильный блок */
+        .nav-menu a {
+            color: #009ca0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-/* СТИЛИ ДЛЯ ТАБЛИЦЫ ПРАЙС-ЛИСТА */
-/* ========================================== */
+        .nav-menu a:hover {
+            color: #007377;
+        }
 
-/* 1. Делаем основной текст (названия услуг) строго чёрным */
-.price-table tbody td {
-    color: #000000 !important;
-}
+        /* Header action buttons */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-/* 2. Сохраняем бирюзовый цвет для комментариев со скидками */
-.price-table tbody td .price-discount {
-    color: #009ca0 !important; 
-}
-/* ==========================================
-   ИСПРАВЛЕННЫЙ БЛОК ДЛЯ ДЕСКТОПА (ПК) 
-   ========================================== */
+        .circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007a87;
+            color: #ffffff;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,122,135,0.2);
+            transition: background-color 0.2s;
+        }
 
-/* Кнопка-триггер (три полоски / крестик) — НА ПК СТРОГО СКРЫТА */
-.lor-burger-button {
-    display: none !important; 
-    background: none;
-    border: none;
-    font-size: 32px;
-    color: #007a87;
-    cursor: pointer;
-    line-height: 1;
-    padding: 5px 10px;
-    z-index: 999;
-}
+        .circle-btn:hover {
+            background-color: #006570;
+        }
 
-/* Контейнер мобильного меню — НА ПК СТРОГО СКРЫТ */
-.lor-mobile-drawer {
-    display: none !important; 
-    position: absolute;
-    top: 100%; 
-    left: 0;
-    width: 100%;
-    background-color: #ffffff;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    border-top: 1px solid #eaeaea;
-    padding: 24px 16px;
-    box-sizing: border-box;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    z-index: 998;
-}
+        .circle-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
 
+        /* Dropdowns */
+        details {
+            position: relative;
+        }
 
-/* ЭТОТ БЛОК ВКЛЮЧИТСЯ ТОЛЬКО НА СМАРТФОНАХ */
-@media (max-width: 768px) {
-    /* 1. Жестко скрываем круглые кнопки и вылезшие текстовые ссылки навигации */
-    div[style*="z-index: 110"], 
-    div[style*="z-index: 100"],
-    .desktop-navigation,
-    .nav-menu { 
-        display: none !important; 
-    }
+        details summary {
+            list-style: none;
+        }
 
-    /* 2. Показываем кнопку меню на телефонах */
-    .lor-burger-button {
-        display: block !important;
-    }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
 
-    /* 3. Показываем меню, когда скрипт добавит ему класс 'is-open' */
-    .lor-mobile-drawer.is-open {
-        display: flex !important;
-    }
-}
+        .dropdown-panel {
+            position: absolute;
+            top: 52px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 220px;
+            z-index: 100;
+        }
 
+        .dropdown-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
 
-</style>
+        .dropdown-panel a:hover {
+            background-color: #f0fafa;
+        }
 
+        /* Burger button (hidden on desktop) */
+        .lor-burger-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #007a87;
+            cursor: pointer;
+            line-height: 1;
+            padding: 5px 10px;
+            z-index: 999;
+        }
+
+        /* Mobile drawer */
+        .lor-mobile-drawer {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #eaeaea;
+            padding: 24px 16px;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 998;
+        }
+
+        .lor-mobile-drawer.is-open {
+            display: flex;
+        }
+
+        .lor-mobile-drawer a {
+            color: #007a87;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-phone {
+            font-size: 18px !important;
+            margin-top: 8px;
+            font-family: sans-serif;
+        }
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 240px;
+            margin-top: 10px;
+        }
+
+        .mobile-actions a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* Content */
+        .text-section {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .main-title-center {
+            font-size: 42px;
+            font-weight: 500;
+            color: #009ca0;
+            text-align: center;
+            margin: 50px 0 35px;
+            border-top: 1px solid #009ca0;
+            border-bottom: 1px solid #009ca0;
+            padding: 15px 0;
+        }
+
+        .info-paragraph {
+            font-size: 17px;
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: left;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+        }
+
+        .info-paragraph strong {
+            font-weight: 700;
+        }
+
+        .price-list-original {
+            list-style-type: none;
+            margin: 15px 0 25px 20px;
+        }
+
+        .price-list-original li {
+            font-size: 17px;
+            color: #000000;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .price-list-original li::before {
+            content: "•";
+            color: #000000;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .diseases-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #009ca0;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 35px 0;
+        }
+
+        .diseases-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+
+        .diseases-list {
+            list-style-type: none;
+        }
+
+        .diseases-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #000000;
+        }
+
+        .diseases-list li::before {
+            content: "•";
+            color: #009ca0;
+            font-weight: bold;
+            font-size: 20px;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        /* Price table */
+        .price-container {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .price-main-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .price-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            margin-top: 20px;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .price-table th {
+            background-color: #009ca0;
+            color: #ffffff;
+            padding: 16px 20px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .price-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #000000;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .price-value {
+            font-weight: bold;
+            color: #000000;
+            white-space: nowrap;
+            text-align: right;
+            width: 130px;
+        }
+
+        .price-discount {
+            display: block;
+            font-size: 13px;
+            color: #009ca0;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin: 50px 0 25px;
+        }
+
+        .branch-card-single {
+            background-color: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+
+        .branch-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .branch-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+
+        .branch-address {
+            font-size: 18px;
+            color: #009ca0;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .route-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .route-buttons a {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .btn-2gis {
+            background-color: #24bc00;
+            color: white;
+        }
+
+        .btn-yandex {
+            background-color: #ffffff;
+            color: black;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .branch-hours {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .bold-text {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        footer {
+            background-color: #009ca0;
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .max-width-container,
+            .text-section {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                padding: 16px 0;
+            }
+
+            .logo-block {
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-img {
+                max-height: 50px;
+                height: auto;
+            }
+
+            .nav-menu,
+            .header-actions {
+                display: none !important;
+            }
+
+            .lor-burger-button {
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 20px;
+            }
+
+            .main-title-center {
+                font-size: 24px;
+                margin: 25px 0 20px;
+                padding: 12px 0;
+                line-height: 1.3;
+            }
+
+            .section-title,
+            .price-main-title {
+                font-size: 22px;
+                margin: 30px 0 15px;
+            }
+
+            .info-paragraph {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+            .price-list-original {
+                margin-left: 5px;
+            }
+
+            .price-list-original li {
+                font-size: 16px;
+            }
+
+            .diseases-card {
+                padding: 16px;
+                margin: 20px 0;
+            }
+
+            .branch-card-single {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            .price-table th,
+            .price-table td {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+
+            .price-value {
+                width: 100px;
+                font-size: 15px;
+            }
+
+            .price-discount {
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
-    <style>
-.price-table-wrapper { width: 100% !important; overflow-x: auto !important; background: #ffffff !important; border: 1px solid #e2e8f0 !important; display: block !important; margin-top: 20px; }
-.price-table { width: 100% !important; border-collapse: collapse !important; text-align: left !important; }
-.price-table th { background-color: #009ca0 !important; color: #ffffff !important; padding: 16px 20px !important; text-transform: uppercase !important; font-size: 14px !important; }
-.price-table td { padding: 16px 20px !important; border-bottom: 1px solid #e2e8f0 !important; color: #333333 !important; vertical-align: top !important; line-height: 1.5 !important; }
-.price-value { font-weight: bold !important; color: #000000 !important; white-space: nowrap !important; text-align: right !important; width: 130px !important; }
-.price-discount { display: block !important; clear: both !important; font-size: 13px !important; color: #007377 !important; margin-top: 6px !important; font-weight: 500 !important; }
-</style>
-
 <body>
-   <header style="position: relative;">
-    <div class="max-width-container header-content">
-        <div class="logo-block">
-            <a href="index.html" class="logo-link">
-                <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
-            </a>
-            <p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
-        </div>
-        
-        <!-- Кнопка-гамбургер (появится только на мобильных смартфонах рядом с логотипом) -->
-        <button class="lor-burger-button" id="lorMenuBtn">☰</button>
+    <header>
+        <div class="max-width-container header-content">
+            <div class="logo-block">
+                <a href="index.html">
+                    <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
+                </a>
+                <p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
+            </div>
 
-        <ul class="nav-menu">
-            <li><a href="#prices">Услуги и цены</a></li>
-            <li><a href="#address">Адрес</a></li>
-            <li><a href="diseases.html">О БОЛЕЗНЯХ</a></li>
-        </ul>
+            <button class="lor-burger-button" id="lorMenuBtn" aria-label="Меню">☰</button>
 
-        <!-- Единый горизонтальный блок связи и навигации в фирменном бирюзовом стиле -->
-        <div style="display: flex; align-items: center; gap: 12px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; user-select: none;">
-            
-            <!-- 1. ИНТЕРАКТИВНАЯ БИРЮЗОВАЯ ИКОНКА СВЯЗИ -->
-            <div style="position: relative; z-index: 110;">
-                <details style="list-style: none;">
-                    <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #007a87; color: #ffffff; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; list-style: none; outline: none; box-shadow: 0 2px 5px rgba(0,122,135,0.2); transition: background-color 0.2s;">
-                        <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 22px; height: 22px; fill: currentColor;">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
+            <ul class="nav-menu">
+                <li><a href="#prices">Услуги и цены</a></li>
+                <li><a href="#address">Адрес</a></li>
+                <li><a href="diseases.html">О болезнях</a></li>
+            </ul>
+
+            <div class="header-actions">
+                <!-- Contact dropdown -->
+                <details>
+                    <summary class="circle-btn" title="Связаться">
+                        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     </summary>
-                    <div style="position: absolute; left: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
-                        <a href="tel:+77072131010" style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 15px; height: 15px; fill: #007a87; flex-shrink: 0;">
-                                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/>
-                            </svg>
+                    <div class="dropdown-panel" style="left: 0;">
+                        <a href="tel:+77072131010">
                             Позвонить в клинику
                         </a>
-                        <a href="https://wa.me" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 16px; height: 16px; fill: #007a87; flex-shrink: 0;">
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        Написать в WhatsApp
-                    </a>
-                </div>
-            </details>
-        </div>
-            <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА (ИДЕАЛЬНЫЙ КРУГ) -->
-            <div style="position: relative; z-index: 100;">
-                <details style="list-style: none;">
-                    <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #007a87; color: #ffffff; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; list-style: none; outline: none; box-shadow: 0 2px 5px rgba(0,122,135,0.2); transition: background-color 0.2s;">
-                        <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 20px; height: 20px; fill: currentColor;">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                        </svg>
+                        <a href="https://wa.me/77072131010" target="_blank" rel="noopener">
+                            Написать в WhatsApp
+                        </a>
+                    </div>
+                </details>
+
+                <!-- Route dropdown -->
+                <details>
+                    <summary class="circle-btn" title="Маршрут">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                     </summary>
-                    <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
-                        <a href="https://2gis.kz" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05); letter-spacing: 0.3px;">
-                            <svg xmlns="http://w3.org" viewBox="0 0 512 512" style="width: 18px; height: 18px; fill: #007a87; flex-shrink: 0;">
-                                <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 411.4c-85.8 0-155.4-69.6-155.4-155.4S170.2 100.6 256 100.6 411.4 170.2 411.4 256 341.8 411.4 256 411.4zm0-244.5c-49.2 0-89.1 39.9-89.1 89.1s39.9 89.1 89.1 89.1 89.1-39.9 89.1-89.1-39.9-89.1-89.1-89.1z"/>
-                            </svg>
+                    <div class="dropdown-panel" style="right: 0;">
+                        <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">
                             Маршрут 2ГИС
                         </a>
-                        <a href="https://yandex.kz" target="_blank" style="display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05); letter-spacing: 0.3px;">
-                            <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 18px; height: 18px; fill: #007a87; flex-shrink: 0;">
-                                <path d="M21 3L3 10.53v.97l6.84 2.66L12.5 21h.97L21 3z"/>
-                            </svg>
-                            Яндекс навигатор
+                        <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">
+                            Яндекс Навигатор
                         </a>
                     </div>
                 </details>
             </div>
         </div>
-    </div>
 
-  <!-- ВЫКАТНОЕ МОБИЛЬНОЕ МЕНЮ (Заполнено кнопками под дизайн смартфона) -->
-<div class="lor-mobile-drawer" id="lorMobileMenu" style="display: none !important; position: absolute;">
-
-
-        <a href="#prices" style="color: #007a87; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Услуги и цены</a>
-        <a href="#address" style="color: #007a87; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Адрес</a>
-        <a href="diseases.html" style="color: #007a87; text-decoration: none; font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">О БОЛЕЗНЯХ</a>
-        
-        <!-- Номер телефона клиники как на макете -->
-        <a href="tel:+73832929400" style="color: #007a87; text-decoration: none; font-weight: bold; font-size: 18px; margin-top: 10px; font-family: sans-serif;">+7 (383) 29-29-400</a>
-        
-        <!-- Список кнопок на мобильном (выстраиваются в одну колонку) -->
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 240px; margin-top: 10px;">
-            <a href="tel:+77072131010" style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">ПОЗВОНИТЬ В КЛИНИКУ</a>
-            <a href="https://wa.me" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">НАПИСАТЬ В WHATSAPP</a>
-            <a href="https://2gis.kz" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">ОТКРЫТЬ В 2ГИС</a>
-            <a href="https://yandex.kz" target="_blank" style="display: flex; align-items: center; justify-content: center; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">ЯНДЕКС НАВИГАТОР</a>
-        </div>
-    </div>
-</header>
-
-
-        <!-- 2. ИНТЕРАКТИВНАЯ КНОПКА ПОСТРОЕНИЯ МАРШРУТА (ИДЕАЛЬНЫЙ КРУГ) -->
-    <div style="position: relative; z-index: 100;">
-        <details style="list-style: none;">
-            <!-- Внешний вид кнопки: идеальный бирюзовый круг, как у связи, только со значком локации -->
-            <summary style="display: inline-flex; align-items: center; justify-content: center; background-color: #007a87; color: #ffffff; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; list-style: none; outline: none; box-shadow: 0 2px 5px rgba(0,122,135,0.2); transition: background-color 0.2s;">
-                <!-- Аккуратный векторный значок булавки карты (геометка) -->
-                <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 20px; height: 20px; fill: currentColor;">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-            </summary>
-            
-                        <!-- Всплывающее меню навигаторов (Сверхчеткие бирюзовые иконки) -->
-            <div style="position: absolute; right: 0; top: 48px; background: #ffffff; border: 1px solid #eaeaea; border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 10px; width: 220px;">
-                
-<!-- Кнопка 2ГИС с оригинальным логотипом-петлей -->
-<a href="https://2gis.kz" target="_blank"
-   style="display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05); letter-spacing: 0.3px;">
-    
-    <!-- Настоящий SVG логотип 2ГИС, окрашивающийся в цвет клиники -->
-    <svg xmlns="http://w3.org" viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #007a87; flex-shrink: 0;">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-    </svg>
-
-    Маршрут 2ГИС
-</a>
-
-
-
-                
-                <!-- Кнопка Яндекс Навигатор — Оригинальная стрелка -->
-                <a href="https://yandex.kz" target="_blank"
-                   style="display: flex; align-items: center; justify-content: center; gap: 10px; background-color: #ffffff; color: #007a87; height: 42px; box-sizing: border-box; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid #007a87; box-shadow: 0 1px 3px rgba(0,0,0,0.05); letter-spacing: 0.3px;">
-                    <svg viewBox="0 0 24 24" xmlns="http://w3.org" style="width: 18px; height: 18px; fill: #007a87; flex-shrink: 0;">
-                        <path d="M21 3L3 10.53v.97l6.84 2.66L12.5 21h.97L21 3z"/>
-                    </svg>
-                    Яндекс навигатор
-                </a>
-
-
-
-
+        <!-- Mobile menu -->
+        <div class="lor-mobile-drawer" id="lorMobileMenu">
+            <a href="#prices">Услуги и цены</a>
+            <a href="#address">Адрес</a>
+            <a href="diseases.html">О болезнях</a>
+            <a href="tel:+77072131010" class="mobile-phone">+7 (707) 213-10-10</a>
+            <div class="mobile-actions">
+                <a href="tel:+77072131010">Позвонить в клинику</a>
+                <a href="https://wa.me/77072131010" target="_blank" rel="noopener">Написать в WhatsApp</a>
+                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">Открыть в 2ГИС</a>
+                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">Яндекс Навигатор</a>
             </div>
-
-        </details>
-    </div>
-
-
-
-</div>
-
-
+        </div>
     </header>
 
     <div class="text-section">
         <h1 class="main-title-center">Клиника Доктор ЛОР</h1>
-        
+
         <p class="info-paragraph">Данный сайт посвящен официальному представительству сети «Доктор ЛОР» в городе Алматы. Основанная в 1996 году в г. Новосибирске, на сегодняшний день сеть включает в себя четыре кабинета специализированной амбулаторной помощи, один из которых открыт для жителей и гостей южной столицы Казахстана. Приём ведётся <strong>без предварительной записи</strong>.</p>
-        
-        
-        
+
         <p class="info-paragraph">Цены на услуги в сети Доктор ЛОР значительно ниже, чем у большинства частных клиник нашего профиля. Проиллюстрировать это можно выдержкой из прейскуранта:</p>
+
         <ul class="price-list-original">
-            <li>Первичная консультация - 4000 ₸</li>
-            <li>Повторная консультация по поводу данного случая заболевания - 3000 ₸</li>
-            <li>Лечение на аппарате "Тонзиллор" (фонофорез включён в стоимость) - 4500 ₸ (1 сеанс)</li>
-            <li>Промывание придаточных пазух носа ("кукушка") - 3000 ₸ (1 сеанс)</li>
-            <li>Фонофорез - 2000 ₸ (1 сеанс)</li>
+            <li>Первичная консультация — 4000 ₸</li>
+            <li>Повторная консультация по поводу данного случая заболевания — 3000 ₸</li>
+            <li>Лечение на аппарате «Тонзиллор» (фонофорез включён в стоимость) — 4500 ₸ (1 сеанс)</li>
+            <li>Промывание придаточных пазух носа («кукушка») — 3000 ₸ (1 сеанс)</li>
+            <li>Фонофорез — 2000 ₸ (1 сеанс)</li>
         </ul>
 
         <p class="info-paragraph">Все остальные цены примерно такого же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
         <p class="info-paragraph">Несмотря на подорожание медикаментов, расходных материалов, оборудования, инструментария, мы удерживаем цены на приемлемом для большинства населения уровне.</p>
 
-        <div id="diseases" class="diseases-card">
+        <div class="diseases-card">
             <h3 class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующими заболеваниями:</h3>
             <ul class="diseases-list">
                 <li>Нарушение носового дыхания любой этиологии (за исключением выраженного искривления перегородки носа), гаймориты, риниты;</li>
@@ -452,110 +657,100 @@
                 <li>Негнойные и гнойные заболевания среднего уха.</li>
             </ul>
         </div>
-<!-- СЕКЦИЯ ПРАЙС-ЛИСТА -->
-<div class="price-container" style="position: relative;">
-    
-    <!-- Невидимый якорь со смещением вверх -->
-    <a id="prices" style="display: block; position: absolute; top: -90px; visibility: hidden;"></a>
-    
-    <h2 class="price-main-title">Прайс-лист на услуги</h2>
-    
-    <div class="price-table-wrapper">
 
-        <table class="price-table">
-            <thead>
-                <tr>
-                    <th>Наименование услуги</th>
-                    <th>Стоимость</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Первичный приём</td>
-                    <td class="price-value">4 000 ₸</td>
-                </tr>
-                <tr>
-                    <td>Повторный приём</td>
-                    <td class="price-value">3 000 ₸</td>
-                </tr>
-                <tr>
-                    <td>
-                        Промывание носа («кукушка»)
-                        <span class="price-discount">* при единоразовой оплате 10 процедур — 20 000 ₸</span>
-                    </td>
-                    <td class="price-value">3 000 ₸</td>
-                </tr>
-                <tr>
-    <td>
-        Анемизация/Фонофорез + промывание носа
-        <span class="price-discount">* при единоразовой оплате 10 процедур — 24 000 ₸</span>
-    </td>
-    <td class="price-value">3 500 ₸</td>
-</tr>
+        <!-- Price list -->
+        <div class="price-container">
+            <a id="prices" style="display:block; position:absolute; top:-90px; visibility:hidden;"></a>
+            <h2 class="price-main-title">Прайс-лист на услуги</h2>
 
-                            <tr>
-                    <td>
-                        Анемизация + промывание носа + фонофорез эндоназально
-                        <span class="price-discount">* при единоразовой оплате 10 процедур — 28 000 ₸</span>
-                    </td>
-                    <td class="price-value">4 000 ₸</td>
-                </tr>
-                <tr>
-                    <td>
-                        Анемизация + промывание носа + фонофорез эндоназально и эндаурально / на заднюю стенку глотки
-                        <span class="price-discount">* при единоразовой оплате 10 процедур — 32 000 ₸</span>
-                    </td>
-                    <td class="price-value">4 500 ₸</td>
-                </tr>
-                <tr>
-                    <td>
-                        Тонзиллор + фонофорез
-                        <span class="price-discount">* при единоразовой оплате 10 процедур — 35 000 ₸</span>
-                        <span class="price-discount">* при необходимости продления курса до 15 процедур — доплата 10 000 ₸ за 5 процедур</span>
-                        <span class="price-discount font-italic">* при необходимости бесплатно проводится инструментальное промывание / вскрытие гнойных кист миндалин / рассечение спаек</span>
-                    </td>
-                    <td class="price-value">4 500 ₸</td>
-                </tr>
-                <tr>
-                    <td>Удаление серной пробки под видеоконтролем (одно ухо)</td>
-                    <td class="price-value">3 500 ₸</td>
-                </tr>
-                <tr>
-                    <td>Туалет уха / введение лекарств на турунде</td>
-                    <td class="price-value">2 000 ₸</td>
-                </tr>
-                <tr>
-                    <td>Видеоэндоскопия уха</td>
-                    <td class="price-value">2 000 ₸</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+            <div class="price-table-wrapper">
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Наименование услуги</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Первичный приём</td>
+                            <td class="price-value">4 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Повторный приём</td>
+                            <td class="price-value">3 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Промывание носа («кукушка»)
+                                <span class="price-discount">* при единоразовой оплате 10 процедур — 20 000 ₸</span>
+                            </td>
+                            <td class="price-value">3 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация/Фонофорез + промывание носа
+                                <span class="price-discount">* при единоразовой оплате 10 процедур — 24 000 ₸</span>
+                            </td>
+                            <td class="price-value">3 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация + промывание носа + фонофорез эндоназально
+                                <span class="price-discount">* при единоразовой оплате 10 процедур — 28 000 ₸</span>
+                            </td>
+                            <td class="price-value">4 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация + промывание носа + фонофорез эндоназально и эндаурально / на заднюю стенку глотки
+                                <span class="price-discount">* при единоразовой оплате 10 процедур — 32 000 ₸</span>
+                            </td>
+                            <td class="price-value">4 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Тонзиллор + фонофорез
+                                <span class="price-discount">* при единоразовой оплате 10 процедур — 35 000 ₸</span>
+                                <span class="price-discount">* при необходимости продления курса до 15 процедур — доплата 10 000 ₸ за 5 процедур</span>
+                                <span class="price-discount">* при необходимости бесплатно проводится инструментальное промывание / вскрытие гнойных кист миндалин / рассечение спаек</span>
+                            </td>
+                            <td class="price-value">4 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Удаление серной пробки под видеоконтролем (одно ухо)</td>
+                            <td class="price-value">3 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Туалет уха / введение лекарств на турунде</td>
+                            <td class="price-value">2 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Видеоэндоскопия уха</td>
+                            <td class="price-value">2 000 ₸</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <h2 class="section-title" id="address">Наш адрес в Алматы</h2>
-<div class="branch-card-single">
-    <div class="branch-icon">📍</div>
-    <h3 class="branch-name">Кабинет в Алматы</h3>
-    <p class="branch-address">улица Розыбакиева, 95</p>
-    
-    <!-- Фирменные лаконичные кнопки (дизайн полностью восстановлен) -->
-    <div class="route-buttons" style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-        
-        <!-- Ссылка 2ГИС: ведет прямо на гео-объект здания Розыбакиева 95 в Алматы -->
-        <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" 
-           target="_blank" 
-           style="display: inline-flex; align-items: center; background-color: #24bc00; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
-           🟢 Маршрут в 2ГИС
-        </a>
+        <h2 class="section-title" id="address">Наш адрес в Алматы</h2>
+        <div class="branch-card-single">
+            <div class="branch-icon">📍</div>
+            <h3 class="branch-name">Кабинет в Алматы</h3>
+            <p class="branch-address">улица Розыбакиева, 95</p>
 
-        <!-- Ссылка Яндекс: открывает Яндекс Карты с поисковым запросом конкретного адреса здания -->
-        <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" 
-           target="_blank" 
-           style="display: inline-flex; align-items: center; background-color: #ffffff; color: black; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-           🔴 Яндекс Навигатор
-        </a>
-    
+            <div class="route-buttons">
+                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563"
+                   target="_blank" rel="noopener" class="btn-2gis">
+                    🟢 Маршрут в 2ГИС
+                </a>
+                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY"
+                   target="_blank" rel="noopener" class="btn-yandex">
+                    🔴 Яндекс Навигатор
+                </a>
+            </div>
+
             <div class="branch-hours">
                 <p style="margin-bottom: 6px;"><span class="bold-text">График работы:</span> Приём ведётся <strong>без предварительной записи</strong></p>
                 <p><span class="bold-text">Для взрослых и детей</span></p>
@@ -567,38 +762,27 @@
         <p>Телефон в Алматы: +7 (707) 213-10-10</p>
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
     </footer>
-        <!-- Скрипт для работы мобильного меню "Доктор ЛОР" -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const menuBtn = document.getElementById('lorMenuBtn');
-    const mobileMenu = document.getElementById('lorMobileMenu');
 
-    // Проверяем, что элементы успешно нашлись на странице
-    if (menuBtn && mobileMenu) {
-        menuBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Предотвращаем баги со случайным закрытием
-            
-            // Переключаем класс видимости меню
-            mobileMenu.classList.toggle('is-open');
-            
-            // Меням значок "гамбургер" на "крестик"
-            if (mobileMenu.classList.contains('is-open')) {
-                menuBtn.innerHTML = '✕';
-            } else {
-                menuBtn.innerHTML = '☰';
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuBtn = document.getElementById('lorMenuBtn');
+            const mobileMenu = document.getElementById('lorMobileMenu');
+
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('is-open');
+                    menuBtn.innerHTML = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
+                        mobileMenu.classList.remove('is-open');
+                        menuBtn.innerHTML = '☰';
+                    }
+                });
             }
         });
-
-        // Если меню открыто и пользователь кликнул мимо него — закрываем
-        document.addEventListener('click', function(e) {
-            if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
-                mobileMenu.classList.remove('is-open');
-                menuBtn.innerHTML = '☰';
-            }
-        });
-    }
-});
-</script>
-
+    </script>
 </body>
 </html>
