@@ -1,388 +1,651 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <style>
-        .diseases-section h1 {
-  text-align: center;
-  color: #00a19c; /* Фирменный бирюзовый цвет */
-  margin-bottom: 20px; /* Отступ снизу от заголовка до текста */
-  font-size: 45px;
-   font-weight: 400;          
-}
- /* Контейнер одного заболевания */
-.accordion-item {
-  background: #fdfdfd;
-  border: 1px solid #eef2f5;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  overflow: hidden;
-    max-width: 1140px;
-  margin: 0 auto 15px auto;
-}
-
-/* Шапка: текст и кнопка на одной линии */
-.accordion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  cursor: pointer;
-  user-select: none;
-}
-
-/* Круглая зеленая кнопка */
-.accordion-icon {
-  width: 36px;
-  height: 36px;
-  background-color: #00a19c; /* Зеленый цвет как на скрине */
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-
-/* Рисуем плюс с помощью псевдоэлементов (чтобы он был ровным) */
-.accordion-icon::before,
-.accordion-icon::after {
-  content: '';
-  position: absolute;
-  background-color: white;
-  transition: transform 0.3s ease;
-}
-/* Горизонтальная палочка */
-.accordion-icon::before {
-  width: 16px;
-  height: 2px;
-}
-/* Вертикальная палочка */
-.accordion-icon::after {
-  width: 2px;
-  height: 16px;
-}
-
-/* Скрытый блок с текстом по умолчанию */
-.accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0 20px;
-  transition: max-height 0.3s ease-out, padding 0.3s ease;
-  background-color: #ffffff;
-    }
-    .accordion-item .accordion-content h3 {
-  text-align: center !important;
-  color: #00a19c !important; /* Фирменный бирюзовый цвет вашего сайта */
-  margin-top: 25px; /* Небольшой отступ сверху, чтобы заголовки не прилипали к тексту */
-  margin-bottom: 15px; /* Отступ снизу до текста */
-}
-    
-    .accordion-content p {
-    text-align: justify;
-}
-
-/* --- СОСТОЯНИЕ КОГДА РАСКРЫТО (Active) --- */
-
-/* Показываем текст при активации */
-.accordion-item.active .accordion-content {
-  max-height: 3000px; /* Достаточная высота для анимации текста */
-  padding: 10px 20px 25px 20px;
-}
-
-/* Превращаем плюс в крестик: поворачиваем иконку на 45 градусов */
-.accordion-item.active .accordion-icon {
-  transform: rotate(45deg);
-  background-color: #00a19c; /* При желании можно поменять цвет крестика */
-}
-</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Клиника Доктор ЛОР — Алматы — Специализированный кабинет</title>
+    <title>О ЛОР-заболеваниях — Клиника Доктор ЛОР — Алматы</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "Segoe UI", Arial, sans-serif; background-color: #ffffff; color: #000000; line-height: 1.7; -webkit-font-smoothing: antialiased; }
-        
-        /* Главный контейнер для шапки */
-        .max-width-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        
-        header { background-color: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 50; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; padding: 24px 20px; }
-        .logo-block { display: flex; flex-direction: column; align-items: flex-start; }
-        .logo-img { height: 64px; display: block; width: auto; }
-        .logo-sub { font-size: 11px; color: #777777; margin-top: 4px; line-height: 1.3; }
-        .nav-menu { display: flex; gap: 24px; list-style: none; }
-        .nav-menu a { color: #009ca0; text-decoration: none; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .nav-menu a:hover { color: #007377; }
-        
-        /* Кнопки WhatsApp */
-        .whatsapp-btn-header { display: inline-flex; align-items: center; gap: 8px; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: bold; padding: 10px 18px; border-radius: 24px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.2s; }
-        .whatsapp-btn-header:hover { background-color: #20ba5a; }
-        .whatsapp-btn-header svg { fill: #ffffff; width: 18px; height: 18px; }
-        
-        .action-button-wp { display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #25D366; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; padding: 14px 24px; border-radius: 8px; transition: background-color 0.2s; margin-top: 15px; width: 100%; max-width: 280px; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
-        .action-button-wp:hover { background-color: #20ba5a; }
-        .action-button-wp svg { fill: #ffffff; width: 18px; height: 18px; }
-        
-        /* НАЙДЕННЫЙ БАЛАНС: Текстовый блок расширен до 1050px — шире прежнего, но с легкими аккуратными полями */
-        .text-section { max-width: 1050px; margin: 0 auto; padding: 0 20px 40px 20px; }
-        .main-title-center { font-size: 42px; font-weight: bold; color: #009ca0; text-align: center; margin: 50px 0 35px; }
-        .info-paragraph { font-size: 17px; color: #333333; margin-bottom: 20px; text-align: left; }
-        
-        /* Стиль оригинального списка цен */
-        .price-list-original { list-style-type: none; margin: 15px 0 25px 20px; }
-        .price-list-original li { font-size: 17px; color: #333333; margin-bottom: 8px; position: relative; padding-left: 15px; }
-        .price-list-original li::before { content: "•"; color: #333333; font-weight: bold; position: absolute; left: 0; }
-        
-        .diseases-card { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-left: 5px solid #009ca0; border-radius: 8px; padding: 24px; margin: 35px 0; }
-        .diseases-title { font-size: 16px; font-weight: bold; color: #111111; margin-bottom: 16px; }
-        .diseases-list { list-style-type: none; }
-        .diseases-list li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: 15px; color: #333333; }
-        .diseases-list li::before { content: "•"; color: #009ca0; font-weight: bold; font-size: 20px; position: absolute; left: 0; top: -2px; }
-        
-        .section-title { font-size: 28px; font-weight: bold; color: #111111; text-align: center; margin: 50px 0 25px; }
-        .branch-card-single { background-color: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; max-width: 500px; margin: 0 auto 50px; text-align: center; }
-        .branch-icon { font-size: 24px; margin-bottom: 12px; }
-        .branch-name { font-size: 18px; font-weight: bold; color: #111111; margin-bottom: 6px; }
-        .branch-address { font-size: 18px; color: #009ca0; font-weight: bold; margin-bottom: 20px; }
-        .branch-hours { border-top: 1px solid #e2e8f0; padding-top: 15px; font-size: 13px; color: #666666; }
-        .bold-text { font-weight: bold; color: #111111; }
-        
-        footer { background-color: #009ca0; color: #ffffff; text-align: center; padding: 40px 20px; font-size: 14px; }
-        footer p { margin-bottom: 8px; }
-        footer a { color: #ffffff; text-decoration: none; font-weight: bold; }
-        /* ========================================== */
-/* МОБИЛЬНАЯ АДАПТАЦИЯ (для экранов до 768px) */
-/* ========================================== */
-@media (max-width: 768px) {
-    /* 1. Предотвращение горизонтального скролла */
-    body {
-        overflow-x: hidden;
-    }
-    
-    .max-width-container, .text-section {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    /* 2. Шапка сайта и логотип */
-    .header-content { 
-        flex-direction: column !important; 
-        gap: 16px; 
-        padding: 16px 15px !important; 
-    }
-    
-    .logo-block { 
-        align-items: center !important; 
-        text-align: center !important; 
-        width: 100%;
-    }
-    
-    .logo-img {
-        max-width: 100%;
-        height: auto;
-        max-height: 50px; /* Уменьшаем высоту логотипа на мобильных */
-    }
-    
-    /* Меню навигации */
-    .nav-menu { 
-        flex-wrap: wrap; 
-        justify-content: center !important; 
-        gap: 12px 16px; 
-        width: 100%;
-    }
-    
-    .nav-menu a {
-        font-size: 13px;
-    }
+        .max-width-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    /* Кнопка WhatsApp в шапке */
-    .whatsapp-btn-header {
-        width: 100%;
-        max-width: 280px;
-        justify-content: center;
-    }
-    
-    /* 3. Типографика и заголовки */
-    .diseases-section h1 {
-        font-size: 28px; /* Уменьшаем огромный заголовок заболеваний */
-        margin-bottom: 15px;
-        padding: 0 10px;
-    }
+        header {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 4px solid #009ca0;
+        }
 
-    .main-title-center { 
-        font-size: 24px; 
-        margin: 25px 0 20px; 
-        line-height: 1.3;
-    }
-    
-    .section-title { 
-        font-size: 22px; 
-        margin: 30px 0 15px; 
-    }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+            position: relative;
+        }
 
-    .info-paragraph {
-        font-size: 16px;
-        line-height: 1.6;
-    }
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-    /* Дополнительно для выравнивания текстов внутри аккордеона на мобильных */
-    .accordion-content p {
-        text-align: left; /* На смартфонах justify (по ширине) выглядит плохо из-за больших пробелов */
-    }
-    
-    /* 4. Адаптация аккордеонов заболеваний */
-    .accordion-item {
-        margin-left: 10px;
-        margin-right: 10px;
-        margin-bottom: 12px;
-    }
+        .logo-img {
+            height: 64px;
+            width: auto;
+            display: block;
+        }
 
-    .accordion-header {
-        padding: 15px; /* Уменьшаем внутренние отступы */
-    }
+        .logo-sub {
+            font-size: 11px;
+            color: #777777;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
 
-    .accordion-header h2, 
-    .accordion-header span {
-        font-size: 16px !important; /* Корректируем размер шрифта названия болезни */
-        line-height: 1.3;
-        padding-right: 10px;
-    }
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
 
-    .accordion-icon {
-        width: 32px;  /* Чуть уменьшаем круглую кнопку с плюсом */
-        height: 32px;
-        flex-shrink: 0; /* Запрещаем кнопке сжиматься, если текст длинный */
-    }
+        .nav-menu a {
+            color: #009ca0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .accordion-item .accordion-content h3 {
-        font-size: 18px; /* Заголовки внутри раскрытого блока */
-        margin-top: 15px;
-        margin-bottom: 10px;
-    }
-    
-    /* 5. Карточки и списки */
-    .price-list-original { 
-        margin-left: 10px; 
-    }
+        .nav-menu a:hover {
+            color: #007377;
+        }
 
-    .diseases-card {
-        padding: 16px;
-        margin: 20px 10px;
-    }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .branch-card-single {
-        padding: 20px;
-        width: auto;
-        max-width: 100%;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
-    
-    .action-button-wp {
-        max-width: 100%;
-    }
-}
+        .circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007a87;
+            color: #ffffff;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,122,135,0.2);
+            transition: background-color 0.2s;
+        }
 
+        .circle-btn:hover {
+            background-color: #006570;
+        }
+
+        .circle-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        details {
+            position: relative;
+        }
+
+        details summary {
+            list-style: none;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .dropdown-panel {
+            position: absolute;
+            top: 52px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 220px;
+            z-index: 100;
+        }
+
+        .dropdown-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .dropdown-panel a:hover {
+            background-color: #f0fafa;
+        }
+
+        .lor-burger-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #007a87;
+            cursor: pointer;
+            line-height: 1;
+            padding: 5px 10px;
+            z-index: 999;
+        }
+
+        .lor-mobile-drawer {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #eaeaea;
+            padding: 24px 16px;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 998;
+        }
+
+        .lor-mobile-drawer.is-open {
+            display: flex;
+        }
+
+        .lor-mobile-drawer a {
+            color: #007a87;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-phone {
+            font-size: 18px !important;
+            margin-top: 8px;
+            font-family: sans-serif;
+        }
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 240px;
+            margin-top: 10px;
+        }
+
+        .mobile-actions a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        /* ===== CONTENT ===== */
+        .text-section {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .main-title-center {
+            font-size: 42px;
+            font-weight: 500;
+            color: #009ca0;
+            text-align: center;
+            margin: 50px 0 35px;
+            border-top: 1px solid #009ca0;
+            border-bottom: 1px solid #009ca0;
+            padding: 15px 0;
+        }
+
+        /* ===== ACCORDION ===== */
+        .accordion-item {
+            background: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            cursor: pointer;
+            user-select: none;
+            gap: 15px;
+        }
+
+        .accordion-header h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000000;
+            margin: 0;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .accordion-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            background-color: #009ca0;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .accordion-icon::before,
+        .accordion-icon::after {
+            content: '';
+            position: absolute;
+            background-color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-icon::before {
+            width: 16px;
+            height: 2px;
+        }
+
+        .accordion-icon::after {
+            width: 2px;
+            height: 16px;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            transition: max-height 0.35s ease-out, padding 0.35s ease;
+            background-color: #ffffff;
+        }
+
+        .accordion-content h3 {
+            text-align: center;
+            color: #009ca0;
+            margin-top: 22px;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .accordion-content p {
+            text-align: justify;
+            font-size: 16px;
+            color: #222222;
+            margin-bottom: 14px;
+            line-height: 1.65;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 5000px;
+            padding: 10px 20px 25px 20px;
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(45deg);
+            background-color: #007a87;
+        }
+
+        /* ===== ADDRESS ===== */
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin: 50px 0 25px;
+        }
+
+        .branch-card-single {
+            background-color: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+
+        .branch-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .branch-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+
+        .branch-address {
+            font-size: 18px;
+            color: #009ca0;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .route-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-route {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+            height: 44px;
+            padding: 0 18px;
+            background-color: #009ca0;
+            color: #ffffff !important;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 156, 160, 0.25);
+            transition: background-color 0.2s;
+        }
+
+        .btn-route:hover {
+            background-color: #007a87;
+        }
+
+        .branch-hours {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .bold-text {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        footer {
+            background-color: #009ca0;
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .max-width-container,
+            .text-section {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                padding: 16px 0;
+            }
+
+            .logo-block {
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-img {
+                max-height: 50px;
+                height: auto;
+            }
+
+            .nav-menu,
+            .header-actions {
+                display: none !important;
+            }
+
+            .lor-burger-button {
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 20px;
+            }
+
+            .main-title-center {
+                font-size: 24px;
+                margin: 25px 0 20px;
+                padding: 12px 0;
+                line-height: 1.3;
+            }
+
+            .section-title {
+                font-size: 22px;
+                margin: 30px 0 15px;
+            }
+
+            .accordion-header {
+                padding: 15px;
+            }
+
+            .accordion-header h3 {
+                font-size: 15px;
+            }
+
+            .accordion-icon {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+            }
+
+            .accordion-icon::before {
+                width: 14px;
+            }
+
+            .accordion-icon::after {
+                height: 14px;
+            }
+
+            .accordion-content p {
+                text-align: left;
+                font-size: 15px;
+            }
+
+            .accordion-content h3 {
+                font-size: 16px;
+            }
+
+            .branch-card-single {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            .route-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-route {
+                width: 100%;
+                max-width: 260px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <div class="max-width-container header-content">
             <div class="logo-block">
-                <a href="index.html" class="logo-link">
-    <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
-</a>
-<p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
+                <a href="index.html">
+                    <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
+                </a>
+                <p class="logo-sub">СПЕЦИАЛИЗИРОВАННЫЙ ОТОРИНОЛАРИНГОЛОГИЧЕСКИЙ КАБИНЕТ</p>
             </div>
+
+            <button class="lor-burger-button" id="lorMenuBtn" aria-label="Меню">☰</button>
+
             <ul class="nav-menu">
                 <li><a href="index.html#prices">Услуги и цены</a></li>
                 <li><a href="#address">Адрес</a></li>
-                <li><a href="diseases.html">О БОЛЕЗНЯХ</a></li>
+                <li><a href="diseases.html">О болезнях</a></li>
             </ul>
-            <a href="https://wa.me" target="_blank" class="whatsapp-btn-header">
-                <svg viewBox="0 0 24 24" xmlns="http://w3.org">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                <span>+7 (707) 213-10-10</span>
-            </a>
+
+            <div class="header-actions">
+                <details>
+                    <summary class="circle-btn" title="Связаться">
+                        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    </summary>
+                    <div class="dropdown-panel" style="left: 0;">
+                        <a href="tel:+77072131010">Позвонить в клинику</a>
+                        <a href="https://wa.me/77072131010" target="_blank" rel="noopener">Написать в WhatsApp</a>
+                    </div>
+                </details>
+
+                <details>
+                    <summary class="circle-btn" title="Маршрут">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    </summary>
+                    <div class="dropdown-panel" style="right: 0;">
+                        <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">Маршрут 2ГИС</a>
+                        <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">Яндекс Навигатор</a>
+                    </div>
+                </details>
+            </div>
         </div>
-   </header>
-<main class="main-content">
-    <section class="diseases-section">
-        <h1>О ЛОР-заболеваниях</h1>       
-        <!-- ВСТАВЛЯЕМ HTML-СТРУКТУРУ АККОРДЕОНА СЮДА -->
+
+        <!-- Mobile menu -->
+        <div class="lor-mobile-drawer" id="lorMobileMenu">
+            <a href="index.html#prices">Услуги и цены</a>
+            <a href="#address">Адрес</a>
+            <a href="diseases.html">О болезнях</a>
+            <a href="tel:+77072131010" class="mobile-phone">+7 (707) 213-10-10</a>
+            <div class="mobile-actions">
+                <a href="tel:+77072131010">Позвонить в клинику</a>
+                <a href="https://wa.me/77072131010" target="_blank" rel="noopener">Написать в WhatsApp</a>
+                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563" target="_blank" rel="noopener">Открыть в 2ГИС</a>
+                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY" target="_blank" rel="noopener">Яндекс Навигатор</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="text-section">
+        <h1 class="main-title-center">О ЛОР-заболеваниях</h1>
+
+        <!-- Аккордеон 1 -->
         <div class="accordion-item">
-            <!-- Шапка, на которую кликают -->
             <div class="accordion-header" onclick="toggleAccordion(this)">
                 <h3>Аденоиды и аденоидит</h3>
-                <!-- Кнопка, которая будет менять плюс на крестик -->
-                <span class="accordion-icon"></span>
-            </div>
-            
-            <!-- Скрытый контент -->
-            <div class="accordion-content" style="text-align: justify;">
-                <h3>Аденоиды — определение</h3>
-                <p>Аденоиды - патологическое разрастание глоточной (носоглоточной) миндалины. Глоточная миндалина хорошо развита в детском возрасте, с 12 лет она уменьшается, а у взрослых нередко почти полностью исчезает. Аденоиды чаще всего наблюдаются у детей 3-10 лет, но могут встречаться и раньше, и у стариков. Развитию аденоидов способствуют часто повторяющиеся воспалительные заболевания верхних дыхательных путей, иммунодефицит, аллергизация детей.</p>
-                 <h3>Симптомы</h3>
-                <p>Нарушение носового дыхания. Из-за затрудненного носового дыхания дети часто спят с открытым ртом, сон бывает беспокойным, прерывистым и сопровождается храпом. Дети становятся вялыми, апатичными, у них в разной степени снижается слух – дети начинают переспрашивать. У школьников часто снижается успеваемость из-за ослабления памяти и внимания. Искажается речь, голос принимает гнусавый оттенок. Дети раннего возраста с трудом овладевают речью. Часты жалобы на головную боль как результат затрудненного оттока крови и лимфы от головного мозга, обусловленного застойными явлениями в полости носа. Рот часто открыт, нижняя челюсть отвисает, носогубные складки сглаживаются, выражение лица в запущенных случаях малоосмысленное, из углов рта вытекает слюна, что придает лицу ребенка особое выражение, получившее название "аденоидное лицо". В этом случае диагноз “написан на лице” - это уже на всю оставшуюся жизнь.</p>
-            <h3>Осложнения аденоидов</h3>
-                <p>Аденоиды, закрывая глоточные отверстия слуховых труб и нарушая вентиляцию среднего уха, могут вызвать постепенное снижение слуха, иногда значительное, причём в запущенных случаях такая тугоухость почти не поддаётся полному излечению. Обычные ОРВИ заканчиваются отитами и гайморитами, которые становятся хроническими. Постоянное дыхание через рот приводит к деформации лицевого скелета. У таких детей наблюдается неправильный прикус, готическое нёбо. В результате длительного затрудненного носового дыхания деформируется грудная клетка, становясь впалой. Нарушается вентиляция легких, снижается насыщение крови кислородом, уменьшается количество эритроцитов и содержание гемоглобина. При аденоидах нарушается деятельность желудочно-кишечного тракта, развиваются малокровие, ночное недержание мочи, спазм гортани, астматические приступы, приступы кашля. Аденоиды намного опаснее, чем считают многие мамы. Это заболевание отражается не только непосредственно на органах дыхания, но также может привести к значительным нарушениям во всём организме. Когда ребенок переходит на ротовое дыхание, меняется весь механизм функционирования детского организма. Нарушается дыхательный ритм, отток крови от мозга, питание мозга и как следствие - ухудшение памяти, мыслительных способностей, нарушение состава крови, функций сердечно-сосудистой системы.</p>
-           <h3>Степени увеличения аденоидов</h3>
-                <p>Различают три степени увеличения аденоидов: 1-я степень - аденоиды закрывают одну треть носоглотки, 2-я степень - две трети носоглотки, 3-я степень - закрывают практически всю носоглотку. Размеры аденоидов не всегда соответствуют вызванным ими патологическим изменениям в организме. Иногда аденоиды I - II степени вызывают резкое затруднение дыхания через нос, снижение слуха и другие патологические изменения и наоборот – аденоиды III ст. не влекут за собой заметных нарушений. Поэтому, размер аденоидов не имеет абсолютного значения и не указывает однозначно, что нужно делать – лечить или оперировать.</p>
-           <h3>Лечение - хирургическое или консервативное</h3>
-                <p>По моему мнению, начинать (или хотя-бы пытаться) всегда нужно с консервативного лечения...Тактику лечения при аденоидах определяет не столько величина аденоидов, сколько возникшие расстройства в организме.
-Всё решает клиническая картина, наличие или отсутствие осложнений, эффективность консервативного лечения, сама возможность проведения адекватного лечения из-за слишком малого возраста ребёнка. Есть существенная вероятность того, что даже резко увеличенная за счёт воспалительного отёка аденоидная ткань (аденоидит), под воздействием адекватной местной терапии уменьшится в размерах и все жалобы исчезнут.
-Схемы консервативного лечения аденоидита и ринита у детей, применяемые в нашей клинике позволяют восстановить носовое дыхание и избежать хирургического лечения примерно в 75% случаев. В 25% случаев, к сожалению, все попытки консервативного лечения не дают ощутимых результатов и ребёнку однозначно показано хирургическое лечение. Не стоит надеяться на то, что это явление временное и скоро все пройдет само - "сами рассосутся с возрастом". Само, как известно, почти ничего не проходит, и если вовремя не обратиться к врачу, можно сильно навредить организму ребенка. Время идёт, а ребёнок получает всё новые и новые хронические заболевания и очаги инфекции, головной мозг ребёнка страдает от недостатка кислорода, нарушается функционирование сердца и лёкгих .
-Часто родители стремятся любыми способами избежать хирургического вмешательства, время идёт, накапливаются стойкие и необратимые изменения в детском организме. Существует миф, что удаление аденоидов может существенно пошатнуть иммунную систему ребенка. Однако следует помнить, что помимо носоглоточной существует еще 5 миндалин и много лимфоидных бляшек, разбросанных по глотке. Наиболее благоприятные периоды для удаления аденоидов - до 3 лет, с 5 до 6, с 9 до 10 и после 13-14 лет. Это связано с периодами роста детского организма.
-Возникновение рецидивов аденоидов напрямую зависят от опыта и умения хирурга, но даже, несмотря на безупречно выполненную операцию, аденоиды могут снова вырасти. Это связано, прежде всего, с аллергизацией детского организма, недостатком иммунитета (недостаток качества иммунных клеток возмещается увеличением их количества - лимфоидная ткань разрастается). По моему убеждению, связано это, прежде всего с неблагоприятной экологической обстановкой. Ни в коем случае не стоит из-за этого отказываться от операции. Сама аденотомия малотравматична, может выполняться под безопасным кратковременным наркозом (например, с использованием ларингеальной маски). Пусть даже ребёнок дважды в течение жизни будет подвержен этой операции, но уж слишком много хронических заболеваний начинается с аденоидов. Таким образом, риск операции несравним с реальной возможностью развития болезней, связанных с аденоидами.</p>
-           <h3>Если отказаться от лечения</h3>
-                <p>Можно получить такие неприятности, как прогрессирующее снижение слуха, хронические гаймориты и тонзиллиты, которые могут привести к серьезному поражению сердечно-сосудистой системы, осложнениям со стороны почек. В общем, не только к некрасивому, вытянутому в нижней части лицу, постоянно открытому рту, гнусавому голосу, непроходящему насморку, умственной отсталости, но и к инвалидизации. Стоит ли поле всего этого вдаваться в дискуссии? В любом случае вред для детского здоровья и развития от хронически затруднённого носового дыхания многократно выше риска оперции по удалению аденоидов.
-<strong>Для нормального развития детского организма необходимо свободное носовое дыхание и отсутствие очагов инфекции в носоглотке.</strong></p>
-            </div>
-        </div>
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <h3>Значение носового дыхания. Влияние нарушения носового дыхания на различные системы организма человека</h3> <!-- Меняем заголовок -->
                 <span class="accordion-icon"></span>
             </div>
             <div class="accordion-content">
-                <h3></h3> <!-- Меняем подзаголовок -->
-                <p>Всем известно, насколько важным является дыхание для поддержания жизненных функций организма. Но мало кто задумывается о том, как может влиять даже незначительное нарушение нормального носового дыхания на состояние различных систем органов человека.
-Различные аномалии верхних дыхательных путей, не выявленные своевременно и не вылеченные заболевания (аденоиды, синуситы, риниты, искривление носовой перегородки и др.), а так же ряд других причин может приводить к развитию трудно устранимых или неустранимых вообще патологических изменений в слизистой оболочке носа, к нарушению нормального носового дыхания, что в дальнейшем способствует возникновению заболеваний различных систем организма.
-Из-за затруднения носового дыхания, происходит «переход» на дыхание через рот. Такие люди обычно спят с открытым ртом, сон у них беспокойный, прерывистый и, нередко сопровождается храпом. Как бы долго они не спали, пациенты с нарушенным носовым дыханием постоянно жалуются, что не высыпаются, поэтому обычно выглядят вялыми и апатичными. У школьников, студентов, по этой причине часто отмечается снижение успеваемости, происходит ослабления памяти и внимания, у взрослых людей отмечается снижение работоспособности, они становятся раздражительными.
-В носу вдыхаемый воздух очищается, увлажняется, согревается. При дыхании через рот в лёгкие поступает неочищеннный (это при нашей-то экологической обстановке!!!), сухой и холодный воздух, что неминуемо влечёт за собой заболевания лёгких и бронхов.
-Часты у таких пациентов и жалобы на головную боль, как результат затрудненного оттока крови и лимфы от головного мозга, такое состояние объясняется застойными явлениями в полости носа.
-Наиболее опасно «неправильное дыхание» для растущего организма. Постоянное дыхание через рот приводит к деформации лицевого скелета. У таких детей часто формируется неправильный прикус. В результате длительного затрудненного носового дыхания деформируется грудная клетка. Нарушается вентиляция легких, снижается насыщение крови кислородом, уменьшается количество эритроцитов и содержание гемоглобина.
-При дыхании через рот наблюдается меньшее сопротивление току воздуха, в результате чего подавляется развитие положительного и отрицательного давления в грудной полости., необходимого для нормального функционирования сердца.
-Таким образом, нарушение носового дыхания отражается не только непосредственно на органах дыхания, но также может привести к значительным патологическим изменениям во всем организме. Когда человек переходит на дыхание через рот, нарушается весь механизм функционирования различных органов и систем. Нарушается дыхательный ритм, отток крови и питание мозга, , и как следствие - ухудшение памяти, мыслительных способностей, нарушение состава крови, функций сердечно сосудистой системы.</p>
+                <h3>Аденоиды — определение</h3>
+                <p>Аденоиды - патологическое разрастание глоточной (носоглоточной) миндалины. Глоточная миндалина хорошо развита в детском возрасте, с 12 лет она уменьшается, а у взрослых нередко почти полностью исчезает. Аденоиды чаще всего наблюдаются у детей 3-10 лет, но могут встречаться и раньше, и у стариков. Развитию аденоидов способствуют часто повторяющиеся воспалительные заболевания верхних дыхательных путей, иммунодефицит, аллергизация детей.</p>
+                
+                <h3>Симптомы</h3>
+                <p>Нарушение носового дыхания. Из-за затрудненного носового дыхания дети часто спят с открытым ртом, сон бывает беспокойным, прерывистым и сопровождается храпом. Дети становятся вялыми, апатичными, у них в разной степени снижается слух – дети начинают переспрашивать. У школьников часто снижается успеваемость из-за ослабления памяти и внимания. Искажается речь, голос принимает гнусавый оттенок. Дети раннего возраста с трудом овладевают речью. Часты жалобы на головную боль как результат затрудненного оттока крови и лимфы от головного мозга, обусловленного застойными явлениями в полости носа. Рот часто открыт, нижняя челюсть отвисает, носогубные складки сглаживаются, выражение лица в запущенных случаях малоосмысленное, из углов рта вытекает слюна, что придает лицу ребенка особое выражение, получившее название "аденоидное лицо". В этом случае диагноз “написан на лице” - это уже на всю оставшуюся жизнь.</p>
+                
+                <h3>Осложнения аденоидов</h3>
+                <p>Аденоиды, закрывая глоточные отверстия слуховых труб и нарушая вентиляцию среднего уха, могут вызвать постепенное снижение слуха, иногда значительное, причём в запущенных случаях такая тугоухость почти не поддаётся полному излечению. Обычные ОРВИ заканчиваются отитами и гайморитами, которые становятся хроническими. Постоянное дыхание через рот приводит к деформации лицевого скелета. У таких детей наблюдается неправильный прикус, готическое нёбо. В результате длительного затрудненного носового дыхания деформируется грудная клетка, становясь впалой. Нарушается вентиляция легких, снижается насыщение крови кислородом, уменьшается количество эритроцитов и содержание гемоглобина. При аденоидах нарушается деятельность желудочно-кишечного тракта, развиваются малокровие, ночное недержание мочи, спазм гортани, астматические приступы, приступы кашля. Аденоиды намного опаснее, чем считают многие мамы. Это заболевание отражается не только непосредственно на органах дыхания, но также может привести к значительным нарушениям во всём организме. Когда ребенок переходит на ротовое дыхание, меняется весь механизм функционирования детского организма. Нарушается дыхательный ритм, отток крови от мозга, питание мозга и как следствие - ухудшение памяти, мыслительных способностей, нарушение состава крови, функций сердечно-сосудистой системы.</p>
+                
+                <h3>Степени увеличения аденоидов</h3>
+                <p>Различают три степени увеличения аденоидов: 1-я степень - аденоиды закрывают одну треть носоглотки, 2-я степень - две трети носоглотки, 3-я степень - закрывают практически всю носоглотку. Размеры аденоидов не всегда соответствуют вызванным ими патологическим изменениям в организме. Иногда аденоиды I - II степени вызывают резкое затруднение дыхания через нос, снижение слуха и другие патологические изменения и наоборот – аденоиды III ст. не влекут за собой заметных нарушений. Поэтому, размер аденоидов не имеет абсолютного значения и не указывает однозначно, что нужно делать – лечить или оперировать.</p>
+                
+                <h3>Лечение - хирургическое или консервативное</h3>
+                <p>По моему мнению, начинать (или хотя-бы пытаться) всегда нужно с консервативного лечения...Тактику лечения при аденоидах определяет не столько величина аденоидов, сколько возникшие расстройства в организме. Всё решает клиническая картина, наличие или отсутствие осложнений, эффективность консервативного лечения, сама возможность проведения адекватного лечения из-за слишком малого возраста ребёнка. Есть существенная вероятность того, что даже резко увеличенная за счёт воспалительного отёка аденоидная ткань (аденоидит), под воздействием адекватной местной терапии уменьшится в размерах и все жалобы исчезнут. Схемы консервативного лечения аденоидита и ринита у детей, применяемые в нашей клинике позволяют восстановить носовое дыхание и избежать хирургического лечения примерно в 75% случаев. В 25% случаев, к сожалению, все попытки консервативного лечения не дают ощутимых результатов и ребёнку однозначно показано хирургическое лечение. Не стоит надеяться на то, что это явление временное и скоро все пройдет само - "сами рассосутся с возрастом". Само, как известно, почти ничего не проходит, и если вовремя не обратиться к врачу, можно сильно навредить организму ребенка. Время идёт, а ребёнок получает всё новые и новые хронические заболевания и очаги инфекции, головной мозг ребёнка страдает от недостатка кислорода, нарушается функционирование сердца и лёкгих. Часто родители стремятся любыми способами избежать хирургического вмешательства, время идёт, накапливаются стойкие и необратимые изменения в детском организме. Существует миф, что удаление аденоидов может существенно пошатнуть иммунную систему ребенка. Однако следует помнить, что помимо носоглоточной существует еще 5 миндалин и много лимфоидных бляшек, разбросанных по глотке. Наиболее благоприятные периоды для удаления аденоидов - до 3 лет, с 5 до 6, с 9 до 10 и после 13-14 лет. Это связано с периодами роста детского организма. Возникновение рецидивов аденоидов напрямую зависят от опыта и умения хирурга, но даже, несмотря на безупречно выполненную операцию, аденоиды могут снова вырасти. Это связано, прежде всего, с аллергизацией детского организма, недостатком иммунитета (недостаток качества иммунных клеток возмещается увеличением их количества - лимфоидная ткань разрастается). По моему убеждению, связано это, прежде всего с неблагоприятной экологической обстановкой. Ни в коем случае не стоит из-за этого отказываться от операции. Сама аденотомия малотравматична, может выполняться под безопасным кратковременным наркозом (например, с использованием ларингеальной маски). Пусть даже ребёнок дважды в течение жизни будет подвержен этой операции, но уж слишком много хронических заболеваний начинается с аденоидов. Таким образом, риск операции несравним с реальной возможностью развития болезней, связанных с аденоидами.</p>
+                
+                <h3>Если отказаться от лечения</h3>
+                <p>Можно получить такие неприятности, как прогрессирующее снижение слуха, хронические гаймориты и тонзиллиты, которые могут привести к серьезному поражению сердечно-сосудистой системы, осложнениям со стороны почек. В общем, не только к некрасивому, вытянутому в нижней части лицу, постоянно открытому рту, гнусавому голосу, непроходящему насморку, умственной отсталости, но и к инвалидизации. Стоит ли поле всего этого вдаваться в дискуссии? В любом случае вред для детского здоровья и развития от хронически затруднённого носового дыхания многократно выше риска оперции по удалению аденоидов. <strong>Для нормального развития детского организма необходимо свободное носовое дыхание и отсутствие очагов инфекции в носоглотке.</strong></p>
             </div>
         </div>
-        <!-- Конец структуры аккордеона -->
 
-    </section>
-</main>
+        <!-- Аккордеон 2 -->
+        <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h3>Значение носового дыхания. Влияние нарушения носового дыхания на различные системы организма человека</h3>
+                <span class="accordion-icon"></span>
+            </div>
+            <div class="accordion-content">
+                <p>Всем известно, насколько важным является дыхание для поддержания жизненных функций организма. Но мало кто задумывается о том, как может влиять даже незначительное нарушение нормального носового дыхания на состояние различных систем органов человека. Различные аномалии верхних дыхательных путей, не выявленные своевременно и не вылеченные заболевания (аденоиды, синуситы, риниты, искривление носовой перегородки и др.), а так же ряд других причин может приводить к развитию трудно устранимых или неустранимых вообще патологических изменений в слизистой оболочке носа, к нарушению нормального носового дыхания, что в дальнейшем способствует возникновению заболеваний различных систем организма. Из-за затруднения носового дыхания, происходит «переход» на дыхание через рот. Такие люди обычно спят с открытым ртом, сон у них беспокойный, прерывистый и, нередко сопровождается храпом. Как бы долго они не спали, пациенты с нарушенным носовым дыханием постоянно жалуются, что не высыпаются, поэтому обычно выглядят вялыми и апатичными. У школьников, студентов, по этой причине часто отмечается снижение успеваемости, происходит ослабления памяти и внимания, у взрослых людей отмечается снижение работоспособности, они становятся раздражительными. В носу вдыхаемый воздух очищается, увлажняется, согревается. При дыхании через рот в лёгкие поступает неочищеннный (это при нашей-то экологической обстановке!!!), сухой и холодный воздух, что неминуемо влечёт за собой заболевания лёгких и бронхов. Часты у таких пациентов и жалобы на головную боль, как результат затрудненного оттока крови и лимфы от головного мозга, такое состояние объясняется застойными явлениями в полости носа. Наиболее опасно «неправильное дыхание» для растущего организма. Постоянное дыхание через рот приводит к деформации лицевого скелета. У таких детей часто формируется неправильный прикус. В результате длительного затрудненного носового дыхания деформируется грудная клетка. Нарушается вентиляция легких, снижается насыщение крови кислородом, уменьшается количество эритроцитов и содержание гемоглобина. При дыхании через рот наблюдается меньшее сопротивление току воздуха, в результате чего подавляется развитие положительного и отрицательного давления в грудной полости., необходимого для нормального функционирования сердца. Таким образом, нарушение носового дыхания отражается не только непосредственно на органах дыхания, но также может привести к значительным патологическим изменениям во всем организме. Когда человек переходит на дыхание через рот, нарушается весь механизм функционирования различных органов и систем. Нарушается дыхательный ритм, отток крови и питание мозга, и как следствие - ухудшение памяти, мыслительных способностей, нарушение состава крови, функций сердечно сосудистой системы.</p>
+            </div>
+        </div>
 
-<!-- ВСТАВЛЯЕМ JAVASCRIPT-СКРИПТ -->
-<!-- Лучше всего разместить его в самом низу страницы, перед закрывающим тегом </body> -->
-<script>
-function toggleAccordion(header) {
-  const item = header.parentElement;
-  item.classList.toggle('active');
-}
-</script>
-<h2 class="section-title" id="address">Наш адрес в Алматы</h2>
+        <!-- Адрес -->
+        <h2 class="section-title" id="address">Наш адрес в Алматы</h2>
         <div class="branch-card-single">
             <div class="branch-icon">📍</div>
             <h3 class="branch-name">Кабинет в Алматы</h3>
             <p class="branch-address">улица Розыбакиева, 95</p>
-            
-            <a href="https://wa.me" target="_blank" class="action-button-wp">
-                <svg viewBox="0 0 24 24" xmlns="http://w3.org">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                </svg>
-                <span>Написать в WhatsApp</span>
-            </a>
-            
+
+            <div class="route-buttons">
+                <a href="https://2gis.kz/almaty/directions/points/%7C76.889794%2C43.234276%3B70000001079013563"
+                   target="_blank" rel="noopener" class="btn-route">
+                    Маршрут в 2ГИС
+                </a>
+                <a href="https://yandex.kz/maps/ru/-/CTGfFCKY"
+                   target="_blank" rel="noopener" class="btn-route">
+                    Яндекс Навигатор
+                </a>
+            </div>
+
             <div class="branch-hours">
                 <p style="margin-bottom: 6px;"><span class="bold-text">График работы:</span> Приём ведётся <strong>без предварительной записи</strong></p>
                 <p><span class="bold-text">Для взрослых и детей</span></p>
@@ -394,5 +657,43 @@ function toggleAccordion(header) {
         <p>Телефон в Алматы: +7 (707) 213-10-10</p>
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
     </footer>
+
+    <script>
+        // Аккордеон
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // Мобильное меню
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuBtn = document.getElementById('lorMenuBtn');
+            const mobileMenu = document.getElementById('lorMobileMenu');
+
+            if (menuBtn && mobileMenu) {
+                menuBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    mobileMenu.classList.toggle('is-open');
+                    menuBtn.innerHTML = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
+                        mobileMenu.classList.remove('is-open');
+                        menuBtn.innerHTML = '☰';
+                    }
+                });
+
+                // Закрытие меню при клике на ссылку
+                const menuLinks = mobileMenu.querySelectorAll('a');
+                menuLinks.forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        mobileMenu.classList.remove('is-open');
+                        menuBtn.innerHTML = '☰';
+                    });
+                });
+            }
+        });
+    </script>
 </body>
-</html>
+    </html>
