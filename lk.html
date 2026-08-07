@@ -218,7 +218,6 @@
             letter-spacing: normal;
         }
 
-        /* ===== CONTENT ===== */
         .text-section {
             max-width: 700px;
             margin: 0 auto;
@@ -356,7 +355,80 @@
             margin-bottom: 8px;
         }
 
-        /* ========== MOBILE ========== */
+        /* Upload section */
+        .upload-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .upload-section h3 {
+            color: #009ca0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .upload-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .upload-controls input[type="file"] {
+            flex: 1;
+            min-width: 180px;
+            font-size: 14px;
+        }
+
+        .btn-upload {
+            width: auto;
+            padding: 12px 22px;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        #upload-status {
+            font-size: 14px;
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #009ca0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .file-item span {
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .btn-download {
+            background: #009ca0;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background: #007a87;
+        }
+
+        /* Mobile */
         @media (max-width: 768px) {
             body { overflow-x: hidden; }
 
@@ -403,6 +475,15 @@
             .cabinet-card {
                 padding: 20px;
             }
+
+            .upload-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-upload {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -422,6 +503,7 @@
                 <li><a href="index.html#prices">Услуги и цены</a></li>
                 <li><a href="index.html#address">Адрес</a></li>
                 <li><a href="diseases.html">О болезнях</a></li>
+                <li><a href="lk.html">Личный кабинет</a></li>
             </ul>
 
             <div class="header-actions">
@@ -459,11 +541,11 @@
             </div>
         </div>
 
-        <!-- Mobile menu -->
         <div class="lor-mobile-drawer" id="lorMobileMenu">
             <a href="index.html#prices">Услуги и цены</a>
             <a href="index.html#address">Адрес</a>
             <a href="diseases.html">О болезнях</a>
+            <a href="lk.html">Личный кабинет</a>
             <a href="tel:+77072131010" class="mobile-phone">+7 (707) 213-10-10</a>
             <div class="mobile-actions">
                 <a href="tel:+77072131010">
@@ -506,7 +588,23 @@
         <!-- Кабинет -->
         <div id="cabinet-block" class="cabinet-card hidden">
             <h2 id="patient-title" style="color:#009ca0; text-align:center; margin-bottom:20px; font-size:22px;">Медкарта пациента</h2>
+            
             <div id="records-list"></div>
+
+            <!-- Блок загрузки файлов -->
+            <div class="upload-section">
+                <h3>Загрузить результаты обследований (PDF)</h3>
+                <p style="font-size:13px; color:#666; margin-bottom:12px;">Только PDF, максимум 10 МБ</p>
+                
+                <div class="upload-controls">
+                    <input type="file" id="file-input" accept="application/pdf">
+                    <button class="btn-primary btn-upload" onclick="uploadFile()">Загрузить</button>
+                </div>
+                
+                <div id="upload-status"></div>
+                <div id="files-list"></div>
+            </div>
+
             <button class="btn-logout" onclick="logout()">Выйти из кабинета</button>
         </div>
     </div>
@@ -521,6 +619,8 @@
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
+
+        let currentPatientId = null;
 
         async function login() {
             const errorDiv = document.getElementById('login-error');
@@ -560,6 +660,8 @@
                 if (data && data.length > 0) {
                     data.sort((a, b) => b.record_code - a.record_code);
 
+                    currentPatientId = id;
+
                     document.getElementById('login-block').classList.add('hidden');
                     document.getElementById('cabinet-block').classList.remove('hidden');
 
@@ -586,6 +688,9 @@
                         `;
                         listDiv.appendChild(card);
                     });
+
+                    // Загружаем список файлов пациента
+                    loadPatientFiles();
                 } else {
                     errorDiv.innerText = "Пациент не найден. Проверьте ID или дату рождения.";
                 }
@@ -600,6 +705,140 @@
             document.getElementById('patient-id').value = "";
             document.getElementById('birth-date').value = "";
             document.getElementById('login-error').innerText = "";
+            document.getElementById('files-list').innerHTML = "";
+            document.getElementById('upload-status').innerHTML = "";
+            currentPatientId = null;
+        }
+
+        // ===== ЗАГРУЗКА ФАЙЛОВ =====
+        async function uploadFile() {
+            const status = document.getElementById('upload-status');
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                status.innerHTML = '<span style="color:#e74c3c;">Выберите файл</span>';
+                return;
+            }
+
+            if (file.type !== 'application/pdf') {
+                status.innerHTML = '<span style="color:#e74c3c;">Можно загружать только PDF</span>';
+                return;
+            }
+
+            // Ограничение 10 МБ
+            if (file.size > 10 * 1024 * 1024) {
+                status.innerHTML = '<span style="color:#e74c3c;">Файл слишком большой (максимум 10 МБ)</span>';
+                return;
+            }
+
+            if (!currentPatientId) {
+                status.innerHTML = '<span style="color:#e74c3c;">Ошибка: пациент не определён</span>';
+                return;
+            }
+
+            status.innerHTML = '<span style="color:#009ca0;">Загрузка...</span>';
+
+            const safeName = file.name.replace(/[^a-zA-Z0-9а-яА-ЯёЁ._-]/g, '_');
+            const fileName = Date.now() + '_' + safeName;
+            const path = currentPatientId + '/' + fileName;
+
+            try {
+                const formData = new FormData();
+                formData.append('', file); // важно: пустое имя поля для Supabase Storage
+
+                const response = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/patient-files/' + path,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY
+                        },
+                        body: formData
+                    }
+                );
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText || response.statusText);
+                }
+
+                status.innerHTML = '<span style="color:#27ae60;">Файл успешно загружен</span>';
+                fileInput.value = '';
+                loadPatientFiles();
+            } catch (err) {
+                status.innerHTML = '<span style="color:#e74c3c;">Ошибка: ' + err.message + '</span>';
+            }
+        }
+
+        async function loadPatientFiles() {
+            if (!currentPatientId) return;
+
+            const listDiv = document.getElementById('files-list');
+            listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Загрузка списка файлов...</p>';
+
+            try {
+                const response = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/list/patient-files?prefix=' + currentPatientId + '/',
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY
+                        }
+                    }
+                );
+
+                const files = await response.json();
+
+                if (!Array.isArray(files) || files.length === 0) {
+                    listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Файлов пока нет</p>';
+                    return;
+                }
+
+                listDiv.innerHTML = '';
+                files.forEach(file => {
+                    // Пропускаем папки
+                    if (!file.name || file.name.endsWith('/')) return;
+
+                    const displayName = file.name.split('/').pop();
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    item.innerHTML = `
+                        <span>${displayName}</span>
+                        <button class="btn-download" onclick="downloadFile('${file.name}')">Скачать</button>
+                    `;
+                    listDiv.appendChild(item);
+                });
+            } catch (err) {
+                listDiv.innerHTML = '<p style="color:#e74c3c; font-size:14px;">Не удалось загрузить список файлов</p>';
+            }
+        }
+
+        async function downloadFile(path) {
+            try {
+                const response = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/sign/patient-files/' + path,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ expiresIn: 3600 })
+                    }
+                );
+
+                const data = await response.json();
+                if (data && data.signedURL) {
+                    window.open(SUPABASE_URL + data.signedURL, '_blank');
+                } else {
+                    alert('Не удалось получить ссылку на файл');
+                }
+            } catch (err) {
+                alert('Ошибка скачивания: ' + err.message);
+            }
         }
 
         // Мобильное меню
