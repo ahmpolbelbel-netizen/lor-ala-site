@@ -605,6 +605,44 @@
 
         let currentPatientId = localStorage.getItem('lor_patient_id') || null;
 
+        // Транслитерация кириллицы → латиница (для безопасных имён файлов)
+        function transliterate(str) {
+            const map = {
+                'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z',
+                'и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r',
+                'с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
+                'ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya',
+                'А':'A','Б':'B','В':'V','Г':'G','Д':'D','Е':'E','Ё':'Yo','Ж':'Zh','З':'Z',
+                'И':'I','Й':'Y','К':'K','Л':'L','М':'M','Н':'N','О':'O','П':'P','Р':'R',
+                'С':'S','Т':'T','У':'U','Ф':'F','Х':'Kh','Ц':'Ts','Ч':'Ch','Ш':'Sh','Щ':'Shch',
+                'Ъ':'','Ы':'Y','Ь':'','Э':'E','Ю':'Yu','Я':'Ya'
+            };
+            return str.split('').map(function(char) {
+                return map[char] !== undefined ? map[char] : char;
+            }).join('');
+        }
+
+        function makeSafeFileName(originalName) {
+            // Транслитерация + очистка
+            let name = transliterate(originalName);
+            // Оставляем только безопасные символы
+            name = name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            // Убираем повторяющиеся подчёркивания
+            name = name.replace(/_+/g, '_');
+            // Убираем подчёркивание в начале/конце
+            name = name.replace(/^_+|_+$/g, '');
+            // Ограничиваем длину
+            if (name.length > 80) {
+                const ext = name.includes('.') ? name.substring(name.lastIndexOf('.')) : '';
+                name = name.substring(0, 80 - ext.length) + ext;
+            }
+            // Если после очистки ничего не осталось
+            if (!name || name === '.' || name === '_') {
+                name = 'file.pdf';
+            }
+            return name;
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             // Мобильное меню
             const menuBtn = document.getElementById('lorMenuBtn');
@@ -805,19 +843,17 @@
 
             status.innerHTML = '<span style="color:#009ca0;">Загрузка...</span>';
 
-            const safeName = file.name
-                .replace(/[^a-zA-Z0-9._-]/g, '_')
-                .replace(/_+/g, '_')
-                .substring(0, 80);
-
-            const fileName = Date.now() + '_' + safeName;
+            const originalName = file.name;
+            const safeBase = makeSafeFileName(originalName);
+            const fileName = Date.now() + '_' + safeBase;
             const path = currentPatientId + '/' + fileName;
 
             try {
+                // 1. Загружаем файл в Storage
                 const formData = new FormData();
                 formData.append('', file);
 
-                const response = await fetch(
+                const uploadResponse = await fetch(
                     SUPABASE_URL + '/storage/v1/object/patient-files/' + path,
                     {
                         method: 'POST',
@@ -829,12 +865,42 @@
                     }
                 );
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(errText || response.statusText);
+                if (!uploadResponse.ok) {
+                    const errText = await uploadResponse.text();
+                    throw new Error(errText || uploadResponse.statusText);
                 }
 
-                status.innerHTML = '<span style="color:#27ae60;">Файл успешно загружен</span>';
+                // 2. Записываем метаданные в таблицу patient_files
+                const metaResponse = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            patient_id: parseInt(currentPatientId),
+                            original_name: originalName,
+                            safe_name: fileName,
+                            storage_path: path,
+                            status: 'new',
+                            file_size: file.size
+                        })
+                    }
+                );
+
+                if (!metaResponse.ok) {
+                    // Файл уже в Storage, но метаданные не записались — сообщаем
+                    const errText = await metaResponse.text();
+                    console.error('Ошибка записи метаданных:', errText);
+                    status.innerHTML = '<span style="color:#e67e22;">Файл загружен, но запись в базу не удалась. Сообщите врачу.</span>';
+                } else {
+                    status.innerHTML = '<span style="color:#27ae60;">Файл успешно загружен</span>';
+                }
+
                 fileInput.value = '';
                 loadPatientFiles();
             } catch (err) {
@@ -849,25 +915,24 @@
             listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Загрузка списка файлов...</p>';
 
             try {
+                // Читаем из таблицы patient_files (там есть оригинальные имена)
                 const response = await fetch(
-                    SUPABASE_URL + '/storage/v1/object/list/patient-files',
+                    SUPABASE_URL + '/rest/v1/patient_files?patient_id=eq.' + parseInt(currentPatientId) + '&order=uploaded_at.desc&select=*',
                     {
-                        method: 'POST',
+                        method: 'GET',
                         headers: {
                             'apikey': SUPABASE_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            prefix: currentPatientId + '/',
-                            limit: 100,
-                            offset: 0
-                        })
+                            'Authorization': 'Bearer ' + SUPABASE_KEY
+                        }
                     }
                 );
 
+                if (!response.ok) {
+                    throw new Error('Ошибка запроса: ' + response.status);
+                }
+
                 const files = await response.json();
-                console.log('Список файлов:', files);
+                console.log('Список файлов из БД:', files);
 
                 if (!Array.isArray(files) || files.length === 0) {
                     listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Файлов пока нет</p>';
@@ -876,14 +941,18 @@
 
                 listDiv.innerHTML = '';
                 files.forEach(file => {
-                    if (!file.name || file.name.endsWith('/')) return;
+                    const displayName = file.original_name || file.safe_name || 'Файл';
+                    const statusLabel = file.status === 'processed' ? '✓' : (file.status === 'error' ? '!' : '•');
+                    const statusColor = file.status === 'processed' ? '#27ae60' : (file.status === 'error' ? '#e74c3c' : '#888');
 
-                    const displayName = file.name.split('/').pop();
                     const item = document.createElement('div');
                     item.className = 'file-item';
                     item.innerHTML = `
-                        <span>${displayName}</span>
-                        <button class="btn-download" onclick="downloadFile('${file.name}')">Скачать</button>
+                        <span title="${file.safe_name || ''}">
+                            <span style="color:${statusColor}; font-weight:bold; margin-right:6px;">${statusLabel}</span>
+                            ${displayName}
+                        </span>
+                        <button class="btn-download" onclick="downloadFile('${file.storage_path}')">Скачать</button>
                     `;
                     listDiv.appendChild(item);
                 });
