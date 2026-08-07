@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабинет врача — Доктор ЛОР</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Tahoma", "MS Sans Serif", "Segoe UI", sans-serif;
+            font-size: 12px;
+            background-color: #008080; /* классический teal Windows 98 */
+            color: #000000;
+            min-height: 100vh;
+            padding: 12px;
+        }
+
+        /* ===== Окно в стиле Windows 98 ===== */
+        .win98-window {
+            background-color: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            box-shadow: 2px 2px 0 #000000;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .win98-titlebar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .win98-titlebar .title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .win98-titlebar .controls button {
+            width: 16px;
+            height: 14px;
+            font-size: 9px;
+            line-height: 1;
+            padding: 0;
+            margin-left: 2px;
+            background: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            cursor: pointer;
+            font-family: "Marlett", sans-serif;
+        }
+
+        .win98-content {
+            padding: 10px;
+        }
+
+        /* ===== Кнопки в стиле Win98 / Office 2007 ===== */
+        .btn98 {
+            font-family: "Tahoma", "MS Sans Serif", sans-serif;
+            font-size: 12px;
+            padding: 4px 14px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            cursor: pointer;
+            color: #000000;
+            min-width: 80px;
+        }
+
+        .btn98:hover {
+            background-color: #d4d0c8;
+        }
+
+        .btn98:active {
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            padding: 5px 13px 3px 15px;
+        }
+
+        .btn98:disabled {
+            color: #808080;
+            cursor: default;
+        }
+
+        .btn98.primary {
+            font-weight: bold;
+        }
+
+        /* ===== Поля ввода ===== */
+        .input98 {
+            font-family: "Tahoma", "MS Sans Serif", sans-serif;
+            font-size: 12px;
+            padding: 3px 5px;
+            border-top: 2px solid #808080;
+            border-left: 2px solid #808080;
+            border-right: 2px solid #ffffff;
+            border-bottom: 2px solid #ffffff;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .input98:focus {
+            outline: 1px dotted #000000;
+            outline-offset: -3px;
+        }
+
+        /* ===== Группы / панели ===== */
+        .groupbox {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 12px 10px 10px 10px;
+            margin-bottom: 10px;
+            position: relative;
+            background: #c0c0c0;
+        }
+
+        .groupbox-title {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            background: #c0c0c0;
+            padding: 0 5px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* ===== Таблица ===== */
+        .table98 {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border: 2px solid #808080;
+            font-size: 12px;
+        }
+
+        .table98 th {
+            background: #c0c0c0;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #808080;
+            padding: 4px 6px;
+            text-align: left;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .table98 td {
+            border-bottom: 1px solid #c0c0c0;
+            border-right: 1px solid #e0e0e0;
+            padding: 3px 6px;
+            vertical-align: middle;
+        }
+
+        .table98 tr:hover td {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        .table98 tr:hover td a,
+        .table98 tr:hover td button {
+            color: #ffffff;
+        }
+
+        .table98 tr.selected td {
+            background: #000080;
+            color: #ffffff;
+        }
+
+        /* ===== Статусбар ===== */
+        .statusbar {
+            background: #c0c0c0;
+            border-top: 1px solid #808080;
+            padding: 3px 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .statusbar-panel {
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            padding: 1px 8px;
+            min-width: 80px;
+        }
+
+        /* ===== Индикаторы статуса ===== */
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+            border: 1px solid #000;
+        }
+        .status-new { background: #ffff00; }
+        .status-processed { background: #00ff00; }
+        .status-error { background: #ff0000; }
+
+        /* ===== Форма входа ===== */
+        .login-box {
+            max-width: 340px;
+            margin: 60px auto;
+        }
+
+        .login-form {
+            padding: 16px;
+        }
+
+        .form-row {
+            margin-bottom: 12px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .form-row input {
+            width: 100%;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .error-msg {
+            color: #c00000;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ===== Модальное окно просмотра текста ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal98 {
+            background: #c0c0c0;
+            border-top: 2px solid #ffffff;
+            border-left: 2px solid #ffffff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            box-shadow: 3px 3px 0 #000000;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal98 .win98-titlebar {
+            flex-shrink: 0;
+        }
+
+        .modal-body {
+            padding: 10px;
+            overflow: auto;
+            flex: 1;
+            background: #ffffff;
+            border: 2px inset #808080;
+            margin: 8px;
+            font-family: "Courier New", Consolas, monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            line-height: 1.45;
+        }
+
+        .modal-footer {
+            padding: 8px 10px;
+            text-align: right;
+            border-top: 1px solid #808080;
+            flex-shrink: 0;
+        }
+
+        .modal-footer .btn98 {
+            margin-left: 6px;
+        }
+
+        /* ===== Фильтры ===== */
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .filter-row label {
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
+        .filter-row select,
+        .filter-row input[type="date"],
+        .filter-row input[type="text"] {
+            font-family: "Tahoma", "MS Sans Serif", sans-serif;
+            font-size: 12px;
+            padding: 2px 4px;
+        }
+
+        /* ===== Прочее ===== */
+        .hidden { display: none !important; }
+
+        a.link98 {
+            color: #0000ff;
+            text-decoration: underline;
+        }
+
+        .toolbar {
+            margin-bottom: 8px;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .info-text {
+            font-size: 11px;
+            color: #404040;
+            margin-top: 4px;
+        }
+
+        /* Адаптив для узких экранов */
+        @media (max-width: 700px) {
+            body { padding: 4px; }
+            .table98 { font-size: 11px; }
+            .filter-row { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== ЭКРАН ВХОДА ========== -->
+    <div id="login-screen" class="login-box">
+        <div class="win98-window">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span>🔐</span>
+                    <span>Вход в кабинет врача — Доктор ЛОР</span>
+                </div>
+            </div>
+            <div class="win98-content login-form">
+                <div class="form-row">
+                    <label for="doc-email">Электронная почта:</label>
+                    <input type="email" id="doc-email" class="input98" placeholder="doctor@example.com" autocomplete="username">
+                </div>
+                <div class="form-row">
+                    <label for="doc-password">Пароль:</label>
+                    <input type="password" id="doc-password" class="input98" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <div class="form-actions">
+                    <button class="btn98 primary" onclick="doctorLogin()">Войти</button>
+                </div>
+                <div id="login-error" class="error-msg"></div>
+                <p class="info-text" style="margin-top:14px; text-align:center;">
+                    Доступ только для врача.<br>
+                    Пациенты на эту страницу попасть не могут.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ОСНОВНОЙ ЭКРАН ========== -->
+    <div id="main-screen" class="hidden">
+        <div class="win98-window">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span>🏥</span>
+                    <span>Доктор ЛОР — Кабинет врача</span>
+                </div>
+                <div class="controls">
+                    <button title="Выйти" onclick="doctorLogout()">×</button>
+                </div>
+            </div>
+
+            <div class="win98-content">
+
+                <!-- Панель фильтров -->
+                <div class="groupbox">
+                    <div class="groupbox-title">Фильтр файлов</div>
+                    <div class="filter-row">
+                        <div>
+                            <label>Статус:</label>
+                            <select id="filter-status" class="input98" onchange="applyFilters()">
+                                <option value="new" selected>Только новые</option>
+                                <option value="all">Все файлы</option>
+                                <option value="processed">Только обработанные</option>
+                                <option value="error">Только с ошибкой</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Пациент (ID или имя):</label>
+                            <input type="text" id="filter-patient" class="input98" style="width:160px;" placeholder="ID или фамилия" onkeyup="if(event.key==='Enter')applyFilters()">
+                        </div>
+                        <div>
+                            <label>С:</label>
+                            <input type="date" id="filter-from" class="input98" onchange="applyFilters()">
+                        </div>
+                        <div>
+                            <label>По:</label>
+                            <input type="date" id="filter-to" class="input98" onchange="applyFilters()">
+                        </div>
+                        <button class="btn98" onclick="applyFilters()">Применить</button>
+                        <button class="btn98" onclick="resetFilters()">Сбросить</button>
+                    </div>
+                </div>
+
+                <!-- Панель инструментов -->
+                <div class="toolbar">
+                    <button class="btn98 primary" onclick="loadFiles()">Обновить список</button>
+                    <button class="btn98" onclick="showHelp()">Как обработать файлы?</button>
+                    <span style="flex:1;"></span>
+                    <span id="doctor-label" style="align-self:center; font-weight:bold;"></span>
+                    <button class="btn98" onclick="doctorLogout()">Выйти</button>
+                </div>
+
+                <!-- Таблица файлов -->
+                <div style="overflow-x:auto;">
+                    <table class="table98" id="files-table">
+                        <thead>
+                            <tr>
+                                <th style="width:28px;">№</th>
+                                <th style="width:90px;">Статус</th>
+                                <th style="width:120px;">Дата загрузки</th>
+                                <th style="width:70px;">ID</th>
+                                <th>Пациент</th>
+                                <th>Имя файла</th>
+                                <th style="width:70px;">Размер</th>
+                                <th style="width:180px;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="files-tbody">
+                            <tr>
+                                <td colspan="8" style="text-align:center; padding:20px; color:#666;">Загрузка...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Статусбар -->
+                <div class="statusbar">
+                    <div class="statusbar-panel" id="stat-total">Файлов: 0</div>
+                    <div class="statusbar-panel" id="stat-new">Новых: 0</div>
+                    <div class="statusbar-panel" id="stat-processed">Обработано: 0</div>
+                    <div class="statusbar-panel" id="stat-updated">Обновлено: —</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== МОДАЛКА ПРОСМОТРА ТЕКСТА ========== -->
+    <div id="text-modal" class="modal-overlay">
+        <div class="modal98">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span>📄</span>
+                    <span id="modal-title">Текст файла</span>
+                </div>
+                <div class="controls">
+                    <button onclick="closeTextModal()">×</button>
+                </div>
+            </div>
+            <div class="modal-body" id="modal-text">Загрузка...</div>
+            <div class="modal-footer">
+                <button class="btn98" onclick="copyModalText()">Копировать текст</button>
+                <button class="btn98" onclick="downloadModalText()">Скачать TXT</button>
+                <button class="btn98 primary" onclick="closeTextModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== МОДАЛКА ПОМОЩИ ========== -->
+    <div id="help-modal" class="modal-overlay">
+        <div class="modal98" style="max-width:560px;">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span>❓</span>
+                    <span>Как обработать файлы</span>
+                </div>
+                <div class="controls">
+                    <button onclick="closeHelpModal()">×</button>
+                </div>
+            </div>
+            <div style="padding:14px; background:#c0c0c0; font-size:12px; line-height:1.5;">
+                <p style="margin-bottom:10px;"><b>Основной способ (рекомендуется):</b></p>
+                <ol style="margin-left:18px; margin-bottom:12px;">
+                    <li>На своём компьютере запустите скрипт <code>process_lab_files.py</code></li>
+                    <li>Скрипт сам найдёт все файлы со статусом «Новый»</li>
+                    <li>Извлечёт текст и запишет его в Access + в эту базу</li>
+                    <li>Нажмите «Обновить список» на этой странице</li>
+                </ol>
+                <p style="margin-bottom:8px;"><b>Статусы:</b></p>
+                <p>
+                    <span class="status-dot status-new"></span> Новый — ещё не обработан<br>
+                    <span class="status-dot status-processed"></span> Обработан — текст готов<br>
+                    <span class="status-dot status-error"></span> Ошибка — скрипт не смог обработать
+                </p>
+                <p style="margin-top:12px; color:#404040;">
+                    Скрипт и база Access будут созданы на следующем этапе.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn98 primary" onclick="closeHelpModal()">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RAW_URL = "https://dptaczshbxmgtybmbnuw.supabase.co";
+        const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
+        const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
+        const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
+
+        let accessToken = localStorage.getItem('lor_doctor_token') || null;
+        let doctorEmail = localStorage.getItem('lor_doctor_email') || null;
+        let allFiles = [];          // полный список с сервера
+        let patientNameCache = {};  // id → имя
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        document.addEventListener('DOMContentLoaded', function () {
+            if (accessToken) {
+                showMainScreen();
+                loadFiles();
+            } else {
+                showLoginScreen();
+            }
+
+            // Enter на форме входа
+            document.getElementById('doc-password').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') doctorLogin();
+            });
+            document.getElementById('doc-email').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') document.getElementById('doc-password').focus();
+            });
+        });
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-screen').classList.add('hidden');
+        }
+
+        function showMainScreen() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('doctor-label').textContent = doctorEmail ? ('Врач: ' + doctorEmail) : 'Врач';
+        }
+
+        // ========== АВТОРИЗАЦИЯ ==========
+        async function doctorLogin() {
+            const email = document.getElementById('doc-email').value.trim();
+            const password = document.getElementById('doc-password').value;
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.textContent = '';
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Введите почту и пароль';
+                return;
+            }
+
+            try {
+                const response = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorDiv.textContent = data.error_description || data.msg || 'Неверный логин или пароль';
+                    return;
+                }
+
+                accessToken = data.access_token;
+                doctorEmail = email;
+                localStorage.setItem('lor_doctor_token', accessToken);
+                localStorage.setItem('lor_doctor_email', doctorEmail);
+
+                showMainScreen();
+                loadFiles();
+            } catch (err) {
+                errorDiv.textContent = 'Ошибка сети: ' + err.message;
+            }
+        }
+
+        function doctorLogout() {
+            accessToken = null;
+            doctorEmail = null;
+            localStorage.removeItem('lor_doctor_token');
+            localStorage.removeItem('lor_doctor_email');
+            allFiles = [];
+            showLoginScreen();
+            document.getElementById('doc-password').value = '';
+            document.getElementById('login-error').textContent = '';
+        }
+
+        // ========== ЗАГРУЗКА ДАННЫХ ==========
+        async function loadFiles() {
+            const tbody = document.getElementById('files-tbody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px;">Загрузка списка...</td></tr>';
+
+            try {
+                // Получаем все файлы (сортировка по дате убыв.)
+                const response = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files?order=uploaded_at.desc&select=*',
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Ошибка ' + response.status);
+                }
+
+                allFiles = await response.json();
+                if (!Array.isArray(allFiles)) allFiles = [];
+
+                // Подтягиваем имена пациентов (из patients_sync)
+                await loadPatientNames();
+
+                applyFilters();
+                updateStatusBar();
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px; color:#c00000;">Ошибка загрузки: ' + err.message + '</td></tr>';
+            }
+        }
+
+        async function loadPatientNames() {
+            // Собираем уникальные patient_id
+            const ids = [...new Set(allFiles.map(f => f.patient_id).filter(Boolean))];
+            if (ids.length === 0) return;
+
+            try {
+                // Берём по одному запросу пачкой (Supabase поддерживает in.)
+                const response = await fetch(
+                    SUPABASE_URL + '/rest/v1/patients_sync?id=in.(' + ids.join(',') + ')&select=id,patient_name',
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                        }
+                    }
+                );
+
+                if (!response.ok) return;
+
+                const rows = await response.json();
+                rows.forEach(row => {
+                    if (row.patient_name) {
+                        // Убираем цифры даты рождения из имени, если они есть
+                        patientNameCache[row.id] = row.patient_name.replace(/[0-9]/g, '').trim();
+                    }
+                });
+            } catch (e) {
+                console.log('Не удалось загрузить имена пациентов', e);
+            }
+        }
+
+        // ========== ФИЛЬТРЫ ==========
+        function applyFilters() {
+            const status = document.getElementById('filter-status').value;
+            const patientQ = document.getElementById('filter-patient').value.trim().toLowerCase();
+            const from = document.getElementById('filter-from').value;
+            const to = document.getElementById('filter-to').value;
+
+            let filtered = allFiles.slice();
+
+            // Статус
+            if (status === 'new') {
+                filtered = filtered.filter(f => f.status === 'new');
+            } else if (status === 'processed') {
+                filtered = filtered.filter(f => f.status === 'processed');
+            } else if (status === 'error') {
+                filtered = filtered.filter(f => f.status === 'error');
+            }
+
+            // Пациент
+            if (patientQ) {
+                filtered = filtered.filter(f => {
+                    const name = (patientNameCache[f.patient_id] || '').toLowerCase();
+                    const idStr = String(f.patient_id || '');
+                    return idStr.includes(patientQ) || name.includes(patientQ);
+                });
+            }
+
+            // Даты
+            if (from) {
+                const fromTs = new Date(from).getTime();
+                filtered = filtered.filter(f => new Date(f.uploaded_at).getTime() >= fromTs);
+            }
+            if (to) {
+                const toTs = new Date(to + 'T23:59:59').getTime();
+                filtered = filtered.filter(f => new Date(f.uploaded_at).getTime() <= toTs);
+            }
+
+            renderTable(filtered);
+            updateStatusBar(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-status').value = 'new';
+            document.getElementById('filter-patient').value = '';
+            document.getElementById('filter-from').value = '';
+            document.getElementById('filter-to').value = '';
+            applyFilters();
+        }
+
+        // ========== ОТРИСОВКА ТАБЛИЦЫ ==========
+        function renderTable(files) {
+            const tbody = document.getElementById('files-tbody');
+
+            if (!files || files.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#666;">Нет файлов по выбранному фильтру</td></tr>';
+                return;
+            }
+
+            let html = '';
+            files.forEach((file, idx) => {
+                const statusClass = file.status === 'processed' ? 'status-processed' :
+                                    file.status === 'error' ? 'status-error' : 'status-new';
+                const statusText = file.status === 'processed' ? 'Обработан' :
+                                   file.status === 'error' ? 'Ошибка' : 'Новый';
+
+                const dateStr = formatDate(file.uploaded_at);
+                const name = patientNameCache[file.patient_id] || '—';
+                const sizeStr = formatSize(file.file_size);
+                const hasText = file.full_text && file.full_text.trim().length > 0;
+
+                html += `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><span class="status-dot ${statusClass}"></span>${statusText}</td>
+                        <td>${dateStr}</td>
+                        <td>${file.patient_id || '—'}</td>
+                        <td>${escapeHtml(name)}</td>
+                        <td title="${escapeHtml(file.safe_name || '')}">${escapeHtml(file.original_name || file.safe_name || '—')}</td>
+                        <td>${sizeStr}</td>
+                        <td>
+                            ${hasText
+                                ? `<button class="btn98" style="padding:2px 8px; min-width:auto;" onclick="viewText(${file.id})">Текст</button>`
+                                : `<button class="btn98" style="padding:2px 8px; min-width:auto;" disabled title="Текст ещё не извлечён">Текст</button>`
+                            }
+                            <button class="btn98" style="padding:2px 8px; min-width:auto;" onclick="downloadPdf('${escapeAttr(file.storage_path)}')">PDF</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function updateStatusBar(filtered) {
+            const list = filtered || allFiles;
+            const total = list.length;
+            const newCount = list.filter(f => f.status === 'new').length;
+            const processedCount = list.filter(f => f.status === 'processed').length;
+
+            document.getElementById('stat-total').textContent = 'Файлов: ' + total;
+            document.getElementById('stat-new').textContent = 'Новых: ' + newCount;
+            document.getElementById('stat-processed').textContent = 'Обработано: ' + processedCount;
+            document.getElementById('stat-updated').textContent = 'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+        }
+
+        // ========== ПРОСМОТР ТЕКСТА ==========
+        let currentModalText = '';
+        let currentModalName = '';
+
+        function viewText(fileId) {
+            const file = allFiles.find(f => f.id === fileId);
+            if (!file) return;
+
+            currentModalText = file.full_text || '(текст отсутствует)';
+            currentModalName = file.original_name || file.safe_name || 'file';
+
+            document.getElementById('modal-title').textContent = currentModalName + ' — ID ' + file.patient_id;
+            document.getElementById('modal-text').textContent = currentModalText;
+            document.getElementById('text-modal').classList.add('visible');
+        }
+
+        function closeTextModal() {
+            document.getElementById('text-modal').classList.remove('visible');
+        }
+
+        function copyModalText() {
+            navigator.clipboard.writeText(currentModalText).then(function () {
+                alert('Текст скопирован в буфер обмена');
+            }).catch(function () {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = currentModalText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                alert('Текст скопирован');
+            });
+        }
+
+        function downloadModalText() {
+            const blob = new Blob([currentModalText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (currentModalName.replace(/\.pdf$/i, '') || 'text') + '.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ========== СКАЧИВАНИЕ PDF ==========
+        async function downloadPdf(path) {
+            try {
+                const response = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/sign/patient-files/' + path,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ expiresIn: 3600 })
+                    }
+                );
+
+                const data = await response.json();
+                if (data && data.signedURL) {
+                    window.open(SUPABASE_URL + data.signedURL, '_blank');
+                } else {
+                    alert('Не удалось получить ссылку на файл');
+                }
+            } catch (err) {
+                alert('Ошибка скачивания: ' + err.message);
+            }
+        }
+
+        // ========== ПОМОЩЬ ==========
+        function showHelp() {
+            document.getElementById('help-modal').classList.add('visible');
+        }
+
+        function closeHelpModal() {
+            document.getElementById('help-modal').classList.remove('visible');
+        }
+
+        // Закрытие модалок по Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeTextModal();
+                closeHelpModal();
+            }
+        });
+
+        // ========== УТИЛИТЫ ==========
+        function formatDate(iso) {
+            if (!iso) return '—';
+            const d = new Date(iso);
+            return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatSize(bytes) {
+            if (!bytes && bytes !== 0) return '—';
+            if (bytes < 1024) return bytes + ' Б';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' МБ';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function escapeAttr(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>
