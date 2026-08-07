@@ -557,7 +557,6 @@
     <div class="text-section">
         <h1 class="main-title-center">Личный кабинет пациента</h1>
 
-        <!-- Форма входа -->
         <div id="login-block" class="cabinet-card">
             <div class="form-group">
                 <label for="patient-id">Номер пациента (ID):</label>
@@ -571,13 +570,11 @@
             <div id="login-error" class="error"></div>
         </div>
 
-        <!-- Кабинет -->
         <div id="cabinet-block" class="cabinet-card hidden">
             <h2 id="patient-title" style="color:#009ca0; text-align:center; margin-bottom:20px; font-size:22px;">Медкарта пациента</h2>
             
             <div id="records-list"></div>
 
-            <!-- Блок загрузки файлов -->
             <div class="upload-section">
                 <h3>Загрузить результаты обследований (PDF)</h3>
                 <p style="font-size:13px; color:#666; margin-bottom:12px;">Только PDF, максимум 10 МБ</p>
@@ -608,7 +605,6 @@
 
         let currentPatientId = localStorage.getItem('lor_patient_id') || null;
 
-        // При загрузке страницы — восстанавливаем сессию
         document.addEventListener('DOMContentLoaded', function () {
             // Мобильное меню
             const menuBtn = document.getElementById('lorMenuBtn');
@@ -637,14 +633,59 @@
                 });
             }
 
-            // Восстановление входа
+            // Восстановление сессии
             if (currentPatientId) {
                 document.getElementById('login-block').classList.add('hidden');
                 document.getElementById('cabinet-block').classList.remove('hidden');
                 document.getElementById('patient-title').innerText = 'Медкарта пациента ID: ' + currentPatientId;
+                restorePatientData(currentPatientId);
                 loadPatientFiles();
             }
         });
+
+        async function restorePatientData(id) {
+            try {
+                const targetUrl = SUPABASE_URL + "/rest/v1/patients_sync?select=*&id=eq." + parseInt(id);
+                const response = await fetch(targetUrl, {
+                    method: "GET",
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": "Bearer " + SUPABASE_KEY
+                    }
+                });
+
+                if (!response.ok) return;
+
+                let data = await response.json();
+                if (!data || data.length === 0) return;
+
+                data.sort((a, b) => b.record_code - a.record_code);
+
+                if (data[0] && data[0].patient_name) {
+                    document.getElementById('patient-title').innerText = "Медкарта: " + data[0].patient_name.replace(/[0-9]/g, '').trim();
+                }
+
+                const listDiv = document.getElementById('records-list');
+                listDiv.innerHTML = "";
+
+                data.forEach(record => {
+                    let text = record.doc_text || "";
+                    let lines = text.split(/[\r\n]+/);
+                    let cleanLines = lines.filter(line => !line.trim().startsWith("Диагноз:"));
+                    text = cleanLines.join("\n");
+
+                    const card = document.createElement('div');
+                    card.className = 'record-card';
+                    card.innerHTML = `
+                        <div class="record-date">Приём от ${record.doc_date} (${record.doc_time})</div>
+                        <div class="record-text"><pre>${text}</pre></div>
+                    `;
+                    listDiv.appendChild(card);
+                });
+            } catch (err) {
+                console.log('Ошибка восстановления данных:', err);
+            }
+        }
 
         async function login() {
             const errorDiv = document.getElementById('login-error');
@@ -734,6 +775,7 @@
             document.getElementById('login-error').innerText = "";
             document.getElementById('files-list').innerHTML = "";
             document.getElementById('upload-status').innerHTML = "";
+            document.getElementById('records-list').innerHTML = "";
         }
 
         async function uploadFile() {
@@ -763,7 +805,6 @@
 
             status.innerHTML = '<span style="color:#009ca0;">Загрузка...</span>';
 
-            // Убираем кириллицу и все лишние символы
             const safeName = file.name
                 .replace(/[^a-zA-Z0-9._-]/g, '_')
                 .replace(/_+/g, '_')
@@ -809,16 +850,24 @@
 
             try {
                 const response = await fetch(
-                    SUPABASE_URL + '/storage/v1/object/list/patient-files?prefix=' + currentPatientId + '/',
+                    SUPABASE_URL + '/storage/v1/object/list/patient-files',
                     {
+                        method: 'POST',
                         headers: {
                             'apikey': SUPABASE_KEY,
-                            'Authorization': 'Bearer ' + SUPABASE_KEY
-                        }
+                            'Authorization': 'Bearer ' + SUPABASE_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            prefix: currentPatientId + '/',
+                            limit: 100,
+                            offset: 0
+                        })
                     }
                 );
 
                 const files = await response.json();
+                console.log('Список файлов:', files);
 
                 if (!Array.isArray(files) || files.length === 0) {
                     listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Файлов пока нет</p>';
@@ -839,6 +888,7 @@
                     listDiv.appendChild(item);
                 });
             } catch (err) {
+                console.error(err);
                 listDiv.innerHTML = '<p style="color:#e74c3c; font-size:14px;">Не удалось загрузить список файлов</p>';
             }
         }
@@ -870,4 +920,4 @@
         }
     </script>
 </body>
-</html>
+                                                     </html>
