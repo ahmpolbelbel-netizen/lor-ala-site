@@ -828,9 +828,9 @@
         </div>
     </div>
 
-    <!-- ========== ИИ: ВСЯ КАРТА (отдельное окно) ========== -->
+    <!-- ========== ИИ: ВСЯ КАРТА (отдельное окно, с версиями и чатом) ========== -->
     <div id="chart-ai-modal" class="modal-overlay">
-        <div class="modal98" style="max-width:920px;">
+        <div class="modal98" style="max-width:960px;">
             <div class="win98-titlebar">
                 <div class="title">
                     <span class="brand-mark brand-mark-sm">Доктор ЛОР</span>
@@ -840,8 +840,25 @@
                     <button onclick="closeChartAiModal()">×</button>
                 </div>
             </div>
+            <div style="padding:6px 10px; background:#c0c0c0; display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-bottom:1px solid #808080;">
+                <label style="font-size:11px;">Версия:</label>
+                <select id="chart-ai-version" class="input98" style="height:22px; max-width:280px;" onchange="onChartVersionChange()"></select>
+                <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="generateChartAi(false)" title="Если ещё нет — создать; если есть — открыть сохранённое">Открыть / создать</button>
+                <button class="btn98 btn-ai-interp" style="min-width:0;height:22px;padding:1px 8px;" onclick="generateChartAi(true)" title="Новый разбор с учётом текущих визитов и анализов; старая версия сохранится">Обновить анализ</button>
+                <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" id="btn-chart-chat" onclick="toggleChartChat()">Чат с ИИ</button>
+                <span id="chart-ai-meta" style="font-size:11px;color:#404040;margin-left:4px;"></span>
+            </div>
             <div class="modal-body" id="chart-ai-body"
-                 style="font-family:Consolas,'Courier New',monospace; font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; max-height:70vh;"></div>
+                 style="font-family:Consolas,'Courier New',monospace; font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; max-height:52vh;"></div>
+            <div id="chart-ai-chat-panel" class="hidden" style="border-top:1px solid #808080; background:#f4f4f4; display:flex; flex-direction:column; max-height:220px;">
+                <div style="padding:4px 10px; font-weight:bold; background:#c0c0c0; border-bottom:1px solid #808080; font-size:12px;">Чат по карте пациента (сохраняется)</div>
+                <div id="chart-ai-chat-messages" style="flex:1; overflow-y:auto; padding:8px 10px; font-size:12px; line-height:1.4; background:#fff; min-height:80px; max-height:140px;"></div>
+                <div style="display:flex; gap:6px; padding:6px 8px; border-top:1px solid #c0c0c0;">
+                    <input type="text" id="chart-ai-chat-input" class="input98" style="flex:1;" placeholder="Вопрос по карте…"
+                           onkeydown="if(event.key==='Enter')sendChartAiChat()">
+                    <button class="btn98 primary" onclick="sendChartAiChat()">Отправить</button>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button class="btn98" onclick="copyChartAi()">Копировать</button>
                 <button class="btn98 primary" onclick="closeChartAiModal()">Закрыть</button>
@@ -1442,8 +1459,47 @@
             document.getElementById('compare-body').textContent = out;
         }
 
-        // ========== ИИ: ВСЯ КАРТА ПАЦИЕНТА ==========
+        // ========== ИИ: ВСЯ КАРТА ПАЦИЕНТА (версии + чат, localStorage) ==========
         let chartAiText = '';
+        let chartAiPatientId = null;
+        let chartAiPack = null; // { versions:[], activeId, chat:[], sourceHash }
+        let chartChatOpen = false;
+
+        function chartPackKey(pid) { return 'lor_chart_pack_' + pid; }
+        function labChatKey(fid) { return 'lor_lab_chat_' + fid; }
+
+        function loadChartPack(pid) {
+            try {
+                const raw = localStorage.getItem(chartPackKey(pid));
+                if (!raw) return { versions: [], activeId: null, chat: [], sourceHash: '' };
+                const o = JSON.parse(raw);
+                if (!o || !Array.isArray(o.versions)) return { versions: [], activeId: null, chat: [], sourceHash: '' };
+                if (!Array.isArray(o.chat)) o.chat = [];
+                return o;
+            } catch (e) {
+                return { versions: [], activeId: null, chat: [], sourceHash: '' };
+            }
+        }
+
+        function saveChartPack(pid, pack) {
+            try {
+                localStorage.setItem(chartPackKey(pid), JSON.stringify(pack));
+            } catch (e) {
+                console.warn('chart pack save fail', e);
+                alert('Не удалось сохранить локально (мало места в браузере)');
+            }
+        }
+
+        function currentChartSourceHash() {
+            if (!historyCache) return '';
+            const files = (historyCache.files || []).map(function (f) {
+                return String(f.id) + ':' + (f.uploaded_at || '') + ':' + ((f.full_text || '').length);
+            }).join('|');
+            const visits = (historyCache.visits || []).map(function (v) {
+                return (v.doc_date || '') + ':' + ((v.doc_text || '').length);
+            }).join('|');
+            return files + '##' + visits;
+        }
 
         function formatChartAiHtml(raw) {
             if (!raw) return '';
@@ -1451,10 +1507,8 @@
                 .replace(/\r\n/g, '\n')
                 .replace(/[ \t]+\n/g, '\n')
                 .replace(/\n{3,}/g, '\n\n');
-            // убрать markdown-решётки, оставить текст
             t = t.replace(/^#{1,6}\s*/gm, '');
             t = t.replace(/\*\*([^*]+)\*\*/g, '$1');
-            // абзацы
             const parts = t.split(/\n\s*\n/).map(function (p) {
                 return p.replace(/\n/g, ' ').trim();
             }).filter(Boolean);
@@ -1465,7 +1519,11 @@
         }
 
         function closeChartAiModal() {
+            // чат и текст уже в localStorage
             document.getElementById('chart-ai-modal').classList.remove('visible');
+            chartChatOpen = false;
+            const panel = document.getElementById('chart-ai-chat-panel');
+            if (panel) panel.classList.add('hidden');
         }
 
         function copyChartAi() {
@@ -1474,7 +1532,188 @@
             }).catch(function () { alert('Не удалось скопировать'); });
         }
 
-        async function requestChartAiAnalysis() {
+        function fillChartVersionSelect() {
+            const sel = document.getElementById('chart-ai-version');
+            if (!sel || !chartAiPack) return;
+            sel.innerHTML = '';
+            if (!chartAiPack.versions.length) {
+                const o = document.createElement('option');
+                o.value = '';
+                o.textContent = '(ещё нет сохранённых версий)';
+                sel.appendChild(o);
+                return;
+            }
+            chartAiPack.versions.slice().reverse().forEach(function (v) {
+                const o = document.createElement('option');
+                o.value = v.id;
+                o.textContent = v.label || v.id;
+                if (String(v.id) === String(chartAiPack.activeId)) o.selected = true;
+                sel.appendChild(o);
+            });
+        }
+
+        function showChartVersion(versionId) {
+            if (!chartAiPack) return;
+            const v = chartAiPack.versions.find(function (x) { return String(x.id) === String(versionId); });
+            if (!v) return;
+            chartAiPack.activeId = v.id;
+            chartAiText = v.text || '';
+            document.getElementById('chart-ai-body').innerHTML = formatChartAiHtml(chartAiText);
+            const meta = document.getElementById('chart-ai-meta');
+            if (meta) {
+                const stale = chartAiPack.sourceHash && chartAiPack.sourceHash !== currentChartSourceHash();
+                meta.textContent = (v.createdAt ? ('от ' + v.createdAt + ' · ') : '') +
+                    (stale ? 'есть новые данные — можно «Обновить анализ»' : 'актуально по сохранённому срезу');
+            }
+            if (chartAiPatientId) saveChartPack(chartAiPatientId, chartAiPack);
+        }
+
+        function onChartVersionChange() {
+            const sel = document.getElementById('chart-ai-version');
+            if (!sel || !sel.value) return;
+            showChartVersion(sel.value);
+        }
+
+        function renderChartChat() {
+            const box = document.getElementById('chart-ai-chat-messages');
+            if (!box) return;
+            box.innerHTML = '';
+            const chat = (chartAiPack && chartAiPack.chat) || [];
+            chat.forEach(function (m) {
+                const div = document.createElement('div');
+                div.className = 'chat-msg ' + (m.role === 'user' ? 'user' : 'assistant');
+                const roleLabel = m.role === 'user' ? 'Вы' : 'ИИ';
+                div.innerHTML = '<div class="role">' + roleLabel + '</div>' +
+                    escapeHtml(m.content || '').replace(/\n/g, '<br>');
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function toggleChartChat() {
+            const panel = document.getElementById('chart-ai-chat-panel');
+            if (!panel) return;
+            chartChatOpen = !chartChatOpen;
+            if (chartChatOpen) {
+                panel.classList.remove('hidden');
+                panel.style.display = 'flex';
+                renderChartChat();
+                const inp = document.getElementById('chart-ai-chat-input');
+                if (inp) inp.focus();
+            } else {
+                panel.classList.add('hidden');
+                panel.style.display = '';
+            }
+        }
+
+        async function sendChartAiChat() {
+            if (!chartAiPatientId || !chartAiPack) return;
+            const inp = document.getElementById('chart-ai-chat-input');
+            const q = (inp && inp.value || '').trim();
+            if (!q) return;
+            if (!GROQ_KEY) { alert('Нет GROQ_KEY'); return; }
+            if (!chartAiText) { alert('Сначала создайте анализ карты'); return; }
+            inp.value = '';
+            chartAiPack.chat = chartAiPack.chat || [];
+            chartAiPack.chat.push({ role: 'user', content: q });
+            saveChartPack(chartAiPatientId, chartAiPack);
+            renderChartChat();
+
+            const system = (
+                'Ты клинический ассистент ЛОР-врача. Отвечай по делу на русском. ' +
+                'Опирайся на сохранённый разбор карты и факты из него. Не ставь диагноз пациенту.\n\n' +
+                'РАЗБОР КАРТЫ:\n' + chartAiText.slice(0, 9000)
+            );
+            const messages = [{ role: 'system', content: system }].concat(
+                chartAiPack.chat.slice(-14).map(function (m) {
+                    return { role: m.role === 'user' ? 'user' : 'assistant', content: m.content };
+                })
+            );
+
+            const box = document.getElementById('chart-ai-chat-messages');
+            const pending = document.createElement('div');
+            pending.className = 'chat-msg assistant';
+            pending.innerHTML = '<div class="role">ИИ</div>…';
+            if (box) { box.appendChild(pending); box.scrollTop = box.scrollHeight; }
+
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + GROQ_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: messages,
+                        temperature: 0.3,
+                        max_tokens: 1500
+                    })
+                });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json();
+                const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Нет ответа';
+                chartAiPack.chat.push({ role: 'assistant', content: answer });
+                saveChartPack(chartAiPatientId, chartAiPack);
+                pending.innerHTML = '<div class="role">ИИ</div>' + escapeHtml(answer).replace(/\n/g, '<br>');
+            } catch (err) {
+                pending.innerHTML = '<div class="role">ИИ</div>Ошибка: ' + escapeHtml(err.message);
+            }
+        }
+
+        /** Кнопка «ИИ: вся карта» — открыть сохранённое или создать */
+        function requestChartAiAnalysis() {
+            openChartAiWorkspace(false);
+        }
+
+        function openChartAiWorkspace(forceNew) {
+            if (!historyCache || !historyCache.patientId) {
+                alert('Сначала откройте историю пациента');
+                return;
+            }
+            const pid = historyCache.patientId;
+            const pname = patientNameCache[pid] || ('ID ' + pid);
+            chartAiPatientId = pid;
+            chartAiPack = loadChartPack(pid);
+
+            // Миграция со старого ключа lor_chart_ai_
+            if (!chartAiPack.versions.length) {
+                try {
+                    const legacy = localStorage.getItem('lor_chart_ai_' + pid);
+                    if (legacy && legacy.trim()) {
+                        const id = 'v' + Date.now();
+                        chartAiPack.versions.push({
+                            id: id,
+                            createdAt: new Date().toLocaleString('ru-RU'),
+                            label: 'Сохранённый разбор',
+                            text: legacy,
+                            sourceHash: ''
+                        });
+                        chartAiPack.activeId = id;
+                        saveChartPack(pid, chartAiPack);
+                    }
+                } catch (e) {}
+            }
+
+            document.getElementById('chart-ai-title').textContent = 'ИИ — карта: ' + pname;
+            document.getElementById('chart-ai-modal').classList.add('visible');
+            fillChartVersionSelect();
+            renderChartChat();
+
+            if (forceNew) {
+                generateChartAi(true);
+                return;
+            }
+            if (chartAiPack.versions.length) {
+                showChartVersion(chartAiPack.activeId || chartAiPack.versions[chartAiPack.versions.length - 1].id);
+            } else {
+                document.getElementById('chart-ai-body').innerHTML =
+                    '<p style="margin:0;">Сохранённого разбора ещё нет. Нажмите «Открыть / создать» или «Обновить анализ».</p>';
+                chartAiText = '';
+            }
+        }
+
+        async function generateChartAi(asUpdate) {
             if (!historyCache || !historyCache.patientId) {
                 alert('Сначала откройте историю пациента');
                 return;
@@ -1486,14 +1725,26 @@
 
             const pid = historyCache.patientId;
             const pname = patientNameCache[pid] || ('ID ' + pid);
+            chartAiPatientId = pid;
+            if (!chartAiPack) chartAiPack = loadChartPack(pid);
+
+            // Если не обновление и уже есть версия — просто показать
+            if (!asUpdate && chartAiPack.versions.length) {
+                document.getElementById('chart-ai-modal').classList.add('visible');
+                fillChartVersionSelect();
+                showChartVersion(chartAiPack.activeId || chartAiPack.versions[chartAiPack.versions.length - 1].id);
+                return;
+            }
+
             const visits = historyCache.visits || [];
             const files = historyCache.files || [];
+            const hash = currentChartSourceHash();
 
             document.getElementById('chart-ai-title').textContent = 'ИИ — карта: ' + pname;
             document.getElementById('chart-ai-body').innerHTML =
-                '<p style="margin:0;">Анализ всей карты (визиты + анализы)… обычно 30–90 сек.</p>';
+                '<p style="margin:0;">' + (asUpdate ? 'Обновление разбора с учётом новых данных…' : 'Анализ всей карты…') +
+                ' обычно 30–90 сек. Старые версии не удаляются.</p>';
             document.getElementById('chart-ai-modal').classList.add('visible');
-            chartAiText = '';
 
             let ctx = 'ПАЦИЕНТ: ' + pname + ' (ID ' + pid + ')\n\n';
             ctx += '=== ПРИЁМЫ (с диагнозами) ===\n';
@@ -1507,6 +1758,13 @@
                 ctx += (f.full_text || '(нет текста)').slice(0, 4000) + '\n';
             });
             if (ctx.length > 28000) ctx = ctx.slice(0, 28000) + '\n…[обрезано]';
+
+            let prevNote = '';
+            if (asUpdate && chartAiPack.versions.length) {
+                const prev = chartAiPack.versions[chartAiPack.versions.length - 1];
+                prevNote = '\n\nПредыдущий разбор врача/ИИ (учти динамику, не копируй слепо):\n' +
+                    String(prev.text || '').slice(0, 4000);
+            }
 
             const system = (
                 'Ты опытный клинический ассистент ЛОР-врача (оториноларингология) в Алматы. ' +
@@ -1542,7 +1800,7 @@
                 'Объём: развёрнутый, примерно 30–50 предложений суммарно.\n' +
                 'В конце отдельным абзацем: Это не диагноз. Интерпретация ИИ, решение принимает лечащий врач.\n' +
                 'Не выдумывай факты, которых нет в тексте.\n\n' +
-                'ДАННЫЕ КАРТЫ:\n' + ctx
+                'ДАННЫЕ КАРТЫ:\n' + ctx + prevNote
             );
 
             try {
@@ -1568,9 +1826,25 @@
                 }
                 const data = await resp.json();
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Пустой ответ';
+                const id = 'v' + Date.now();
+                const label = (asUpdate ? 'Обновление ' : 'Разбор ') + new Date().toLocaleString('ru-RU');
+                chartAiPack.versions.push({
+                    id: id,
+                    createdAt: new Date().toLocaleString('ru-RU'),
+                    label: label,
+                    text: answer,
+                    sourceHash: hash
+                });
+                // храним до 12 версий
+                if (chartAiPack.versions.length > 12) {
+                    chartAiPack.versions = chartAiPack.versions.slice(-12);
+                }
+                chartAiPack.activeId = id;
+                chartAiPack.sourceHash = hash;
                 chartAiText = answer;
-                document.getElementById('chart-ai-body').innerHTML = formatChartAiHtml(answer);
-                try { localStorage.setItem('lor_chart_ai_' + pid, answer); } catch (e) {}
+                saveChartPack(pid, chartAiPack);
+                fillChartVersionSelect();
+                showChartVersion(id);
             } catch (err) {
                 document.getElementById('chart-ai-body').innerHTML =
                     '<p style="color:#c00000;">Ошибка ИИ: ' + escapeHtml(err.message) + '</p>';
@@ -2020,23 +2294,64 @@
             document.getElementById('modal-text').innerHTML = formatLabText(currentModalText);
             document.getElementById('text-modal').classList.add('visible');
 
-            // Кнопка чата — только если уже есть ИИ-заключение
+            // Кнопка чата — если есть ИИ-заключение ИЛИ уже сохранённый чат
             const hasConclusion = /══\s*ИИ-ЗАКЛЮЧЕНИЕ\s*══/.test(currentModalText);
+            const savedChat = loadLabChat(fileId);
             const btnChat = document.getElementById('btn-ai-chat');
             if (btnChat) {
-                if (hasConclusion) btnChat.classList.remove('hidden');
+                if (hasConclusion || (savedChat && savedChat.length)) btnChat.classList.remove('hidden');
                 else btnChat.classList.add('hidden');
             }
-            // Сброс чата при открытии другого файла
-            chatHistory = [];
+            // Восстановить чат этого файла (не сбрасывать)
+            chatHistory = savedChat.slice();
             chatOpen = false;
             const panel = document.getElementById('ai-chat-panel');
-            if (panel) panel.classList.add('hidden');
-            const msgs = document.getElementById('ai-chat-messages');
-            if (msgs) msgs.innerHTML = '';
+            if (panel) {
+                panel.classList.add('hidden');
+                panel.style.display = '';
+            }
+            renderLabChatMessages();
+        }
+
+        function loadLabChat(fileId) {
+            if (fileId == null) return [];
+            try {
+                const raw = localStorage.getItem(labChatKey(fileId));
+                if (!raw) return [];
+                const arr = JSON.parse(raw);
+                return Array.isArray(arr) ? arr : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLabChat(fileId, history) {
+            if (fileId == null) return;
+            try {
+                localStorage.setItem(labChatKey(fileId), JSON.stringify(history || []));
+            } catch (e) {
+                console.warn('lab chat save', e);
+            }
+        }
+
+        function renderLabChatMessages() {
+            const box = document.getElementById('ai-chat-messages');
+            if (!box) return;
+            box.innerHTML = '';
+            (chatHistory || []).forEach(function (m) {
+                const div = document.createElement('div');
+                div.className = 'chat-msg ' + (m.role === 'user' ? 'user' : 'assistant');
+                const roleLabel = m.role === 'user' ? 'Вы' : 'ИИ';
+                div.innerHTML = '<div class="role">' + roleLabel + '</div>' +
+                    escapeHtml(m.content || '').replace(/\n/g, '<br>');
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
         }
 
         function closeTextModal() {
+            // сохранить чат перед закрытием
+            if (currentModalFileId != null) saveLabChat(currentModalFileId, chatHistory);
             document.getElementById('text-modal').classList.remove('visible');
             currentModalFileId = null;
             chatOpen = false;
@@ -2051,12 +2366,24 @@
             if (chatOpen) {
                 panel.classList.remove('hidden');
                 panel.style.display = 'flex';
-                if (chatHistory.length === 0) {
-                    appendChatMsg('assistant', 'Можете задать уточняющий вопрос по этому анализу и заключению. Это не диагноз.');
+                // подтянуть с диска на всякий случай
+                if (currentModalFileId != null) {
+                    chatHistory = loadLabChat(currentModalFileId);
+                }
+                renderLabChatMessages();
+                if (!chatHistory.length) {
+                    appendChatMsg('assistant', 'Можете задать уточняющий вопрос по этому анализу и заключению. Это не диагноз. Переписка сохраняется.');
+                    // не сохраняем системную подсказку как историю диалога — только показ
+                    chatHistory = [];
+                    const box = document.getElementById('ai-chat-messages');
+                    if (box && box.lastChild) {
+                        // оставить приветствие на экране, history пустая до первого вопроса
+                    }
                 }
                 const inp = document.getElementById('ai-chat-input');
                 if (inp) inp.focus();
             } else {
+                if (currentModalFileId != null) saveLabChat(currentModalFileId, chatHistory);
                 panel.classList.add('hidden');
                 panel.style.display = '';
             }
@@ -2082,8 +2409,14 @@
                 return;
             }
             inp.value = '';
+            // если на экране было только приветствие без history — очистим DOM и начнём чисто
+            if (!chatHistory.length) {
+                const box0 = document.getElementById('ai-chat-messages');
+                if (box0) box0.innerHTML = '';
+            }
             appendChatMsg('user', q);
             chatHistory.push({ role: 'user', content: q });
+            if (currentModalFileId != null) saveLabChat(currentModalFileId, chatHistory);
 
             const system = (
                 'Ты клинический ассистент ЛОР-врача. Отвечай кратко и по делу на русском. ' +
@@ -2123,6 +2456,7 @@
                 const data = await resp.json();
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Нет ответа';
                 chatHistory.push({ role: 'assistant', content: answer });
+                if (currentModalFileId != null) saveLabChat(currentModalFileId, chatHistory);
                 if (pending) {
                     pending.innerHTML = '<div class="role">ИИ</div>' + escapeHtml(answer).replace(/\n/g, '<br>');
                 } else {
