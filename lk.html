@@ -526,15 +526,15 @@
         }
 
         .text-modal-body .abnormal {
-            background: #ffe0e0;
-            color: #c0392b;
+            background: #e74c3c;
+            color: #ffffff !important;
             font-weight: bold;
-            padding: 0 2px;
-            border-radius: 2px;
+            padding: 1px 6px;
+            border-radius: 3px;
         }
 
         .text-modal-body .status-norm {
-            color: #006600;
+            color: #1e8449;
             font-weight: bold;
         }
 
@@ -1279,10 +1279,10 @@
             if (!raw) return '';
             let text = escapeHtml(raw);
 
-            // Статусы со значками
-            text = text.replace(/▲?\s*ПОВЫШЕН/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
-            text = text.replace(/▼?\s*СНИЖЕН/g, '<span class="abnormal">▼ СНИЖЕН</span>');
-            text = text.replace(/●?\s*НОРМА/g, '<span class="status-norm">● НОРМА</span>');
+            // Только целые статусы — не подсвечивать «повышение» в комментариях
+            text = text.replace(/(▲\s*)?ПОВЫШЕН\b/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
+            text = text.replace(/(▼\s*)?СНИЖЕН\b/g, '<span class="abnormal">▼ СНИЖЕН</span>');
+            text = text.replace(/(●\s*)?НОРМА\b/g, '<span class="status-norm">● НОРМА</span>');
 
             // Заголовки секций
             text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
