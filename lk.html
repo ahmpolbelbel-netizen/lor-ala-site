@@ -518,10 +518,10 @@
             padding: 16px 18px;
             overflow: auto;
             flex: 1;
-            font-size: 14px;
-            line-height: 1.55;
-            white-space: pre-wrap;
-            font-family: "Segoe UI", Tahoma, sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: pre;
+            font-family: "Consolas", "Courier New", "Lucida Console", monospace;
             color: #222;
         }
 
@@ -529,16 +529,19 @@
             background: #ffe0e0;
             color: #c0392b;
             font-weight: bold;
-            padding: 0 3px;
-            border-radius: 3px;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .text-modal-body .status-norm {
+            color: #006600;
+            font-weight: bold;
         }
 
         .text-modal-body .section-title {
             font-weight: bold;
             color: #009ca0;
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 4px;
+            display: inline;
         }
 
         .text-modal-footer {
@@ -1276,21 +1279,19 @@
             if (!raw) return '';
             let text = escapeHtml(raw);
 
-            // Подсветка типичных маркеров отклонений
-            const abnormalPatterns = [
-                /([↑↓⇑⇓])/g,
-                /\b([HL])\b(?=\s|$|,|;|\))/g,
-                /(\*[^*\n]{0,40}\*)/g,
-                /(повышен[аоы]?|снижен[аоы]?|выше\s+нормы|ниже\s+нормы|отклонени[ея]|вне\s+референс)/gi
-            ];
+            // Статусы от парсера демона
+            text = text.replace(/\bПОВЫШЕН\b/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
+            text = text.replace(/\bСНИЖЕН\b/g, '<span class="abnormal">▼ СНИЖЕН</span>');
+            text = text.replace(/\bНОРМА\b/g, '<span class="status-norm">● НОРМА</span>');
 
-            abnormalPatterns.forEach(function (re) {
-                text = text.replace(re, '<span class="abnormal">$1</span>');
-            });
+            // Стрелки
+            text = text.replace(/([↑↓⇑⇓])/g, '<span class="abnormal">$1</span>');
 
-            // Выделяем возможные заголовки разделов (строки в ВЕРХНЕМ РЕГИСТРЕ или заканчивающиеся на :)
-            text = text.replace(/(^|\n)([А-ЯA-ZЁ][А-ЯA-ZЁ\s\d\-—–]{3,60}:?)(\n|$)/g,
-                '$1<span class="section-title">$2</span>$3');
+            // Заголовки секций ══ ... ══
+            text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
+
+            // Дата
+            text = text.replace(/(Дата\s+[^:\n]+:\s*[^\n]+)/g, '<b>$1</b>');
 
             return text;
         }
