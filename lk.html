@@ -466,6 +466,21 @@
             background: #1e8449;
         }
 
+        .btn-wa {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btn-wa:hover {
+            background: #1da851;
+        }
+
         .file-actions {
             display: flex;
             gap: 6px;
@@ -772,11 +787,14 @@
             <div id="records-list"></div>
 
             <div class="upload-section">
-                <h3>Загрузить результаты обследований (PDF)</h3>
-                <p style="font-size:13px; color:#666; margin-bottom:12px;">Только PDF, максимум 10 МБ</p>
+                <h3>Загрузить результаты обследований</h3>
+                <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                    PDF или фото бланка (JPG/PNG). Фото автоматически сжимаются перед отправкой.
+                    Максимум 10 МБ после сжатия.
+                </p>
                 
                 <div class="upload-controls">
-                    <input type="file" id="file-input" accept="application/pdf">
+                    <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/webp,image/jpg">
                     <button class="btn-primary btn-upload" onclick="uploadFile()">Загрузить</button>
                 </div>
                 
@@ -1028,6 +1046,121 @@
             document.getElementById('records-list').innerHTML = "";
         }
 
+        // ---- Сжатие фото → одностраничный PDF (JPEG внутри) ----
+        function _pdfEscapeName(s) {
+            return String(s).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+        }
+
+        function buildPdfFromJpeg(jpegBytes, width, height) {
+            // Минимальный PDF 1.4 с одним JPEG-изображением на странице
+            const encoder = new TextEncoder();
+            const parts = [];
+            function addStr(s) { parts.push(encoder.encode(s)); }
+            function addBytes(u8) { parts.push(u8); }
+
+            addStr('%PDF-1.4\n');
+            const offsets = [0];
+
+            function markObj() {
+                let len = 0;
+                for (let i = 0; i < parts.length; i++) len += parts[i].length;
+                offsets.push(len);
+            }
+
+            markObj(); // 1 Catalog
+            addStr('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+            markObj(); // 2 Pages
+            addStr('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+            markObj(); // 3 Page
+            addStr('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + width + ' ' + height +
+                '] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>\nendobj\n');
+            markObj(); // 4 Content stream
+            const content = 'q\n' + width + ' 0 0 ' + height + ' 0 0 cm\n/Im0 Do\nQ\n';
+            addStr('4 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + 'endstream\nendobj\n');
+            markObj(); // 5 Image
+            addStr('5 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + width + ' /Height ' + height +
+                ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpegBytes.length +
+                ' >>\nstream\n');
+            addBytes(jpegBytes);
+            addStr('\nendstream\nendobj\n');
+
+            const xrefStart = parts.reduce(function (a, p) { return a + p.length; }, 0);
+            addStr('xref\n0 6\n0000000000 65535 f \n');
+            for (let i = 1; i <= 5; i++) {
+                const off = String(offsets[i]).padStart(10, '0');
+                addStr(off + ' 00000 n \n');
+            }
+            addStr('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xrefStart + '\n%%EOF\n');
+
+            let total = 0;
+            for (let i = 0; i < parts.length; i++) total += parts[i].length;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            for (let i = 0; i < parts.length; i++) {
+                out.set(parts[i], pos);
+                pos += parts[i].length;
+            }
+            return new Blob([out], { type: 'application/pdf' });
+        }
+
+        async function compressImageToPdf(file) {
+            const maxSide = 1600;
+            const quality = 0.52;
+            const bitmap = await createImageBitmap(file);
+            let w = bitmap.width;
+            let h = bitmap.height;
+            if (w > maxSide || h > maxSide) {
+                const scale = maxSide / Math.max(w, h);
+                w = Math.round(w * scale);
+                h = Math.round(h * scale);
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(bitmap, 0, 0, w, h);
+            if (bitmap.close) bitmap.close();
+
+            const jpegBlob = await new Promise(function (resolve) {
+                canvas.toBlob(resolve, 'image/jpeg', quality);
+            });
+            if (!jpegBlob) throw new Error('Не удалось сжать изображение');
+            const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
+            return buildPdfFromJpeg(jpegBytes, w, h);
+        }
+
+        async function prepareUploadBlob(file, statusEl) {
+            const isImage = /^image\/(jpeg|jpg|png|webp)$/i.test(file.type) ||
+                /\.(jpe?g|png|webp)$/i.test(file.name);
+            const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+
+            if (!isImage && !isPdf) {
+                throw new Error('Допустимы только PDF или фото (JPG/PNG)');
+            }
+
+            if (isImage) {
+                if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Сжатие фото…</span>';
+                const pdfBlob = await compressImageToPdf(file);
+                const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
+                return {
+                    blob: pdfBlob,
+                    uploadName: base + '_compressed.pdf',
+                    originalName: file.name + ' → PDF'
+                };
+            }
+
+            // PDF: если очень большой — предупреждаем, загружаем как есть
+            // (настоящее пересжатие многостраничного PDF в браузере без тяжёлых библиотек ограничено)
+            if (file.size > 8 * 1024 * 1024) {
+                if (statusEl) {
+                    statusEl.innerHTML = '<span style="color:#e67e22;">PDF большой. Лучше сфотографировать бланк — фото сожмётся сильнее.</span>';
+                }
+            }
+            return { blob: file, uploadName: file.name, originalName: file.name };
+        }
+
         async function uploadFile() {
             const status = document.getElementById('upload-status');
             const fileInput = document.getElementById('file-input');
@@ -1038,32 +1171,38 @@
                 return;
             }
 
-            if (file.type !== 'application/pdf') {
-                status.innerHTML = '<span style="color:#e74c3c;">Можно загружать только PDF</span>';
-                return;
-            }
-
-            if (file.size > 10 * 1024 * 1024) {
-                status.innerHTML = '<span style="color:#e74c3c;">Файл слишком большой (максимум 10 МБ)</span>';
-                return;
-            }
-
             if (!currentPatientId) {
                 status.innerHTML = '<span style="color:#e74c3c;">Ошибка: пациент не определён</span>';
                 return;
             }
 
-            status.innerHTML = '<span style="color:#009ca0;">Загрузка...</span>';
+            status.innerHTML = '<span style="color:#009ca0;">Подготовка…</span>';
 
-            const originalName = file.name;
-            const safeBase = makeSafeFileName(originalName);
+            let prepared;
+            try {
+                prepared = await prepareUploadBlob(file, status);
+            } catch (err) {
+                status.innerHTML = '<span style="color:#e74c3c;">' + err.message + '</span>';
+                return;
+            }
+
+            if (prepared.blob.size > 10 * 1024 * 1024) {
+                status.innerHTML = '<span style="color:#e74c3c;">После сжатия всё ещё больше 10 МБ. Сделайте фото ближе/светлее или уменьшите в галерее.</span>';
+                return;
+            }
+
+            status.innerHTML = '<span style="color:#009ca0;">Загрузка (' +
+                (prepared.blob.size / 1024).toFixed(0) + ' КБ)…</span>';
+
+            const originalName = prepared.originalName;
+            const safeBase = makeSafeFileName(prepared.uploadName);
             const fileName = Date.now() + '_' + safeBase;
             const path = currentPatientId + '/' + fileName;
 
             try {
                 // 1. Загружаем файл в Storage
                 const formData = new FormData();
-                formData.append('', file);
+                formData.append('', prepared.blob, prepared.uploadName);
 
                 const uploadResponse = await fetch(
                     SUPABASE_URL + '/storage/v1/object/patient-files/' + path,
@@ -1099,7 +1238,7 @@
                             safe_name: fileName,
                             storage_path: path,
                             status: 'new',
-                            file_size: file.size
+                            file_size: prepared.blob.size
                         })
                     }
                 );
@@ -1155,9 +1294,14 @@
                     const displayName = file.original_name || file.safe_name || 'Файл';
                     const statusLabel = file.status === 'processed' ? '✓' : (file.status === 'error' ? '!' : '•');
                     const statusColor = file.status === 'processed' ? '#27ae60' : (file.status === 'error' ? '#e74c3c' : '#888');
-                    const hasText = file.full_text && file.full_text.trim().length > 20;
+                    // hasText: есть результаты без учёта блока ИИ
+                    const textForPatient = stripAiConclusionForPatient(file.full_text || '');
+                    const hasText = textForPatient.length > 20;
                     const safePath = (file.storage_path || '').replace(/'/g, "\\'");
                     const safeName = (displayName || '').replace(/'/g, "\\'");
+                    const upDate = file.uploaded_at
+                        ? new Date(file.uploaded_at).toLocaleDateString('ru-RU')
+                        : '';
 
                     const item = document.createElement('div');
                     item.className = 'file-item';
@@ -1168,6 +1312,7 @@
                         actionsHtml += `<button class="btn-view-text" onclick="viewPatientText(${file.id})">Текст</button>`;
                     }
                     actionsHtml += `<button class="btn-download" onclick="downloadFile('${safePath}')">Скачать</button>`;
+                    actionsHtml += `<button class="btn-wa" onclick="whatsappAboutFile('${escapeHtml(displayName).replace(/'/g, "\\'")}', '${upDate}')">WhatsApp врачу</button>`;
                     actionsHtml += `<button class="btn-delete" onclick="deletePatientFile(${file.id}, '${safePath}', '${safeName}')">Удалить</button>`;
 
                     item.innerHTML = `
@@ -1183,6 +1328,23 @@
                 console.error(err);
                 listDiv.innerHTML = '<p style="color:#e74c3c; font-size:14px;">Не удалось загрузить список файлов</p>';
             }
+        }
+
+        function whatsappAboutFile(fileName, uploadDate) {
+            const id = currentPatientId || '';
+            const lines = [
+                'Здравствуйте, доктор!',
+                '',
+                'Пишу по загруженному анализу:',
+                '• Файл: ' + fileName,
+                (uploadDate ? '• Дата загрузки: ' + uploadDate : null),
+                (id ? '• ID пациента: ' + id : null),
+                '',
+                'Вопрос: '
+            ].filter(Boolean);
+            const text = lines.join('\n');
+            const url = 'https://wa.me/77072131010?text=' + encodeURIComponent(text);
+            window.open(url, '_blank', 'noopener');
         }
 
         async function downloadFile(path) {
@@ -1275,8 +1437,22 @@
         }
 
         // ========== ПРОСМОТР ТЕКСТА (пациент) ==========
+        // ВАЖНО: пациент НИКОГДА не видит блок ИИ-заключения — только сырые/структурированные результаты
         let patientModalText = '';
         let patientModalName = '';
+
+        function stripAiConclusionForPatient(raw) {
+            if (!raw) return '';
+            let t = String(raw);
+            // Удалить блок ИИ-заключения и всё после него (любые варианты заголовка)
+            t = t.replace(/\n*══\s*ИИ[- ]?ЗАКЛЮЧЕНИЕ\s*══[\s\S]*$/i, '');
+            t = t.replace(/\n*══\s*AI[- ]?(CONCLUSION|INTERPRET)[^\n]*══[\s\S]*$/i, '');
+            // На всякий случай убрать строки-маркеры ИИ
+            t = t.replace(/^.*ИИ-заключение.*$/gmi, '');
+            t = t.replace(/^.*Интерпретация ИИ.*$/gmi, '');
+            t = t.replace(/^.*Это не диагноз\. Интерпретация ИИ.*$/gmi, '');
+            return t.trim();
+        }
 
         async function viewPatientText(fileId) {
             try {
@@ -1296,11 +1472,12 @@
                 if (!rows || !rows[0]) throw new Error('Файл не найден');
 
                 const file = rows[0];
-                patientModalText = file.full_text || '(текст отсутствует)';
+                // Только результаты анализов — без ИИ
+                patientModalText = stripAiConclusionForPatient(file.full_text || '(текст отсутствует)');
                 patientModalName = file.original_name || file.safe_name || 'Анализ';
 
                 document.getElementById('patient-modal-title').textContent = patientModalName;
-                document.getElementById('patient-modal-body').innerHTML = formatLabText(patientModalText);
+                document.getElementById('patient-modal-body').innerHTML = formatLabTextPatient(patientModalText);
                 document.getElementById('patient-text-modal').classList.add('visible');
             } catch (err) {
                 alert('Ошибка: ' + err.message);
@@ -1312,11 +1489,12 @@
         }
 
         function copyPatientModalText() {
-            navigator.clipboard.writeText(patientModalText).then(function () {
+            const safe = stripAiConclusionForPatient(patientModalText);
+            navigator.clipboard.writeText(safe).then(function () {
                 alert('Текст скопирован');
             }).catch(function () {
                 const ta = document.createElement('textarea');
-                ta.value = patientModalText;
+                ta.value = safe;
                 document.body.appendChild(ta);
                 ta.select();
                 document.execCommand('copy');
@@ -1326,7 +1504,8 @@
         }
 
         function downloadPatientModalText() {
-            const blob = new Blob([patientModalText], { type: 'text/plain;charset=utf-8' });
+            const safe = stripAiConclusionForPatient(patientModalText);
+            const blob = new Blob([safe], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -1335,20 +1514,15 @@
             URL.revokeObjectURL(url);
         }
 
-        // Форматирование текста анализа: подсветка отклонений + читаемость
-        function formatLabText(raw) {
+        // Форматирование ТОЛЬКО результатов (без ИИ-блоков)
+        function formatLabTextPatient(raw) {
             if (!raw) return '';
-            let text = escapeHtml(raw);
+            let text = escapeHtml(stripAiConclusionForPatient(raw));
 
-            // Только целые статусы — не подсвечивать «повышение» в комментариях
             text = text.replace(/(▲\s*)?ПОВЫШЕН\b/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
             text = text.replace(/(▼\s*)?СНИЖЕН\b/g, '<span class="abnormal">▼ СНИЖЕН</span>');
             text = text.replace(/(●\s*)?НОРМА\b/g, '<span class="status-norm">● НОРМА</span>');
-
-            // Заголовки секций
             text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
-
-            // Дата
             text = text.replace(/(Дата\s+[^:\n]+:\s*[^\n]+)/g, '<b>$1</b>');
 
             return text;
