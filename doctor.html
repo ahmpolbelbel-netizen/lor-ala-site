@@ -627,6 +627,13 @@
                         <span style="font-size:11px; color:#404040;">Ищет по всей базе patients_sync (не только загруженные файлы)</span>
                     </div>
                     <div id="patient-search-results" style="max-height:180px; overflow:auto; font-size:12px;"></div>
+                    <div id="patient-history-box" class="hidden" style="margin-top:8px; border-top:1px solid #808080; padding-top:8px;">
+                        <div style="font-weight:bold; margin-bottom:4px;">
+                            История пациента <span id="history-patient-label"></span>
+                            <button class="btn98" style="min-width:0; height:20px; padding:1px 8px; margin-left:8px;" onclick="closePatientHistory()">Скрыть</button>
+                        </div>
+                        <div id="patient-history-body" style="max-height:220px; overflow:auto; font-size:12px; background:#fff; border:2px inset #808080; padding:6px;"></div>
+                    </div>
                 </div>
 
                 <!-- Таблица файлов -->
@@ -966,8 +973,10 @@
                     html += '<tr>' +
                         '<td style="font-weight:bold; color:#000080;">' + row.id + '</td>' +
                         '<td>' + escapeHtml(name) + '</td>' +
-                        '<td><button class="btn98" style="padding:2px 8px;" onclick="filterByPatientId(' + row.id + ')">Файлы</button></td>' +
-                        '</tr>';
+                        '<td style="white-space:nowrap;">' +
+                        '<button class="btn98" style="padding:2px 6px; min-width:0;" onclick="filterByPatientId(' + row.id + ')">Файлы</button> ' +
+                        '<button class="btn98" style="padding:2px 6px; min-width:0;" onclick="showPatientHistory(' + row.id + ')">История</button>' +
+                        '</td></tr>';
                     patientNameCache[row.id] = name;
                 });
                 html += '</tbody></table>';
@@ -980,12 +989,106 @@
         function clearPatientSearch() {
             document.getElementById('patient-search-q').value = '';
             document.getElementById('patient-search-results').innerHTML = '';
+            closePatientHistory();
         }
 
         function filterByPatientId(id) {
             document.getElementById('filter-patient').value = String(id);
             document.getElementById('filter-status').value = 'all';
             applyFilters();
+            showPatientHistory(id);
+        }
+
+        function closePatientHistory() {
+            const box = document.getElementById('patient-history-box');
+            if (box) box.classList.add('hidden');
+        }
+
+        async function showPatientHistory(patientId) {
+            const box = document.getElementById('patient-history-box');
+            const body = document.getElementById('patient-history-body');
+            const label = document.getElementById('history-patient-label');
+            if (!box || !body) return;
+
+            box.classList.remove('hidden');
+            const pname = patientNameCache[patientId] || ('ID ' + patientId);
+            if (label) label.textContent = '— ' + pname + ' (ID ' + patientId + ')';
+            body.innerHTML = 'Загрузка истории приёмов и анализов…';
+
+            try {
+                const headers = {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                };
+
+                // Приёмы из patients_sync (синхронизация с Access)
+                const visResp = await fetch(
+                    SUPABASE_URL + '/rest/v1/patients_sync?id=eq.' + patientId +
+                    '&select=id,patient_name,doc_date,doc_time,doc_text,record_code&order=record_code.desc&limit=40',
+                    { method: 'GET', headers: headers }
+                );
+                let visits = visResp.ok ? await visResp.json() : [];
+                if (!Array.isArray(visits)) visits = [];
+
+                // Файлы анализов
+                const filesResp = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files?patient_id=eq.' + patientId +
+                    '&select=id,original_name,status,uploaded_at,full_text&order=uploaded_at.desc&limit=30',
+                    { method: 'GET', headers: headers }
+                );
+                let files = filesResp.ok ? await filesResp.json() : [];
+                if (!Array.isArray(files)) files = [];
+
+                let html = '';
+
+                html += '<div style="margin-bottom:8px;"><b>Приёмы (из базы / Access):</b> ' + visits.length + '</div>';
+                if (visits.length === 0) {
+                    html += '<div style="color:#666; margin-bottom:10px;">Нет записей приёмов в patients_sync</div>';
+                } else {
+                    html += '<table class="table98" style="width:100%; margin-bottom:12px; table-layout:auto;"><thead><tr>' +
+                        '<th>Дата</th><th>Время</th><th>Кратко</th></tr></thead><tbody>';
+                    visits.forEach(function (v) {
+                        let brief = (v.doc_text || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+                        // Не показывать диагноз-строки если есть
+                        brief = brief.replace(/Диагноз:.*/i, '').trim();
+                        html += '<tr>' +
+                            '<td style="white-space:nowrap;">' + escapeHtml(v.doc_date || '—') + '</td>' +
+                            '<td style="white-space:nowrap;">' + escapeHtml(v.doc_time || '') + '</td>' +
+                            '<td title="' + escapeHtml(brief) + '">' + escapeHtml(brief || '—') + '</td>' +
+                            '</tr>';
+                    });
+                    html += '</tbody></table>';
+                }
+
+                html += '<div style="margin-bottom:6px;"><b>Загруженные анализы:</b> ' + files.length + '</div>';
+                if (files.length === 0) {
+                    html += '<div style="color:#666;">Файлов пока нет</div>';
+                } else {
+                    html += '<table class="table98" style="width:100%; table-layout:auto;"><thead><tr>' +
+                        '<th>Дата</th><th>Файл</th><th>Статус</th><th></th></tr></thead><tbody>';
+                    files.forEach(function (f) {
+                        const st = f.status === 'processed' ? 'Готов' :
+                            (f.status === 'error' ? 'Ошибка' : 'В работе');
+                        const d = f.uploaded_at ? formatDate(f.uploaded_at) : '—';
+                        const hasText = f.full_text && f.full_text.trim().length > 20;
+                        html += '<tr>' +
+                            '<td style="white-space:nowrap;">' + escapeHtml(d) + '</td>' +
+                            '<td>' + escapeHtml(f.original_name || 'файл') + '</td>' +
+                            '<td>' + st + '</td>' +
+                            '<td>' + (hasText
+                                ? '<button class="btn98" style="min-width:0;padding:1px 6px;" onclick="viewText(' + f.id + ')">Текст</button>'
+                                : '') + '</td></tr>';
+                    });
+                    html += '</tbody></table>';
+                }
+
+                html += '<p style="margin-top:8px; color:#404040; font-size:11px;">' +
+                    'Приёмы подтягиваются из синхронизации с Access. Google Calendar здесь не отображается — только события в календаре.</p>';
+
+                body.innerHTML = html;
+            } catch (err) {
+                body.innerHTML = '<span style="color:#c00000;">Ошибка: ' + escapeHtml(err.message) + '</span>';
+            }
         }
 
         // ========== ФИЛЬТРЫ ==========
