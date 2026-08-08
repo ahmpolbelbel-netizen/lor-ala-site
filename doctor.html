@@ -590,6 +590,8 @@
                     <b>Уведомления:</b>
                     <button class="btn98" style="padding:2px 8px; min-width:0;" onclick="enableNotifications()">Включить звук и пуш</button>
                     <span id="notify-status" style="margin-left:8px; color:#404040;">выключены</span>
+                    <span style="margin-left:16px;"><b>Сеть:</b> <span id="online-status">онлайн</span></span>
+                    <button class="btn98" style="padding:2px 8px; min-width:0; margin-left:8px;" onclick="cacheForOffline()" title="Сохранить список и карточки на устройство">Офлайн-копия</button>
                 </div>
 
                 <!-- Панель фильтров -->
@@ -627,6 +629,7 @@
                 <div class="toolbar">
                     <button class="btn98 primary" onclick="loadFiles()">Обновить список</button>
                     <button class="btn98" onclick="showHelp()">Как обработать файлы?</button>
+                    <button class="btn98" onclick="loadOfflineCache()" title="Показать данные из офлайн-копии">Из кэша</button>
                     <span style="flex:1;"></span>
                     <span id="doctor-label" style="align-self:center; font-weight:bold;"></span>
                     <button class="btn98" onclick="doctorLogout()">Выйти</button>
@@ -657,9 +660,12 @@
                             <input type="date" id="history-to" class="input98" onchange="refreshPatientHistoryDates()">
                             <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="refreshPatientHistoryDates()">Применить</button>
                             <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="startCompareMode()">Сравнить 2 анализа</button>
+                            <button class="btn98 btn-ai-interp" style="min-width:0;height:22px;padding:1px 8px;" onclick="requestChartAiAnalysis()" title="ИИ-разбор всей карты">ИИ: вся карта</button>
+                            <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="exportCourseCalendar()" title="Ежедневные визиты в Google Calendar (кроме пятницы)">Календарь курса</button>
                             <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="closePatientHistory()">Скрыть</button>
                         </div>
                         <div id="patient-card-3sec" style="background:#fff;border:2px inset #808080;padding:8px;margin-bottom:8px;font-size:12px;"></div>
+                        <div id="chart-ai-box" class="hidden" style="background:#eaf2f8;border:2px inset #808080;padding:8px;margin-bottom:8px;font-size:12px;max-height:320px;overflow:auto;white-space:pre-wrap;"></div>
                         <div id="patient-history-body" style="max-height:280px;overflow:auto;font-size:12px;background:#fff;border:2px inset #808080;padding:6px;"></div>
                     </div>
                 </div>
@@ -857,6 +863,7 @@
                 if (e.key === 'Enter') document.getElementById('doc-password').focus();
             });
             updateNotifyUi();
+            updateOnlineStatus();
         });
 
         function showLoginScreen() {
@@ -871,6 +878,7 @@
             document.getElementById('doctor-label').textContent = doctorEmail ? ('Врач: ' + doctorEmail) : 'Врач';
             document.getElementById('notify-banner').classList.add('visible');
             updateNotifyUi();
+            updateOnlineStatus();
         }
 
         // ========== АВТОРИЗАЦИЯ ==========
@@ -1380,6 +1388,241 @@
 
             document.getElementById('compare-body').textContent = out;
         }
+
+        // ========== ИИ: ВСЯ КАРТА ПАЦИЕНТА ==========
+        async function requestChartAiAnalysis() {
+            if (!historyCache || !historyCache.patientId) {
+                alert('Сначала откройте историю пациента');
+                return;
+            }
+            if (!GROQ_KEY) {
+                alert('Нет GROQ_KEY');
+                return;
+            }
+            const box = document.getElementById('chart-ai-box');
+            if (box) {
+                box.classList.remove('hidden');
+                box.textContent = 'ИИ анализирует всю карту (визиты + анализы)… это 30–90 сек';
+            }
+
+            const pid = historyCache.patientId;
+            const pname = patientNameCache[pid] || ('ID ' + pid);
+            const visits = historyCache.visits || [];
+            const files = historyCache.files || [];
+
+            // Собираем контекст: визиты полностью (с диагнозами), анализы без обрезки слишком сильной
+            let ctx = 'ПАЦИЕНТ: ' + pname + ' (ID ' + pid + ')\n\n';
+            ctx += '=== ПРИЁМЫ (от новых к старым, текст из Access, с диагнозами) ===\n';
+            visits.slice(0, 25).forEach(function (v, i) {
+                ctx += '\n--- Приём #' + (i + 1) + ' ' + (v.doc_date || '') + ' ' + (v.doc_time || '') + ' ---\n';
+                ctx += (v.doc_text || '(пусто)').slice(0, 3500) + '\n';
+            });
+            ctx += '\n=== ЛАБОРАТОРНЫЕ АНАЛИЗЫ ===\n';
+            files.slice(0, 12).forEach(function (f, i) {
+                ctx += '\n--- Файл #' + (i + 1) + ' ' + (f.original_name || '') + ' ' + (f.uploaded_at || '') + ' ---\n';
+                ctx += (f.full_text || '(нет текста)').slice(0, 4000) + '\n';
+            });
+            // лимит контекста
+            if (ctx.length > 28000) ctx = ctx.slice(0, 28000) + '\n…[обрезано]';
+
+            const system = (
+                'Ты клинический ассистент ЛОР-врача (оториноларингология) в Алматы. ' +
+                'Тебе дают всю доступную карту: записи приёмов (с диагнозами и назначениями врача) и тексты анализов. ' +
+                'Отвечай на русском, деловым стилем, без markdown-заголовков #. Это НЕ диагноз для пациента — только разбор для врача.'
+            );
+            const user = (
+                'Сделай ДВА блока.\n\n' +
+                'БЛОК 1. АНАЛИЗ ВСЕЙ ИСТОРИИ\n' +
+                '1) Хронология: как развивалась ЛОР-проблема (и сопутствующее).\n' +
+                '2) Повторяющиеся диагнозы/жалобы/назначения врача.\n' +
+                '3) Лабораторные отклонения в динамике (если есть несколько анализов).\n' +
+                '4) Подход СНГ / клиническая практика региона vs ориентиры США (не сравнивай «нормы бланков», ' +
+                'а клинический смысл находок и тактику).\n' +
+                '5) Возможные направления к другим специалистам (ЛОР остаётся ведущим): педиатр/терапевт, ' +
+                'аллерголог, пульмонолог, невролог, гастроэнтеролог, стоматолог, иммунолог — только если данные карты это допускают; ' +
+                'с кратким «почему».\n' +
+                '6) На что обратить внимание на следующем приёме.\n\n' +
+                'БЛОК 2. ПОСЛЕДНИЙ ЭПИЗОД / ОБОСТРЕНИЕ\n' +
+                '1) Что выглядит как актуальный эпизод (даты, жалобы, диагноз, назначения).\n' +
+                '2) Ответ на лечение по карте (если видно).\n' +
+                '3) Дифференциальный ряд (коротко, 3–6 пунктов).\n' +
+                '4) Какие анализы/обследования логично уточнить.\n' +
+                '5) Красные флаги, если есть.\n\n' +
+                'В конце одной строкой: «Это не диагноз. Интерпретация ИИ, решение принимает лечащий врач.»\n' +
+                'Не выдумывай факты, которых нет в тексте. Объём: содержательный, 25–45 предложений.\n\n' +
+                'ДАННЫЕ КАРТЫ:\n' + ctx
+            );
+
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + GROQ_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            { role: 'system', content: system },
+                            { role: 'user', content: user }
+                        ],
+                        temperature: 0.25,
+                        max_tokens: 3500
+                    })
+                });
+                if (!resp.ok) {
+                    const t = await resp.text();
+                    throw new Error('Groq HTTP ' + resp.status + ' ' + t.slice(0, 150));
+                }
+                const data = await resp.json();
+                const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Пустой ответ';
+                if (box) box.textContent = answer;
+                // сохранить локально
+                try {
+                    localStorage.setItem('lor_chart_ai_' + pid, answer);
+                } catch (e) {}
+            } catch (err) {
+                if (box) box.textContent = 'Ошибка ИИ: ' + err.message;
+            }
+        }
+
+        // ========== GOOGLE CALENDAR / ICS (курс, без пятниц, цвет «павлин») ==========
+        function exportCourseCalendar() {
+            if (!historyCache || !historyCache.patientId) {
+                alert('Сначала откройте историю пациента');
+                return;
+            }
+            const pid = historyCache.patientId;
+            const pname = patientNameCache[pid] || ('ID ' + pid);
+            const startStr = prompt('Дата начала курса (ГГГГ-ММ-ДД):', new Date().toISOString().slice(0, 10));
+            if (!startStr) return;
+            const daysStr = prompt('Сколько рабочих дней курса? (пятницы пропускаются)', '10');
+            const needDays = Math.max(1, parseInt(daysStr || '10', 10) || 10);
+            const timeStr = prompt('Время визита (ЧЧ:ММ), местное:', '10:00');
+            const [hh, mm] = (timeStr || '10:00').split(':');
+            const hour = parseInt(hh, 10) || 10;
+            const minute = parseInt(mm, 10) || 0;
+
+            const start = new Date(startStr + 'T12:00:00');
+            if (isNaN(start.getTime())) {
+                alert('Некорректная дата');
+                return;
+            }
+
+            function pad(n) { return (n < 10 ? '0' : '') + n; }
+            function toIcsLocal(d) {
+                return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + 'T' +
+                    pad(d.getHours()) + pad(d.getMinutes()) + '00';
+            }
+
+            const events = [];
+            const cursor = new Date(start);
+            let added = 0;
+            let guard = 0;
+            while (added < needDays && guard < 120) {
+                guard++;
+                // 5 = Friday
+                if (cursor.getDay() !== 5) {
+                    const evStart = new Date(cursor);
+                    evStart.setHours(hour, minute, 0, 0);
+                    const evEnd = new Date(evStart);
+                    evEnd.setMinutes(evEnd.getMinutes() + 30);
+                    events.push({ start: evStart, end: evEnd, n: added + 1 });
+                    added++;
+                }
+                cursor.setDate(cursor.getDate() + 1);
+            }
+
+            // Цвет «павлин» (peacock) в Google Calendar UI — colorId 9; в ICS помечаем CATEGORIES
+            let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Doctor LOR//Course//RU\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\n';
+            ics += 'X-WR-CALNAME:Курс ЛОР ' + pname.replace(/\r?\n/g, ' ') + '\r\n';
+            events.forEach(function (ev) {
+                const uid = 'lor-course-' + pid + '-' + ev.n + '-' + ev.start.getTime() + '@doctor-lor';
+                ics += 'BEGIN:VEVENT\r\n';
+                ics += 'UID:' + uid + '\r\n';
+                ics += 'DTSTAMP:' + toIcsLocal(new Date()) + '\r\n';
+                ics += 'DTSTART:' + toIcsLocal(ev.start) + '\r\n';
+                ics += 'DTEND:' + toIcsLocal(ev.end) + '\r\n';
+                ics += 'SUMMARY:ЛОР курс ' + ev.n + '/' + needDays + ' — ' + pname.replace(/\r?\n/g, ' ') + '\r\n';
+                ics += 'DESCRIPTION:Пациент ID ' + pid + '. Оплативший курс. Цвет в Google Calendar: Павлиний (Peacock). Пятница — выходной\\nКабинет Доктор ЛОР\\n\r\n';
+                ics += 'LOCATION:Доктор ЛОР, Алматы, Розыбакиева 95\r\n';
+                ics += 'CATEGORIES:LOR-COURSE,PEACOCK,PAID-FULL\r\n';
+                ics += 'STATUS:CONFIRMED\r\n';
+                ics += 'END:VEVENT\r\n';
+            });
+            ics += 'END:VCALENDAR\r\n';
+
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lor_course_' + pid + '.ics';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            alert(
+                'Скачан файл .ics: ' + events.length + ' визитов (пятницы пропущены).\n\n' +
+                'Импорт в Google Calendar:\n' +
+                '1) calendar.google.com → Настройки → Импорт и экспорт → Импорт\n' +
+                '2) Выберите файл lor_course_' + pid + '.ics\n' +
+                '3) Назначьте календарю цвет «Павлиний» (Peacock) для оплативших курс\n\n' +
+                'Полный API Google (создание событий без файла) можно подключить отдельно с OAuth.'
+            );
+        }
+
+        // ========== ОФЛАЙН-КАБИНЕТ ==========
+        function updateOnlineStatus() {
+            const el = document.getElementById('online-status');
+            if (!el) return;
+            if (navigator.onLine) {
+                el.textContent = 'онлайн';
+                el.style.color = '#006400';
+            } else {
+                el.textContent = 'ОФЛАЙН — данные из кэша';
+                el.style.color = '#8b0000';
+            }
+        }
+
+        function cacheForOffline() {
+            try {
+                const payload = {
+                    at: new Date().toISOString(),
+                    files: allFiles,
+                    names: patientNameCache,
+                    history: historyCache
+                };
+                localStorage.setItem('lor_offline_pack', JSON.stringify(payload));
+                alert('Офлайн-копия сохранена (' + allFiles.length + ' файлов). При отсутствии сети нажмите «Из кэша».');
+            } catch (e) {
+                alert('Не удалось сохранить (мало места в браузере): ' + e.message);
+            }
+        }
+
+        function loadOfflineCache() {
+            try {
+                const raw = localStorage.getItem('lor_offline_pack');
+                if (!raw) {
+                    alert('Кэш пуст. Сначала «Офлайн-копия» при наличии сети.');
+                    return;
+                }
+                const payload = JSON.parse(raw);
+                allFiles = payload.files || [];
+                patientNameCache = payload.names || {};
+                historyCache = payload.history || null;
+                applyFilters();
+                updateStatusBar();
+                alert('Загружено из кэша от ' + (payload.at || '?') + '. Файлов: ' + allFiles.length);
+            } catch (e) {
+                alert('Ошибка кэша: ' + e.message);
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', function () {
+            updateOnlineStatus();
+            // автоподхват кэша если список пуст
+            if (!allFiles.length) loadOfflineCache();
+        });
 
         // ========== ФИЛЬТРЫ ==========
         function applyFilters() {
