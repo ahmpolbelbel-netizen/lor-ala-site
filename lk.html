@@ -515,14 +515,17 @@
         }
 
         .text-modal-body {
-            padding: 16px 18px;
+            padding: 14px 16px;
             overflow: auto;
             flex: 1;
-            font-size: 13px;
+            font-size: 12px;
             line-height: 1.45;
-            white-space: pre;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-wrap: break-word;
             font-family: "Consolas", "Courier New", "Lucida Console", monospace;
             color: #222;
+            max-width: 100%;
         }
 
         .text-modal-body .abnormal {
