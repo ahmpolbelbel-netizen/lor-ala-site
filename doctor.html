@@ -682,7 +682,7 @@
                                 <th style="width:140px;">Пациент</th>
                                 <th>Имя файла</th>
                                 <th style="width:56px;">Размер</th>
-                                <th style="width:168px;">Действия</th>
+                                <th style="width:220px;">Действия</th>
                             </tr>
                         </thead>
                         <tbody id="files-tbody">
@@ -828,7 +828,60 @@
         </div>
     </div>
 
+    <!-- ========== ИИ: ВСЯ КАРТА (отдельное окно) ========== -->
+    <div id="chart-ai-modal" class="modal-overlay">
+        <div class="modal98" style="max-width:920px;">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span class="brand-mark brand-mark-sm">Доктор ЛОР</span>
+                    <span id="chart-ai-title">ИИ — вся карта</span>
+                </div>
+                <div class="controls">
+                    <button onclick="closeChartAiModal()">×</button>
+                </div>
+            </div>
+            <div class="modal-body" id="chart-ai-body"
+                 style="font-family:Consolas,'Courier New',monospace; font-size:14px; line-height:1.55; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; max-height:70vh;"></div>
+            <div class="modal-footer">
+                <button class="btn98" onclick="copyChartAi()">Копировать</button>
+                <button class="btn98 primary" onclick="closeChartAiModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== СЖАТИЕ PDF (врач) ========== -->
+    <div id="compress-modal" class="modal-overlay">
+        <div class="modal98" style="max-width:480px;">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span class="brand-mark brand-mark-sm">Доктор ЛОР</span>
+                    <span>Сжатие файла</span>
+                </div>
+                <div class="controls">
+                    <button onclick="closeCompressModal()">×</button>
+                </div>
+            </div>
+            <div style="padding:14px; background:#c0c0c0; font-size:12px;">
+                <p id="compress-file-label" style="margin-bottom:10px;"></p>
+                <p style="margin-bottom:8px;">Степень (для архива / пересылки):</p>
+                <label style="display:block; margin:4px 0;"><input type="radio" name="doc-compress" value="max" checked> Макс. (текст — «граммы»)</label>
+                <label style="display:block; margin:4px 0;"><input type="radio" name="doc-compress" value="balanced"> Обычное</label>
+                <label style="display:block; margin:4px 0;"><input type="radio" name="doc-compress" value="mush"> «Каша» (минимум КБ)</label>
+                <p id="compress-status" style="margin-top:10px; color:#404040;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn98 primary" onclick="runDoctorCompress()">Сжать и скачать</button>
+                <button class="btn98" onclick="closeCompressModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
         const RAW_URL = "https://dptaczshbxmgtybmbnuw.supabase.co";
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
@@ -1390,6 +1443,37 @@
         }
 
         // ========== ИИ: ВСЯ КАРТА ПАЦИЕНТА ==========
+        let chartAiText = '';
+
+        function formatChartAiHtml(raw) {
+            if (!raw) return '';
+            let t = String(raw)
+                .replace(/\r\n/g, '\n')
+                .replace(/[ \t]+\n/g, '\n')
+                .replace(/\n{3,}/g, '\n\n');
+            // убрать markdown-решётки, оставить текст
+            t = t.replace(/^#{1,6}\s*/gm, '');
+            t = t.replace(/\*\*([^*]+)\*\*/g, '$1');
+            // абзацы
+            const parts = t.split(/\n\s*\n/).map(function (p) {
+                return p.replace(/\n/g, ' ').trim();
+            }).filter(Boolean);
+            return parts.map(function (p) {
+                return '<p style="margin:0 0 12px 0; word-break:break-word; overflow-wrap:anywhere;">' +
+                    escapeHtml(p) + '</p>';
+            }).join('');
+        }
+
+        function closeChartAiModal() {
+            document.getElementById('chart-ai-modal').classList.remove('visible');
+        }
+
+        function copyChartAi() {
+            navigator.clipboard.writeText(chartAiText || '').then(function () {
+                alert('Скопировано');
+            }).catch(function () { alert('Не удалось скопировать'); });
+        }
+
         async function requestChartAiAnalysis() {
             if (!historyCache || !historyCache.patientId) {
                 alert('Сначала откройте историю пациента');
@@ -1399,58 +1483,52 @@
                 alert('Нет GROQ_KEY');
                 return;
             }
-            const box = document.getElementById('chart-ai-box');
-            if (box) {
-                box.classList.remove('hidden');
-                box.textContent = 'ИИ анализирует всю карту (визиты + анализы)… это 30–90 сек';
-            }
 
             const pid = historyCache.patientId;
             const pname = patientNameCache[pid] || ('ID ' + pid);
             const visits = historyCache.visits || [];
             const files = historyCache.files || [];
 
-            // Собираем контекст: визиты полностью (с диагнозами), анализы без обрезки слишком сильной
+            document.getElementById('chart-ai-title').textContent = 'ИИ — карта: ' + pname;
+            document.getElementById('chart-ai-body').innerHTML =
+                '<p style="margin:0;">Анализ всей карты (визиты + анализы)… обычно 30–90 сек.</p>';
+            document.getElementById('chart-ai-modal').classList.add('visible');
+            chartAiText = '';
+
             let ctx = 'ПАЦИЕНТ: ' + pname + ' (ID ' + pid + ')\n\n';
-            ctx += '=== ПРИЁМЫ (от новых к старым, текст из Access, с диагнозами) ===\n';
+            ctx += '=== ПРИЁМЫ (с диагнозами) ===\n';
             visits.slice(0, 25).forEach(function (v, i) {
                 ctx += '\n--- Приём #' + (i + 1) + ' ' + (v.doc_date || '') + ' ' + (v.doc_time || '') + ' ---\n';
                 ctx += (v.doc_text || '(пусто)').slice(0, 3500) + '\n';
             });
-            ctx += '\n=== ЛАБОРАТОРНЫЕ АНАЛИЗЫ ===\n';
+            ctx += '\n=== АНАЛИЗЫ ===\n';
             files.slice(0, 12).forEach(function (f, i) {
-                ctx += '\n--- Файл #' + (i + 1) + ' ' + (f.original_name || '') + ' ' + (f.uploaded_at || '') + ' ---\n';
+                ctx += '\n--- Файл #' + (i + 1) + ' ' + (f.original_name || '') + ' ---\n';
                 ctx += (f.full_text || '(нет текста)').slice(0, 4000) + '\n';
             });
-            // лимит контекста
             if (ctx.length > 28000) ctx = ctx.slice(0, 28000) + '\n…[обрезано]';
 
             const system = (
-                'Ты клинический ассистент ЛОР-врача (оториноларингология) в Алматы. ' +
-                'Тебе дают всю доступную карту: записи приёмов (с диагнозами и назначениями врача) и тексты анализов. ' +
-                'Отвечай на русском, деловым стилем, без markdown-заголовков #. Это НЕ диагноз для пациента — только разбор для врача.'
+                'Ты клинический ассистент ЛОР-врача в Алматы. Отвечай на русском. ' +
+                'Только разбор для врача, не диагноз пациенту. Без markdown (# и **). ' +
+                'Пиши короткими абзацами: один смысл — один абзац, пустая строка между абзацами.'
             );
             const user = (
-                'Сделай ДВА блока.\n\n' +
-                'БЛОК 1. АНАЛИЗ ВСЕЙ ИСТОРИИ\n' +
-                '1) Хронология: как развивалась ЛОР-проблема (и сопутствующее).\n' +
-                '2) Повторяющиеся диагнозы/жалобы/назначения врача.\n' +
-                '3) Лабораторные отклонения в динамике (если есть несколько анализов).\n' +
-                '4) Подход СНГ / клиническая практика региона vs ориентиры США (не сравнивай «нормы бланков», ' +
-                'а клинический смысл находок и тактику).\n' +
-                '5) Возможные направления к другим специалистам (ЛОР остаётся ведущим): педиатр/терапевт, ' +
-                'аллерголог, пульмонолог, невролог, гастроэнтеролог, стоматолог, иммунолог — только если данные карты это допускают; ' +
-                'с кратким «почему».\n' +
-                '6) На что обратить внимание на следующем приёме.\n\n' +
-                'БЛОК 2. ПОСЛЕДНИЙ ЭПИЗОД / ОБОСТРЕНИЕ\n' +
-                '1) Что выглядит как актуальный эпизод (даты, жалобы, диагноз, назначения).\n' +
-                '2) Ответ на лечение по карте (если видно).\n' +
-                '3) Дифференциальный ряд (коротко, 3–6 пунктов).\n' +
-                '4) Какие анализы/обследования логично уточнить.\n' +
-                '5) Красные флаги, если есть.\n\n' +
-                'В конце одной строкой: «Это не диагноз. Интерпретация ИИ, решение принимает лечащий врач.»\n' +
-                'Не выдумывай факты, которых нет в тексте. Объём: содержательный, 25–45 предложений.\n\n' +
-                'ДАННЫЕ КАРТЫ:\n' + ctx
+                'Сделай два раздела. Между абзацами — пустая строка.\n\n' +
+                'РАЗДЕЛ 1. ВСЯ ИСТОРИЯ\n' +
+                'Абзац про хронологию ЛОР-проблемы.\n' +
+                'Абзац про повторяющиеся диагнозы, жалобы, назначения врача.\n' +
+                'Абзац про лабораторные отклонения в динамике (если есть).\n' +
+                'Абзац: клинический смысл (СНГ/регион и ориентиры США) — без сравнения «норм бланков».\n' +
+                'Абзац: что проверить на следующем приёме.\n\n' +
+                'Рефералы к другим специалистам — ТОЛЬКО если в данных карты есть основание. ' +
+                'Не перечисляй «на всякий случай». Для каждого направления отдельный абзац в формате: ' +
+                '«К кому: … Зачем (по данным карты): … Что именно из карты это мотивирует: …»\n\n' +
+                'РАЗДЕЛ 2. ПОСЛЕДНИЙ ЭПИЗОД / ОБОСТРЕНИЕ\n' +
+                'Абзацы: актуальное; ответ на лечение; дифференциал (кратко); что уточнить; красные флаги если есть.\n\n' +
+                'В конце отдельным абзацем: Это не диагноз. Интерпретация ИИ, решение принимает лечащий врач.\n' +
+                'Не выдумывай факты. 20–40 коротких абзацев максимум.\n\n' +
+                'ДАННЫЕ:\n' + ctx
             );
 
             try {
@@ -1466,7 +1544,7 @@
                             { role: 'system', content: system },
                             { role: 'user', content: user }
                         ],
-                        temperature: 0.25,
+                        temperature: 0.2,
                         max_tokens: 3500
                     })
                 });
@@ -1476,14 +1554,178 @@
                 }
                 const data = await resp.json();
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Пустой ответ';
-                if (box) box.textContent = answer;
-                // сохранить локально
-                try {
-                    localStorage.setItem('lor_chart_ai_' + pid, answer);
-                } catch (e) {}
+                chartAiText = answer;
+                document.getElementById('chart-ai-body').innerHTML = formatChartAiHtml(answer);
+                try { localStorage.setItem('lor_chart_ai_' + pid, answer); } catch (e) {}
             } catch (err) {
-                if (box) box.textContent = 'Ошибка ИИ: ' + err.message;
+                document.getElementById('chart-ai-body').innerHTML =
+                    '<p style="color:#c00000;">Ошибка ИИ: ' + escapeHtml(err.message) + '</p>';
             }
+        }
+
+        // ========== СЖАТИЕ PDF В КАБИНЕТЕ ВРАЧА ==========
+        let compressTargetFile = null;
+
+        function openCompressModal(fileId) {
+            const f = allFiles.find(function (x) { return x.id === fileId; });
+            if (!f) {
+                alert('Файл не найден');
+                return;
+            }
+            compressTargetFile = f;
+            const sz = f.file_size ? (Math.round(f.file_size / 1024) + ' КБ') : '?';
+            document.getElementById('compress-file-label').textContent =
+                (f.original_name || f.safe_name || 'файл') + ' · сейчас ' + sz;
+            document.getElementById('compress-status').textContent = '';
+            document.getElementById('compress-modal').classList.add('visible');
+        }
+
+        function closeCompressModal() {
+            document.getElementById('compress-modal').classList.remove('visible');
+            compressTargetFile = null;
+        }
+
+        async function runDoctorCompress() {
+            if (!compressTargetFile || !compressTargetFile.storage_path) {
+                alert('Нет пути к файлу');
+                return;
+            }
+            const modeEl = document.querySelector('input[name="doc-compress"]:checked');
+            const mode = (modeEl && modeEl.value) || 'max';
+            const st = document.getElementById('compress-status');
+            st.textContent = 'Скачивание оригинала…';
+            try {
+                const path = compressTargetFile.storage_path;
+                const resp = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/patient-files/' + path,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                        }
+                    }
+                );
+                if (!resp.ok) throw new Error('Не скачался оригинал HTTP ' + resp.status);
+                const blob = await resp.blob();
+                st.textContent = 'Сжатие (' + mode + ')…';
+                const out = await compressPdfBlobDoctor(blob, mode, st);
+                const kb = (out.size / 1024).toFixed(0);
+                st.textContent = 'Готово: ' + kb + ' КБ. Скачивание…';
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(out);
+                const base = (compressTargetFile.original_name || 'file').replace(/\.pdf$/i, '');
+                a.download = base + '_' + mode + '.pdf';
+                a.click();
+                URL.revokeObjectURL(a.href);
+            } catch (e) {
+                st.textContent = 'Ошибка: ' + e.message;
+            }
+        }
+
+        async function compressPdfBlobDoctor(blob, mode, stEl) {
+            // Без pdf.js — просто отдаём как есть с пометкой
+            if (typeof pdfjsLib === 'undefined') {
+                if (stEl) stEl.textContent = 'pdf.js не загружен — отдаю оригинал';
+                return blob;
+            }
+            const maxSide = mode === 'mush' ? 900 : (mode === 'balanced' ? 1400 : 1100);
+            const quality = mode === 'mush' ? 0.22 : (mode === 'balanced' ? 0.48 : 0.32);
+            const scale = mode === 'mush' ? 0.85 : (mode === 'balanced' ? 1.2 : 1.0);
+            const data = new Uint8Array(await blob.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({ data: data }).promise;
+            const pages = [];
+            for (let i = 1; i <= Math.min(pdf.numPages, 8); i++) {
+                if (stEl) stEl.textContent = 'Стр. ' + i + '/' + pdf.numPages + '…';
+                const page = await pdf.getPage(i);
+                const baseVp = page.getViewport({ scale: 1 });
+                let w = Math.round(baseVp.width * scale);
+                let h = Math.round(baseVp.height * scale);
+                if (Math.max(w, h) > maxSide) {
+                    const s = maxSide / Math.max(w, h);
+                    w = Math.round(w * s);
+                    h = Math.round(h * s);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, w, h);
+                await page.render({
+                    canvasContext: ctx,
+                    viewport: page.getViewport({ scale: w / baseVp.width })
+                }).promise;
+                const jpeg = await new Promise(function (r) { canvas.toBlob(r, 'image/jpeg', quality); });
+                pages.push({ jpeg: jpeg, w: w, h: h });
+            }
+            // одна страница или склейка
+            if (pages.length === 1) {
+                return await jpegToSimplePdf(pages[0].jpeg, pages[0].w, pages[0].h);
+            }
+            let totalH = 0, maxW = 0;
+            const use = pages.slice(0, 4);
+            use.forEach(function (p) { totalH += p.h; maxW = Math.max(maxW, p.w); });
+            const canvas = document.createElement('canvas');
+            canvas.width = maxW;
+            canvas.height = totalH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, maxW, totalH);
+            let y = 0;
+            for (let i = 0; i < use.length; i++) {
+                const bmp = await createImageBitmap(use[i].jpeg);
+                ctx.drawImage(bmp, 0, y);
+                y += use[i].h;
+                if (bmp.close) bmp.close();
+            }
+            const jpeg = await new Promise(function (r) { canvas.toBlob(r, 'image/jpeg', 0.4); });
+            return await jpegToSimplePdf(jpeg, maxW, totalH);
+        }
+
+        async function jpegToSimplePdf(jpegBlob, width, height) {
+            const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
+            const enc = new TextEncoder();
+            const parts = [];
+            function add(s) { parts.push(typeof s === 'string' ? enc.encode(s) : s); }
+            const offsets = [0];
+            function mark() {
+                let n = 0;
+                for (let i = 0; i < parts.length; i++) n += parts[i].length;
+                offsets.push(n);
+            }
+            add('%PDF-1.4\n');
+            mark();
+            add('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+            mark();
+            add('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+            mark();
+            add('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + width + ' ' + height +
+                '] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>\nendobj\n');
+            mark();
+            const content = 'q\n' + width + ' 0 0 ' + height + ' 0 0 cm\n/Im0 Do\nQ\n';
+            add('4 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + 'endstream\nendobj\n');
+            mark();
+            add('5 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + width + ' /Height ' + height +
+                ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpegBytes.length +
+                ' >>\nstream\n');
+            add(jpegBytes);
+            add('\nendstream\nendobj\n');
+            const xref = parts.reduce(function (a, p) { return a + p.length; }, 0);
+            add('xref\n0 6\n0000000000 65535 f \n');
+            for (let i = 1; i <= 5; i++) {
+                add(String(offsets[i]).padStart(10, '0') + ' 00000 n \n');
+            }
+            add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n');
+            let total = 0;
+            for (let i = 0; i < parts.length; i++) total += parts[i].length;
+            const out = new Uint8Array(total);
+            let pos = 0;
+            for (let i = 0; i < parts.length; i++) {
+                out.set(parts[i], pos);
+                pos += parts[i].length;
+            }
+            return new Blob([out], { type: 'application/pdf' });
         }
 
         // ========== GOOGLE CALENDAR / ICS (курс, без пятниц, цвет «павлин») ==========
@@ -1724,6 +1966,7 @@
                                 : `<button class="btn98" disabled title="Ещё обрабатывается">Текст</button>`
                             }
                             <button class="btn98" onclick="downloadPdf('${escapeAttr(file.storage_path || '')}')">PDF</button>
+                            <button class="btn98" onclick="openCompressModal(${file.id})" title="Сжать PDF перед пересылкой">Сжать</button>
                             <button class="btn98 btn-del" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path || '')}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удал.</button>
                         </td>
                     </tr>
@@ -2229,6 +2472,8 @@
                 closeHelpModal();
                 closeVisitModal();
                 closeCompareModal();
+                closeChartAiModal();
+                closeCompressModal();
             }
         });
 
