@@ -149,6 +149,7 @@
             background: #ffffff;
             border: 2px solid #808080;
             font-size: 12px;
+            table-layout: fixed;
         }
 
         .table98 th {
@@ -168,6 +169,31 @@
             border-right: 1px solid #e0e0e0;
             padding: 3px 6px;
             vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table98 td.col-file {
+            max-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table98 td.col-actions {
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .table98 td.col-actions .btn98 {
+            min-width: 0;
+            padding: 2px 6px;
+            font-size: 11px;
+        }
+
+        .btn-del {
+            color: #800000 !important;
+            font-weight: bold;
         }
 
         .table98 tr:hover td {
@@ -354,6 +380,37 @@
             font-weight: bold;
         }
 
+        .chat-msg {
+            margin-bottom: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            max-width: 95%;
+        }
+        .chat-msg.user {
+            background: #d6eaf8;
+            margin-left: auto;
+            text-align: right;
+        }
+        .chat-msg.assistant {
+            background: #eafaf1;
+            border-left: 3px solid #1a5276;
+        }
+        .chat-msg .role {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        #notify-banner {
+            display: none;
+            background: #ffffcc;
+            border: 1px solid #808080;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        #notify-banner.visible { display: block; }
+
         .modal-body .ai-conclusion {
             display: block;
             margin-top: 12px;
@@ -471,6 +528,12 @@
 
             <div class="win98-content">
 
+                <div id="notify-banner">
+                    <b>Уведомления:</b>
+                    <button class="btn98" style="padding:2px 8px; min-width:0;" onclick="enableNotifications()">Включить звук и пуш</button>
+                    <span id="notify-status" style="margin-left:8px; color:#404040;">выключены</span>
+                </div>
+
                 <!-- Панель фильтров -->
                 <div class="groupbox">
                     <div class="groupbox-title">Фильтр файлов</div>
@@ -533,13 +596,13 @@
                         <thead>
                             <tr>
                                 <th style="width:28px;">№</th>
-                                <th style="width:90px;">Статус</th>
-                                <th style="width:120px;">Дата загрузки</th>
-                                <th style="width:70px;">ID</th>
-                                <th>Пациент</th>
+                                <th style="width:78px;">Статус</th>
+                                <th style="width:100px;">Дата</th>
+                                <th style="width:48px;">ID</th>
+                                <th style="width:140px;">Пациент</th>
                                 <th>Имя файла</th>
-                                <th style="width:70px;">Размер</th>
-                                <th style="width:320px; min-width:300px;">Действия</th>
+                                <th style="width:56px;">Размер</th>
+                                <th style="width:168px;">Действия</th>
                             </tr>
                         </thead>
                         <tbody id="files-tbody">
@@ -575,9 +638,20 @@
                 </div>
             </div>
             <div class="modal-body" id="modal-text">Загрузка...</div>
+            <!-- Чат с ИИ по текущему анализу -->
+            <div id="ai-chat-panel" class="hidden" style="border-top:1px solid #808080; background:#f4f4f4; max-height:260px; display:flex; flex-direction:column;">
+                <div style="padding:4px 10px; font-weight:bold; background:#c0c0c0; border-bottom:1px solid #808080;">Чат с ИИ по этому анализу</div>
+                <div id="ai-chat-messages" style="flex:1; overflow-y:auto; padding:8px 10px; font-size:12px; line-height:1.4; background:#fff; min-height:100px; max-height:160px;"></div>
+                <div style="display:flex; gap:6px; padding:6px 8px; border-top:1px solid #c0c0c0;">
+                    <input type="text" id="ai-chat-input" class="input98" style="flex:1;" placeholder="Вопрос по анализу…"
+                           onkeydown="if(event.key==='Enter')sendAiChat()">
+                    <button class="btn98 primary" onclick="sendAiChat()">Отправить</button>
+                </div>
+            </div>
             <div class="modal-footer">
                 <button class="btn98 btn-ai" onclick="requestAiImprove()" title="Очистка текста бланка (Groq)">ИИ-очистка</button>
-                <button class="btn98 btn-ai-interp" onclick="requestAiInterpret()" title="Клиническая интерпретация результатов (Groq)">ИИ-заключение</button>
+                <button class="btn98 btn-ai-interp" id="btn-ai-interp" onclick="requestAiInterpret()" title="Клиническая интерпретация (обычно делается автоматически)">ИИ-заключение</button>
+                <button class="btn98 btn-ai-interp hidden" id="btn-ai-chat" onclick="toggleAiChat()" title="Продолжить обсуждение анализа с ИИ">Чат с ИИ</button>
                 <button class="btn98" onclick="copyModalText()">Копировать</button>
                 <button class="btn98" onclick="downloadModalText()">Скачать TXT</button>
                 <button class="btn98 primary" onclick="closeTextModal()">Закрыть</button>
@@ -598,21 +672,22 @@
                 </div>
             </div>
             <div style="padding:14px; background:#c0c0c0; font-size:12px; line-height:1.5;">
-                <p style="margin-bottom:10px;"><b>Основной способ (рекомендуется):</b></p>
+                <p style="margin-bottom:10px;"><b>Как это работает:</b></p>
                 <ol style="margin-left:18px; margin-bottom:12px;">
-                    <li>На своём компьютере запустите скрипт <code>process_lab_files.py</code></li>
-                    <li>Скрипт сам найдёт все файлы со статусом «Новый»</li>
-                    <li>Извлечёт текст и запишет его в Access + в эту базу</li>
-                    <li>Нажмите «Обновить список» на этой странице</li>
+                    <li>Пациент загружает PDF в личном кабинете</li>
+                    <li>Демон на ПК (<code>process_lab_files.py</code>) забирает файл, извлекает текст</li>
+                    <li><b>ИИ-заключение формируется автоматически</b> (1–2 мин)</li>
+                    <li>В кабинете врача появится статус «Готов» и уведомление (если включено)</li>
+                    <li>Откройте «Текст» — внизу блок заключения; кнопка «Чат с ИИ» для уточнений</li>
                 </ol>
                 <p style="margin-bottom:8px;"><b>Статусы:</b></p>
                 <p>
-                    <span class="status-dot status-new"></span> Новый — ещё не обработан<br>
-                    <span class="status-dot status-processed"></span> Обработан — текст готов<br>
-                    <span class="status-dot status-error"></span> Ошибка — скрипт не смог обработать
+                    <span class="status-dot status-new"></span> Новый / ИИ… — в очереди<br>
+                    <span class="status-dot status-processed"></span> Готов — текст + заключение<br>
+                    <span class="status-dot status-error"></span> Ошибка
                 </p>
                 <p style="margin-top:12px; color:#404040;">
-                    Скрипт и база Access будут созданы на следующем этапе.
+                    Уведомления работают, пока вкладка кабинета открыта (в т.ч. на телефоне в фоне).
                 </p>
             </div>
             <div class="modal-footer">
@@ -626,39 +701,50 @@
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
+        // Ключ Groq для чата в кабинете (тот же, что в groq_key.txt на ПК демона)
+        const GROQ_KEY = "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";
 
         let accessToken = localStorage.getItem('lor_doctor_token') || null;
         let doctorEmail = localStorage.getItem('lor_doctor_email') || null;
-        let allFiles = [];          // полный список с сервера
-        let patientNameCache = {};  // id → имя
+        let allFiles = [];
+        let patientNameCache = {};
+        let knownReadyIds = JSON.parse(localStorage.getItem('lor_known_ready_ids') || '[]');
+        let notifyEnabled = localStorage.getItem('lor_notify_on') === '1';
+        let pollTimer = null;
+        let chatHistory = [];
+        let chatOpen = false;
 
         // ========== ИНИЦИАЛИЗАЦИЯ ==========
         document.addEventListener('DOMContentLoaded', function () {
             if (accessToken) {
                 showMainScreen();
                 loadFiles();
+                startPolling();
             } else {
                 showLoginScreen();
             }
 
-            // Enter на форме входа
             document.getElementById('doc-password').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') doctorLogin();
             });
             document.getElementById('doc-email').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') document.getElementById('doc-password').focus();
             });
+            updateNotifyUi();
         });
 
         function showLoginScreen() {
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-screen').classList.add('hidden');
+            stopPolling();
         }
 
         function showMainScreen() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
             document.getElementById('doctor-label').textContent = doctorEmail ? ('Врач: ' + doctorEmail) : 'Врач';
+            document.getElementById('notify-banner').classList.add('visible');
+            updateNotifyUi();
         }
 
         // ========== АВТОРИЗАЦИЯ ==========
@@ -697,6 +783,7 @@
 
                 showMainScreen();
                 loadFiles();
+                startPolling();
             } catch (err) {
                 errorDiv.textContent = 'Ошибка сети: ' + err.message;
             }
@@ -708,18 +795,20 @@
             localStorage.removeItem('lor_doctor_token');
             localStorage.removeItem('lor_doctor_email');
             allFiles = [];
+            stopPolling();
             showLoginScreen();
             document.getElementById('doc-password').value = '';
             document.getElementById('login-error').textContent = '';
         }
 
         // ========== ЗАГРУЗКА ДАННЫХ ==========
-        async function loadFiles() {
+        async function loadFiles(silent) {
             const tbody = document.getElementById('files-tbody');
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px;">Загрузка списка...</td></tr>';
+            if (!silent) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px;">Загрузка списка...</td></tr>';
+            }
 
             try {
-                // Получаем все файлы (сортировка по дате убыв.)
                 const response = await fetch(
                     SUPABASE_URL + '/rest/v1/patient_files?order=uploaded_at.desc&select=*',
                     {
@@ -738,14 +827,15 @@
                 allFiles = await response.json();
                 if (!Array.isArray(allFiles)) allFiles = [];
 
-                // Подтягиваем имена пациентов (из patients_sync)
                 await loadPatientNames();
-
                 applyFilters();
                 updateStatusBar();
+                checkNewReadyFiles(allFiles);
             } catch (err) {
                 console.error(err);
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px; color:#c00000;">Ошибка загрузки: ' + err.message + '</td></tr>';
+                if (!silent) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px; color:#c00000;">Ошибка загрузки: ' + err.message + '</td></tr>';
+                }
             }
         }
 
@@ -919,37 +1009,43 @@
 
             let html = '';
             files.forEach((file, idx) => {
-                const statusClass = file.status === 'processed' ? 'status-processed' :
-                                    file.status === 'error' ? 'status-error' : 'status-new';
-                const statusText = file.status === 'processed' ? 'Обработан' :
-                                   file.status === 'error' ? 'Ошибка' : 'Новый';
+                let statusClass = 'status-new';
+                let statusText = 'Новый';
+                if (file.status === 'processed') {
+                    statusClass = 'status-processed';
+                    statusText = 'Готов';
+                } else if (file.status === 'error') {
+                    statusClass = 'status-error';
+                    statusText = 'Ошибка';
+                } else if (file.status === 'ai_pending' || file.status === 'ai_interpret') {
+                    statusClass = 'status-new';
+                    statusText = 'ИИ…';
+                }
 
                 const dateStr = formatDate(file.uploaded_at);
                 const name = patientNameCache[file.patient_id] || '—';
                 const sizeStr = formatSize(file.file_size);
                 const hasText = file.full_text && file.full_text.trim().length > 0;
+                const hasConclusion = hasText && /══\s*ИИ-ЗАКЛЮЧЕНИЕ\s*══/.test(file.full_text || '');
 
                 const origName = file.original_name || file.safe_name || 'файл';
+                const shortName = origName.length > 42 ? (origName.slice(0, 38) + '…') : origName;
                 html += `
                     <tr id="doc-row-${file.id}">
                         <td>${idx + 1}</td>
                         <td><span class="status-dot ${statusClass}"></span>${statusText}</td>
-                        <td>${dateStr}</td>
+                        <td title="${escapeHtml(dateStr)}">${dateStr}</td>
                         <td>${file.patient_id || '—'}</td>
-                        <td>${escapeHtml(name)}</td>
-                        <td title="${escapeHtml(file.safe_name || '')}">${escapeHtml(origName)}</td>
+                        <td class="col-file" title="${escapeHtml(name)}">${escapeHtml(name)}</td>
+                        <td class="col-file" title="${escapeHtml(origName)}">${escapeHtml(shortName)}</td>
                         <td>${sizeStr}</td>
-                        <td style="min-width:300px;">
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; white-space:nowrap; width:100%;">
-                                <span style="display:inline-flex; gap:4px;">
-                                    ${hasText
-                                        ? `<button class="btn98" style="padding:3px 8px; min-width:52px;" onclick="viewText(${file.id})">Текст</button>`
-                                        : `<button class="btn98" style="padding:3px 8px; min-width:52px;" disabled title="Текст ещё не извлечён">Текст</button>`
-                                    }
-                                    <button class="btn98" style="padding:3px 8px; min-width:40px;" onclick="downloadPdf('${escapeAttr(file.storage_path)}')">PDF</button>
-                                </span>
-                                <button class="btn98" style="padding:3px 10px; min-width:70px; color:#800000; font-weight:bold; margin-left:auto;" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path)}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удалить</button>
-                            </div>
+                        <td class="col-actions">
+                            ${hasText
+                                ? `<button class="btn98" onclick="viewText(${file.id})" title="${hasConclusion ? 'Текст + ИИ-заключение' : 'Текст'}">Текст</button>`
+                                : `<button class="btn98" disabled title="Ещё обрабатывается">Текст</button>`
+                            }
+                            <button class="btn98" onclick="downloadPdf('${escapeAttr(file.storage_path || '')}')">PDF</button>
+                            <button class="btn98 btn-del" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path || '')}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удал.</button>
                         </td>
                     </tr>
                 `;
@@ -987,11 +1083,239 @@
             document.getElementById('modal-title').textContent = currentModalName + ' — ' + pname;
             document.getElementById('modal-text').innerHTML = formatLabText(currentModalText);
             document.getElementById('text-modal').classList.add('visible');
+
+            // Кнопка чата — только если уже есть ИИ-заключение
+            const hasConclusion = /══\s*ИИ-ЗАКЛЮЧЕНИЕ\s*══/.test(currentModalText);
+            const btnChat = document.getElementById('btn-ai-chat');
+            if (btnChat) {
+                if (hasConclusion) btnChat.classList.remove('hidden');
+                else btnChat.classList.add('hidden');
+            }
+            // Сброс чата при открытии другого файла
+            chatHistory = [];
+            chatOpen = false;
+            const panel = document.getElementById('ai-chat-panel');
+            if (panel) panel.classList.add('hidden');
+            const msgs = document.getElementById('ai-chat-messages');
+            if (msgs) msgs.innerHTML = '';
         }
 
         function closeTextModal() {
             document.getElementById('text-modal').classList.remove('visible');
             currentModalFileId = null;
+            chatOpen = false;
+            const panel = document.getElementById('ai-chat-panel');
+            if (panel) panel.classList.add('hidden');
+        }
+
+        function toggleAiChat() {
+            const panel = document.getElementById('ai-chat-panel');
+            if (!panel) return;
+            chatOpen = !chatOpen;
+            if (chatOpen) {
+                panel.classList.remove('hidden');
+                panel.style.display = 'flex';
+                if (chatHistory.length === 0) {
+                    appendChatMsg('assistant', 'Можете задать уточняющий вопрос по этому анализу и заключению. Это не диагноз.');
+                }
+                const inp = document.getElementById('ai-chat-input');
+                if (inp) inp.focus();
+            } else {
+                panel.classList.add('hidden');
+                panel.style.display = '';
+            }
+        }
+
+        function appendChatMsg(role, text) {
+            const box = document.getElementById('ai-chat-messages');
+            if (!box) return;
+            const div = document.createElement('div');
+            div.className = 'chat-msg ' + role;
+            const roleLabel = role === 'user' ? 'Вы' : 'ИИ';
+            div.innerHTML = '<div class="role">' + roleLabel + '</div>' + escapeHtml(text).replace(/\n/g, '<br>');
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function sendAiChat() {
+            const inp = document.getElementById('ai-chat-input');
+            const q = (inp && inp.value || '').trim();
+            if (!q) return;
+            if (!GROQ_KEY) {
+                alert('Не задан GROQ_KEY в doctor.html');
+                return;
+            }
+            inp.value = '';
+            appendChatMsg('user', q);
+            chatHistory.push({ role: 'user', content: q });
+
+            const system = (
+                'Ты клинический ассистент ЛОР-врача. Отвечай кратко и по делу на русском. ' +
+                'Опирайся только на текст анализа ниже. Не ставь диагноз. ' +
+                'Если данных недостаточно — скажи об этом. В конце при необходимости напомни, что решение за врачом.\n\n' +
+                'ТЕКСТ АНАЛИЗА:\n' + (currentModalText || '').slice(0, 7000)
+            );
+
+            const messages = [{ role: 'system', content: system }].concat(
+                chatHistory.slice(-12).map(function (m) {
+                    return { role: m.role, content: m.content };
+                })
+            );
+
+            appendChatMsg('assistant', '…');
+            const box = document.getElementById('ai-chat-messages');
+            const pending = box ? box.lastChild : null;
+
+            try {
+                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + GROQ_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: messages,
+                        temperature: 0.3,
+                        max_tokens: 1200
+                    })
+                });
+                if (!resp.ok) {
+                    const errT = await resp.text();
+                    throw new Error('Groq HTTP ' + resp.status + ': ' + errT.slice(0, 120));
+                }
+                const data = await resp.json();
+                const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Нет ответа';
+                chatHistory.push({ role: 'assistant', content: answer });
+                if (pending) {
+                    pending.innerHTML = '<div class="role">ИИ</div>' + escapeHtml(answer).replace(/\n/g, '<br>');
+                } else {
+                    appendChatMsg('assistant', answer);
+                }
+            } catch (err) {
+                if (pending) {
+                    pending.innerHTML = '<div class="role">ИИ</div>Ошибка: ' + escapeHtml(err.message);
+                } else {
+                    appendChatMsg('assistant', 'Ошибка: ' + err.message);
+                }
+            }
+        }
+
+        // ========== УВЕДОМЛЕНИЯ ==========
+        function updateNotifyUi() {
+            const el = document.getElementById('notify-status');
+            if (!el) return;
+            if (notifyEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                el.textContent = 'включены (звук + пуш при готовности анализа)';
+            } else if (notifyEnabled) {
+                el.textContent = 'ожидают разрешения браузера';
+            } else {
+                el.textContent = 'выключены — нажмите кнопку слева';
+            }
+        }
+
+        async function enableNotifications() {
+            if (typeof Notification === 'undefined') {
+                alert('Браузер не поддерживает уведомления. Откройте кабинет в Chrome/Edge на телефоне или ПК.');
+                return;
+            }
+            try {
+                const perm = await Notification.requestPermission();
+                if (perm !== 'granted') {
+                    alert('Разрешение не дано. В настройках браузера разрешите уведомления для этого сайта.');
+                    notifyEnabled = false;
+                    localStorage.setItem('lor_notify_on', '0');
+                    updateNotifyUi();
+                    return;
+                }
+                notifyEnabled = true;
+                localStorage.setItem('lor_notify_on', '1');
+                updateNotifyUi();
+                // Пробное уведомление
+                showDoctorNotification('Уведомления ЛОР', 'Готово. Когда анализ обработается полностью — придёт уведомление со звуком.');
+                playNotifySound();
+            } catch (e) {
+                alert('Не удалось включить уведомления: ' + e.message);
+            }
+        }
+
+        function playNotifySound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = 'sine';
+                o.frequency.value = 880;
+                g.gain.value = 0.15;
+                o.connect(g);
+                g.connect(ctx.destination);
+                o.start();
+                setTimeout(function () {
+                    o.frequency.value = 1175;
+                }, 120);
+                setTimeout(function () {
+                    o.stop();
+                    ctx.close();
+                }, 320);
+            } catch (e) { /* ignore */ }
+        }
+
+        function showDoctorNotification(title, body) {
+            if (!notifyEnabled || typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+            try {
+                const n = new Notification(title, {
+                    body: body,
+                    tag: 'lor-lab-' + Date.now(),
+                    requireInteraction: true
+                });
+                n.onclick = function () {
+                    window.focus();
+                    n.close();
+                };
+            } catch (e) { /* ignore */ }
+        }
+
+        function checkNewReadyFiles(files) {
+            if (!Array.isArray(files)) return;
+            const ready = files.filter(function (f) {
+                return f.status === 'processed' && f.full_text && /══\s*ИИ-ЗАКЛЮЧЕНИЕ\s*══/.test(f.full_text);
+            });
+            const readyIds = ready.map(function (f) { return f.id; });
+            // Первый запуск после логина — просто запомнить, не спамить
+            if (!knownReadyIds || knownReadyIds.length === 0) {
+                knownReadyIds = readyIds;
+                localStorage.setItem('lor_known_ready_ids', JSON.stringify(knownReadyIds));
+                return;
+            }
+            const knownSet = {};
+            knownReadyIds.forEach(function (id) { knownSet[id] = true; });
+            ready.forEach(function (f) {
+                if (!knownSet[f.id]) {
+                    const pname = patientNameCache[f.patient_id] || ('ID ' + f.patient_id);
+                    const fname = f.original_name || f.safe_name || 'анализ';
+                    showDoctorNotification(
+                        'Анализ готов — ' + pname,
+                        fname + '. Откройте кабинет врача → Текст (есть ИИ-заключение).'
+                    );
+                    playNotifySound();
+                }
+            });
+            knownReadyIds = readyIds;
+            localStorage.setItem('lor_known_ready_ids', JSON.stringify(knownReadyIds));
+        }
+
+        function startPolling() {
+            stopPolling();
+            pollTimer = setInterval(function () {
+                if (accessToken) loadFiles(true);
+            }, 45000);
+        }
+
+        function stopPolling() {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
         }
 
         function copyModalText() {
@@ -1159,28 +1483,54 @@
 
         // ========== СКАЧИВАНИЕ PDF ==========
         async function downloadPdf(path) {
+            if (!path) {
+                alert('Путь к файлу не указан');
+                return;
+            }
+            const auth = accessToken || SUPABASE_KEY;
+            const headers = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + auth
+            };
             try {
-                const response = await fetch(
-                    SUPABASE_URL + '/storage/v1/object/sign/patient-files/' + path,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ expiresIn: 3600 })
-                    }
-                );
+                // 1) Прямое скачивание с авторизацией (надёжнее signed URL)
+                const directUrl = SUPABASE_URL + '/storage/v1/object/patient-files/' +
+                    path.split('/').map(encodeURIComponent).join('/');
+                let response = await fetch(directUrl, { method: 'GET', headers: headers });
 
-                const data = await response.json();
-                if (data && data.signedURL) {
-                    window.open(SUPABASE_URL + data.signedURL, '_blank');
-                } else {
-                    alert('Не удалось получить ссылку на файл');
+                if (!response.ok) {
+                    // 2) Запасной вариант — signed URL
+                    const signResp = await fetch(
+                        SUPABASE_URL + '/storage/v1/object/sign/patient-files/' +
+                            path.split('/').map(encodeURIComponent).join('/'),
+                        {
+                            method: 'POST',
+                            headers: Object.assign({}, headers, { 'Content-Type': 'application/json' }),
+                            body: JSON.stringify({ expiresIn: 3600 })
+                        }
+                    );
+                    const data = await signResp.json();
+                    const signed = data.signedURL || data.signedUrl || (data.data && (data.data.signedURL || data.data.signedUrl));
+                    if (!signed) {
+                        throw new Error('HTTP ' + response.status + ' и signed URL недоступен');
+                    }
+                    const full = signed.indexOf('http') === 0 ? signed : (SUPABASE_URL + signed);
+                    window.open(full, '_blank');
+                    return;
                 }
+
+                const blob = await response.blob();
+                const objUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = objUrl;
+                a.target = '_blank';
+                a.download = (path.split('/').pop() || 'analysis.pdf');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(function () { URL.revokeObjectURL(objUrl); }, 60000);
             } catch (err) {
-                alert('Ошибка скачивания: ' + err.message);
+                alert('Ошибка открытия PDF: ' + err.message);
             }
         }
 
