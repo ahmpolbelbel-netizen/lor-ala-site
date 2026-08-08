@@ -344,6 +344,31 @@
             font-weight: bold;
         }
 
+        .btn-ai-interp {
+            background: #1a5276 !important;
+            color: #fff !important;
+            font-weight: bold;
+        }
+
+        .modal-body .ai-conclusion {
+            display: block;
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: #eaf2f8;
+            border-left: 4px solid #1a5276;
+            color: #1a252f;
+            white-space: pre-wrap;
+            font-family: "Tahoma", "Segoe UI", sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal-body .ai-conclusion-title {
+            color: #1a5276;
+            font-weight: bold;
+            font-family: "Consolas", "Courier New", monospace;
+        }
+
         /* ===== Фильтры ===== */
         .filter-row {
             display: flex;
@@ -530,7 +555,8 @@
             </div>
             <div class="modal-body" id="modal-text">Загрузка...</div>
             <div class="modal-footer">
-                <button class="btn98 btn-ai" onclick="requestAiImprove()" title="Отправить на доп. очистку через ИИ (нужен groq_key.txt)">ИИ-улучшение</button>
+                <button class="btn98 btn-ai" onclick="requestAiImprove()" title="Очистка текста бланка (Groq)">ИИ-очистка</button>
+                <button class="btn98 btn-ai-interp" onclick="requestAiInterpret()" title="Клиническая интерпретация результатов (Groq)">ИИ-заключение</button>
                 <button class="btn98" onclick="copyModalText()">Копировать</button>
                 <button class="btn98" onclick="downloadModalText()">Скачать TXT</button>
                 <button class="btn98 primary" onclick="closeTextModal()">Закрыть</button>
@@ -889,7 +915,6 @@
             URL.revokeObjectURL(url);
         }
 
-        // Только целые статусы в конце строки / как отдельные токены — не трогаем слово "повышение" в комментариях
         function formatLabText(raw) {
             if (!raw) return '';
             let text = escapeHtml(raw);
@@ -901,36 +926,71 @@
             text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
             text = text.replace(/(Дата\s+[^:\n]+:\s*[^\n]+)/g, '<b>$1</b>');
 
+            // Блок ИИ-заключения
+            text = text.replace(
+                /(══\s*ИИ-ЗАКЛЮЧЕНИЕ\s*══)([\s\S]*?)(?=(?:\n══\s)|$)/,
+                function (_, title, body) {
+                    return '<span class="ai-conclusion-title">' + title + '</span>' +
+                        '<span class="ai-conclusion">' + body.trim() + '</span>';
+                }
+            );
+
             return text;
         }
 
-        // Поставить файл в очередь на ИИ-очистку (демон подхватит status=ai_pending)
+        async function setFileStatus(fileId, status, okMsg) {
+            const resp = await fetch(
+                SUPABASE_URL + '/rest/v1/patient_files?id=eq.' + fileId,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ status: status })
+                }
+            );
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            alert(okMsg);
+            closeTextModal();
+            loadFiles();
+        }
+
         async function requestAiImprove() {
             if (!currentModalFileId) {
                 alert('Файл не выбран');
                 return;
             }
-            if (!confirm('Отправить этот анализ на дополнительную очистку через ИИ?\n\nДемон обработает в течение ~1 мин (нужен файл groq_key.txt).')) {
+            if (!confirm('Очистить текст бланка через ИИ?\n\nДемон обработает за ~1 мин (нужен groq_key.txt).')) {
                 return;
             }
             try {
-                const resp = await fetch(
-                    SUPABASE_URL + '/rest/v1/patient_files?id=eq.' + currentModalFileId,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            'apikey': SUPABASE_KEY,
-                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify({ status: 'ai_pending' })
-                    }
+                await setFileStatus(
+                    currentModalFileId,
+                    'ai_pending',
+                    'Поставлено в очередь на ИИ-очистку.\nЧерез 1–2 мин обновите список и откройте «Текст».'
                 );
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                alert('Поставлено в очередь ИИ.\nОбновите список через 1–2 минуты и откройте «Текст» снова.');
-                closeTextModal();
-                loadFiles();
+            } catch (err) {
+                alert('Ошибка: ' + err.message);
+            }
+        }
+
+        async function requestAiInterpret() {
+            if (!currentModalFileId) {
+                alert('Файл не выбран');
+                return;
+            }
+            if (!confirm('Сформировать ИИ-заключение по этому анализу?\n\nДемон обработает за ~1–2 мин (нужен groq_key.txt).\nЭто не диагноз — только вспомогательный разбор для врача.')) {
+                return;
+            }
+            try {
+                await setFileStatus(
+                    currentModalFileId,
+                    'ai_interpret',
+                    'Поставлено в очередь на ИИ-заключение.\nЧерез 1–2 мин обновите список и откройте «Текст» — внизу появится блок заключения.'
+                );
             } catch (err) {
                 alert('Ошибка: ' + err.message);
             }
