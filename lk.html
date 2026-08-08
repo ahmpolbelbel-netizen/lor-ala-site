@@ -44,9 +44,11 @@
         }
 
         .logo-img {
-            height: 64px;
+            height: 56px;
             width: auto;
+            max-width: 280px;
             display: block;
+            object-fit: contain;
         }
 
         .logo-sub {
@@ -789,15 +791,20 @@
             <div class="upload-section">
                 <h3>Загрузить результаты обследований</h3>
                 <p style="font-size:13px; color:#666; margin-bottom:12px;">
-                    PDF или фото бланка (JPG/PNG). Фото автоматически сжимаются перед отправкой.
-                    Максимум 10 МБ после сжатия.
+                    PDF или фото бланка (JPG/PNG). По умолчанию — <b>максимальное сжатие</b>
+                    (текстовые бланки обычно «граммы»). Если качество плохое — «Оригинал».
                 </p>
-                
-                <div class="upload-controls">
-                    <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/webp,image/jpg">
-                    <button class="btn-primary btn-upload" onclick="uploadFile()">Загрузить</button>
+                <div class="upload-controls" style="flex-direction:column;align-items:stretch;gap:8px;">
+                    <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/webp,image/jpg" onchange="onFilePicked()">
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="max" checked onchange="onFilePicked()"> Макс.</label>
+                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="balanced" onchange="onFilePicked()"> Обычное</label>
+                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="mush" onchange="onFilePicked()"> «Каша»</label>
+                        <button type="button" class="btn-primary btn-upload" style="width:auto;padding:10px 16px;" onclick="uploadFile()">Загрузить</button>
+                        <button type="button" id="btn-restore-original" class="btn-download" style="display:none;" onclick="restoreOriginalUpload()">Оригинал</button>
+                    </div>
+                    <div id="compress-preview" style="font-size:13px;color:#555;"></div>
                 </div>
-                
                 <div id="upload-status"></div>
                 <div id="files-list"></div>
             </div>
@@ -810,7 +817,10 @@
     <div id="patient-text-modal" class="text-modal-overlay">
         <div class="text-modal">
             <div class="text-modal-header">
-                <h3 id="patient-modal-title">Текст анализа</h3>
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+                    <span style="font-family:Georgia,serif;font-weight:bold;color:#009ca0;font-size:15px;white-space:nowrap;">Доктор ЛОР</span>
+                    <h3 id="patient-modal-title" style="margin:0;overflow:hidden;text-overflow:ellipsis;">Текст анализа</h3>
+                </div>
                 <button class="text-modal-close" onclick="closePatientTextModal()" title="Закрыть">&times;</button>
             </div>
             <div class="text-modal-body" id="patient-modal-body"></div>
@@ -827,7 +837,11 @@
         <p>&copy; 2026 Доктор ЛОР — Алматы. Все права защищены.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
         const RAW_URL = "https://dptaczshbxmgtybmbnuw.supabase.co";
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
@@ -1103,14 +1117,28 @@
             return new Blob([out], { type: 'application/pdf' });
         }
 
-        async function compressImageToPdf(file) {
-            const maxSide = 1600;
-            const quality = 0.52;
+        let pendingOriginalFile = null;
+        let pendingPrepared = null;
+        let useOriginalUpload = false;
+
+        function getCompressMode() {
+            const el = document.querySelector('input[name="compress-mode"]:checked');
+            return (el && el.value) || 'max';
+        }
+
+        function compressParams(mode) {
+            if (mode === 'mush') return { maxSide: 900, quality: 0.28 };
+            if (mode === 'balanced') return { maxSide: 1600, quality: 0.55 };
+            return { maxSide: 1200, quality: 0.38 };
+        }
+
+        async function compressImageToPdf(file, mode) {
+            const p = compressParams(mode || getCompressMode());
             const bitmap = await createImageBitmap(file);
             let w = bitmap.width;
             let h = bitmap.height;
-            if (w > maxSide || h > maxSide) {
-                const scale = maxSide / Math.max(w, h);
+            if (w > p.maxSide || h > p.maxSide) {
+                const scale = p.maxSide / Math.max(w, h);
                 w = Math.round(w * scale);
                 h = Math.round(h * scale);
             }
@@ -1122,43 +1150,139 @@
             ctx.fillRect(0, 0, w, h);
             ctx.drawImage(bitmap, 0, 0, w, h);
             if (bitmap.close) bitmap.close();
-
             const jpegBlob = await new Promise(function (resolve) {
-                canvas.toBlob(resolve, 'image/jpeg', quality);
+                canvas.toBlob(resolve, 'image/jpeg', p.quality);
             });
             if (!jpegBlob) throw new Error('Не удалось сжать изображение');
             const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
             return buildPdfFromJpeg(jpegBytes, w, h);
         }
 
-        async function prepareUploadBlob(file, statusEl) {
+        async function compressPdfFile(file, mode, statusEl) {
+            if (typeof pdfjsLib === 'undefined') return file;
+            const p = compressParams(mode || getCompressMode());
+            const scale = mode === 'mush' ? 0.85 : (mode === 'balanced' ? 1.25 : 1.0);
+            const quality = mode === 'mush' ? 0.22 : (mode === 'balanced' ? 0.48 : 0.32);
+            if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Сжатие PDF…</span>';
+            const data = new Uint8Array(await file.arrayBuffer());
+            const pdf = await pdfjsLib.getDocument({ data: data }).promise;
+            const pageBlobs = [];
+            for (let i = 1; i <= Math.min(pdf.numPages, 6); i++) {
+                const page = await pdf.getPage(i);
+                const baseVp = page.getViewport({ scale: 1 });
+                let w = Math.round(baseVp.width * scale);
+                let h = Math.round(baseVp.height * scale);
+                if (Math.max(w, h) > p.maxSide) {
+                    const s = p.maxSide / Math.max(w, h);
+                    w = Math.round(w * s);
+                    h = Math.round(h * s);
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#fff';
+                ctx.fillRect(0, 0, w, h);
+                await page.render({
+                    canvasContext: ctx,
+                    viewport: page.getViewport({ scale: w / baseVp.width })
+                }).promise;
+                const jpegBlob = await new Promise(function (resolve) {
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                });
+                pageBlobs.push({ blob: jpegBlob, w: w, h: h });
+            }
+            if (pageBlobs.length === 1) {
+                const bytes = new Uint8Array(await pageBlobs[0].blob.arrayBuffer());
+                return buildPdfFromJpeg(bytes, pageBlobs[0].w, pageBlobs[0].h);
+            }
+            const use = pageBlobs.slice(0, 3);
+            let totalH = 0, maxW = 0;
+            use.forEach(function (pg) { totalH += pg.h; maxW = Math.max(maxW, pg.w); });
+            const canvas = document.createElement('canvas');
+            canvas.width = maxW;
+            canvas.height = totalH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, maxW, totalH);
+            let y = 0;
+            for (let i = 0; i < use.length; i++) {
+                const bmp = await createImageBitmap(use[i].blob);
+                ctx.drawImage(bmp, 0, y);
+                y += use[i].h;
+                if (bmp.close) bmp.close();
+            }
+            const jpegBlob = await new Promise(function (resolve) {
+                canvas.toBlob(resolve, 'image/jpeg', 0.38);
+            });
+            const bytes = new Uint8Array(await jpegBlob.arrayBuffer());
+            return buildPdfFromJpeg(bytes, maxW, totalH);
+        }
+
+        async function prepareUploadBlob(file, statusEl, forceOriginal) {
             const isImage = /^image\/(jpeg|jpg|png|webp)$/i.test(file.type) ||
                 /\.(jpe?g|png|webp)$/i.test(file.name);
             const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-
-            if (!isImage && !isPdf) {
-                throw new Error('Допустимы только PDF или фото (JPG/PNG)');
+            if (!isImage && !isPdf) throw new Error('Допустимы только PDF или фото (JPG/PNG)');
+            if (forceOriginal) {
+                return { blob: file, uploadName: file.name, originalName: file.name + ' (оригинал)' };
             }
-
+            const mode = getCompressMode();
             if (isImage) {
                 if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Сжатие фото…</span>';
-                const pdfBlob = await compressImageToPdf(file);
+                const pdfBlob = await compressImageToPdf(file, mode);
                 const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
-                return {
-                    blob: pdfBlob,
-                    uploadName: base + '_compressed.pdf',
-                    originalName: file.name + ' → PDF'
-                };
+                return { blob: pdfBlob, uploadName: base + '_c.pdf', originalName: file.name + ' → PDF' };
             }
-
-            // PDF: если очень большой — предупреждаем, загружаем как есть
-            // (настоящее пересжатие многостраничного PDF в браузере без тяжёлых библиотек ограничено)
-            if (file.size > 8 * 1024 * 1024) {
-                if (statusEl) {
-                    statusEl.innerHTML = '<span style="color:#e67e22;">PDF большой. Лучше сфотографировать бланк — фото сожмётся сильнее.</span>';
+            try {
+                const compressed = await compressPdfFile(file, mode, statusEl);
+                if (compressed && compressed.size < file.size) {
+                    return {
+                        blob: compressed,
+                        uploadName: file.name.replace(/\.pdf$/i, '') + '_c.pdf',
+                        originalName: file.name + ' (сжат)'
+                    };
                 }
-            }
+            } catch (e) { console.warn('PDF compress', e); }
             return { blob: file, uploadName: file.name, originalName: file.name };
+        }
+
+        async function onFilePicked() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+            const prev = document.getElementById('compress-preview');
+            const btnOrig = document.getElementById('btn-restore-original');
+            useOriginalUpload = false;
+            pendingOriginalFile = file || null;
+            pendingPrepared = null;
+            if (!file) {
+                if (prev) prev.textContent = '';
+                if (btnOrig) btnOrig.style.display = 'none';
+                return;
+            }
+            if (prev) prev.innerHTML = 'Подготовка сжатия…';
+            try {
+                const prepared = await prepareUploadBlob(file, null, false);
+                pendingPrepared = prepared;
+                const origKb = (file.size / 1024).toFixed(0);
+                const newKb = (prepared.blob.size / 1024).toFixed(0);
+                if (prev) {
+                    prev.innerHTML = 'Было: <b>' + origKb + ' КБ</b> → будет: <b style="color:#009ca0;">' + newKb + ' КБ</b>';
+                }
+                if (btnOrig) btnOrig.style.display = 'inline-block';
+            } catch (e) {
+                if (prev) prev.textContent = e.message;
+            }
+        }
+
+        function restoreOriginalUpload() {
+            useOriginalUpload = true;
+            pendingPrepared = null;
+            const prev = document.getElementById('compress-preview');
+            if (pendingOriginalFile && prev) {
+                prev.innerHTML = 'Будет загружен <b>оригинал</b>: ' +
+                    (pendingOriginalFile.size / 1024).toFixed(0) + ' КБ';
+            }
         }
 
         async function uploadFile() {
@@ -1180,7 +1304,13 @@
 
             let prepared;
             try {
-                prepared = await prepareUploadBlob(file, status);
+                if (useOriginalUpload) {
+                    prepared = await prepareUploadBlob(file, status, true);
+                } else if (pendingPrepared && pendingOriginalFile === file) {
+                    prepared = pendingPrepared;
+                } else {
+                    prepared = await prepareUploadBlob(file, status, false);
+                }
             } catch (err) {
                 status.innerHTML = '<span style="color:#e74c3c;">' + err.message + '</span>';
                 return;
