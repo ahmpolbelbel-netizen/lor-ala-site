@@ -29,72 +29,101 @@
         }
 
         .win98-titlebar {
-            background: linear-gradient(90deg, #000080, #1084d0);
+            background: linear-gradient(90deg, #000080 0%, #1084d0 100%);
             color: #ffffff;
             font-weight: bold;
             font-size: 13px;
-            padding: 3px 6px;
+            padding: 2px 3px 2px 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             user-select: none;
+            height: 22px;
+            box-sizing: border-box;
         }
 
         .win98-titlebar .title {
             display: flex;
             align-items: center;
             gap: 6px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .win98-titlebar .controls {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
         }
 
         .win98-titlebar .controls button {
-            width: 16px;
-            height: 14px;
-            font-size: 9px;
-            line-height: 1;
+            width: 21px;
+            height: 19px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 15px;
             padding: 0;
-            margin-left: 2px;
+            margin: 0;
             background: #c0c0c0;
             border-top: 1px solid #ffffff;
             border-left: 1px solid #ffffff;
             border-right: 1px solid #000000;
             border-bottom: 1px solid #000000;
+            box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
             cursor: pointer;
-            font-family: "Marlett", sans-serif;
+            color: #000;
+            font-family: "Tahoma", "MS Sans Serif", sans-serif;
+        }
+
+        .win98-titlebar .controls button:active {
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            box-shadow: none;
         }
 
         .win98-content {
-            padding: 10px;
+            padding: 8px;
         }
 
-        /* ===== Кнопки в стиле Win98 / Office 2007 ===== */
+        /* ===== Кнопки Windows 98 (чёткие, плоские bevel) ===== */
         .btn98 {
             font-family: "Tahoma", "MS Sans Serif", sans-serif;
-            font-size: 12px;
-            padding: 4px 14px;
+            font-size: 11px;
+            padding: 3px 10px;
             background-color: #c0c0c0;
-            border-top: 2px solid #ffffff;
-            border-left: 2px solid #ffffff;
-            border-right: 2px solid #808080;
-            border-bottom: 2px solid #808080;
+            border-top: 1px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
             cursor: pointer;
             color: #000000;
-            min-width: 80px;
+            min-width: 70px;
+            height: 23px;
+            line-height: 15px;
+            image-rendering: pixelated;
         }
 
         .btn98:hover {
-            background-color: #d4d0c8;
+            background-color: #c0c0c0;
         }
 
         .btn98:active {
-            border-top: 2px solid #808080;
-            border-left: 2px solid #808080;
-            border-right: 2px solid #ffffff;
-            border-bottom: 2px solid #ffffff;
-            padding: 5px 13px 3px 15px;
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            box-shadow: inset 1px 1px 0 #808080;
+            padding: 4px 9px 2px 11px;
         }
 
         .btn98:disabled {
             color: #808080;
+            text-shadow: 1px 1px 0 #ffffff;
             cursor: default;
         }
 
@@ -102,22 +131,24 @@
             font-weight: bold;
         }
 
-        /* ===== Поля ввода ===== */
+        /* ===== Поля ввода Win98 (утопленные) ===== */
         .input98 {
             font-family: "Tahoma", "MS Sans Serif", sans-serif;
             font-size: 12px;
-            padding: 3px 5px;
-            border-top: 2px solid #808080;
-            border-left: 2px solid #808080;
-            border-right: 2px solid #ffffff;
-            border-bottom: 2px solid #ffffff;
+            padding: 2px 4px;
+            border-top: 1px solid #808080;
+            border-left: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: 1px solid #ffffff;
+            box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #dfdfdf;
             background: #ffffff;
             color: #000000;
+            height: 21px;
         }
 
         .input98:focus {
             outline: 1px dotted #000000;
-            outline-offset: -3px;
+            outline-offset: -4px;
         }
 
         /* ===== Группы / панели ===== */
@@ -187,13 +218,20 @@
 
         .table98 td.col-actions .btn98 {
             min-width: 0;
-            padding: 2px 6px;
+            width: auto;
+            height: 20px;
+            padding: 1px 5px;
             font-size: 11px;
         }
 
         .btn-del {
             color: #800000 !important;
             font-weight: bold;
+        }
+
+        .modal-footer .btn98 {
+            min-width: 72px;
+            height: 24px;
         }
 
         .table98 tr:hover td {
@@ -369,14 +407,14 @@
         }
 
         .btn-ai {
-            background: #6c3483 !important;
-            color: #fff !important;
+            background: #c0c0c0 !important;
+            color: #4a235a !important;
             font-weight: bold;
         }
 
         .btn-ai-interp {
-            background: #1a5276 !important;
-            color: #fff !important;
+            background: #c0c0c0 !important;
+            color: #1a5276 !important;
             font-weight: bold;
         }
 
@@ -543,8 +581,9 @@
                             <select id="filter-status" class="input98" onchange="applyFilters()">
                                 <option value="new" selected>Только новые</option>
                                 <option value="all">Все файлы</option>
-                                <option value="processed">Только обработанные</option>
+                                <option value="processed">Только готовые</option>
                                 <option value="error">Только с ошибкой</option>
+                                <option value="abnormal">С отклонениями ▲▼</option>
                             </select>
                         </div>
                         <div>
@@ -960,11 +999,15 @@
 
             // Статус
             if (status === 'new') {
-                filtered = filtered.filter(f => f.status === 'new');
+                filtered = filtered.filter(f => f.status === 'new' || f.status === 'ai_pending' || f.status === 'ai_interpret');
             } else if (status === 'processed') {
                 filtered = filtered.filter(f => f.status === 'processed');
             } else if (status === 'error') {
                 filtered = filtered.filter(f => f.status === 'error');
+            } else if (status === 'abnormal') {
+                filtered = filtered.filter(f =>
+                    f.full_text && (f.full_text.indexOf('ПОВЫШЕН') >= 0 || f.full_text.indexOf('СНИЖЕН') >= 0)
+                );
             }
 
             // Пациент
@@ -1031,7 +1074,7 @@
                 const origName = file.original_name || file.safe_name || 'файл';
                 const shortName = origName.length > 42 ? (origName.slice(0, 38) + '…') : origName;
                 html += `
-                    <tr id="doc-row-${file.id}">
+                    <tr id="doc-row-${file.id}" ondblclick="viewText(${file.id})" title="Двойной клик — открыть текст">
                         <td>${idx + 1}</td>
                         <td><span class="status-dot ${statusClass}"></span>${statusText}</td>
                         <td title="${escapeHtml(dateStr)}">${dateStr}</td>
