@@ -289,20 +289,21 @@
         }
 
         .modal-body {
-            padding: 14px 16px;
-            overflow-x: hidden;
+            padding: 12px 14px;
+            overflow-x: auto;
             overflow-y: auto;
             flex: 1;
             background: #ffffff;
             border: 2px inset #808080;
             margin: 8px;
             font-family: "Consolas", "Courier New", "Lucida Console", monospace;
-            font-size: 13px;
+            font-size: 12px;
             white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: anywhere;
-            line-height: 1.5;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.45;
             color: #222;
+            max-width: 100%;
         }
 
         /* Отклонения — ярко, сразу видно */
@@ -509,20 +510,21 @@
                     <button class="btn98" onclick="doctorLogout()">Выйти</button>
                 </div>
 
-                <!-- Поиск пациента по фамилии (вся база) -->
-                <div class="win98-panel" style="margin:0 8px 8px 8px;">
-                    <div class="win98-titlebar" style="cursor:default;">
-                        <div class="title"><span>🔎</span> Поиск пациента (вся база)</div>
-                    </div>
-                    <div style="padding:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-                        <input type="text" id="patient-search-q" class="input98" style="width:220px;"
-                               placeholder="Фамилия или часть имени"
-                               onkeyup="if(event.key==='Enter')searchAllPatients()">
+                <!-- Поиск по ВСЕМ пациентам ЛОР (таблица patients_sync) -->
+                <div class="groupbox" style="margin-bottom:10px;">
+                    <div class="groupbox-title">Поиск по всем пациентам ЛОР</div>
+                    <div class="filter-row" style="margin-bottom:6px;">
+                        <div>
+                            <label>Фамилия / имя / ID:</label>
+                            <input type="text" id="patient-search-q" class="input98" style="width:240px;"
+                                   placeholder="Фамилия, часть ФИО или ID"
+                                   onkeyup="if(event.key==='Enter')searchAllPatients()">
+                        </div>
                         <button class="btn98 primary" onclick="searchAllPatients()">Найти</button>
                         <button class="btn98" onclick="clearPatientSearch()">Очистить</button>
-                        <span style="font-size:11px; color:#444;">Чтобы быстро назвать пациенту его ID</span>
+                        <span style="font-size:11px; color:#404040;">Ищет по всей базе patients_sync (не только загруженные файлы)</span>
                     </div>
-                    <div id="patient-search-results" style="padding:0 8px 8px 8px; max-height:140px; overflow:auto; font-size:12px;"></div>
+                    <div id="patient-search-results" style="max-height:180px; overflow:auto; font-size:12px;"></div>
                 </div>
 
                 <!-- Таблица файлов -->
@@ -537,7 +539,7 @@
                                 <th>Пациент</th>
                                 <th>Имя файла</th>
                                 <th style="width:70px;">Размер</th>
-                                <th style="width:280px;">Действия</th>
+                                <th style="width:320px; min-width:300px;">Действия</th>
                             </tr>
                         </thead>
                         <tbody id="files-tbody">
@@ -779,47 +781,70 @@
             }
         }
 
-        // ========== ПОИСК ПАЦИЕНТА ПО ВСЕЙ БАЗЕ ==========
+        // ========== ПОИСК ПО ВСЕМ ПАЦИЕНТАМ ЛОР (patients_sync) ==========
         async function searchAllPatients() {
             const q = (document.getElementById('patient-search-q').value || '').trim();
             const box = document.getElementById('patient-search-results');
-            if (!q || q.length < 2) {
-                box.innerHTML = '<span style="color:#666;">Введите не менее 2 символов</span>';
+            if (!q || q.length < 1) {
+                box.innerHTML = '<span style="color:#666;">Введите фамилию, часть ФИО или ID пациента</span>';
                 return;
             }
-            box.innerHTML = 'Поиск...';
+            box.innerHTML = 'Поиск по всей базе...';
             try {
-                // ilike по имени — вся таблица patients_sync
-                const url = SUPABASE_URL + '/rest/v1/patients_sync?patient_name=ilike.*' +
-                    encodeURIComponent(q) + '*&select=id,patient_name&order=patient_name.asc&limit=30';
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                const headers = {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY)
+                };
+                let rows = [];
+
+                // Если введено число — ищем по ID
+                if (/^\d+$/.test(q)) {
+                    const urlId = SUPABASE_URL + '/rest/v1/patients_sync?id=eq.' + q +
+                        '&select=id,patient_name&limit=10';
+                    const r1 = await fetch(urlId, { method: 'GET', headers: headers });
+                    if (r1.ok) {
+                        rows = await r1.json();
                     }
-                });
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                const rows = await response.json();
+                }
+
+                // Поиск по имени (ilike) — всегда, если не нашли по ID или запрос не чисто числовой
+                if (rows.length === 0 || !/^\d+$/.test(q)) {
+                    const urlName = SUPABASE_URL + '/rest/v1/patients_sync?patient_name=ilike.*' +
+                        encodeURIComponent(q) + '*&select=id,patient_name&order=patient_name.asc&limit=50';
+                    const r2 = await fetch(urlName, { method: 'GET', headers: headers });
+                    if (!r2.ok) throw new Error('HTTP ' + r2.status);
+                    const byName = await r2.json();
+                    // Объединяем, без дублей по id
+                    const seen = {};
+                    rows.forEach(function (r) { seen[r.id] = true; });
+                    byName.forEach(function (r) {
+                        if (!seen[r.id]) {
+                            seen[r.id] = true;
+                            rows.push(r);
+                        }
+                    });
+                }
+
                 if (!rows.length) {
-                    box.innerHTML = '<span style="color:#666;">Ничего не найдено</span>';
+                    box.innerHTML = '<span style="color:#666;">Ничего не найдено в базе пациентов ЛОР</span>';
                     return;
                 }
+
                 let html = '<table class="table98" style="width:100%; font-size:12px;"><thead><tr>' +
-                    '<th style="width:70px;">ID</th><th>ФИО</th><th style="width:90px;"></th></tr></thead><tbody>';
+                    '<th style="width:70px;">ID</th><th>ФИО</th><th style="width:100px;"></th></tr></thead><tbody>';
                 rows.forEach(function (row) {
                     const name = (row.patient_name || '').replace(/[0-9]/g, '').trim() || row.patient_name || '—';
                     html += '<tr>' +
                         '<td style="font-weight:bold; color:#000080;">' + row.id + '</td>' +
                         '<td>' + escapeHtml(name) + '</td>' +
-                        '<td><button class="btn98" style="padding:1px 6px;" onclick="filterByPatientId(' + row.id + ')">Файлы</button></td>' +
+                        '<td><button class="btn98" style="padding:2px 8px;" onclick="filterByPatientId(' + row.id + ')">Файлы</button></td>' +
                         '</tr>';
                     patientNameCache[row.id] = name;
                 });
                 html += '</tbody></table>';
                 box.innerHTML = html;
             } catch (err) {
-                box.innerHTML = '<span style="color:#c00000;">Ошибка: ' + err.message + '</span>';
+                box.innerHTML = '<span style="color:#c00000;">Ошибка поиска: ' + err.message + '</span>';
             }
         }
 
@@ -914,16 +939,16 @@
                         <td>${escapeHtml(name)}</td>
                         <td title="${escapeHtml(file.safe_name || '')}">${escapeHtml(origName)}</td>
                         <td>${sizeStr}</td>
-                        <td>
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:4px; white-space:nowrap;">
-                                <span>
+                        <td style="min-width:300px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; white-space:nowrap; width:100%;">
+                                <span style="display:inline-flex; gap:4px;">
                                     ${hasText
-                                        ? `<button class="btn98" style="padding:2px 6px; min-width:auto;" onclick="viewText(${file.id})">Текст</button>`
-                                        : `<button class="btn98" style="padding:2px 6px; min-width:auto;" disabled title="Текст ещё не извлечён">Текст</button>`
+                                        ? `<button class="btn98" style="padding:3px 8px; min-width:52px;" onclick="viewText(${file.id})">Текст</button>`
+                                        : `<button class="btn98" style="padding:3px 8px; min-width:52px;" disabled title="Текст ещё не извлечён">Текст</button>`
                                     }
-                                    <button class="btn98" style="padding:2px 6px; min-width:auto;" onclick="downloadPdf('${escapeAttr(file.storage_path)}')">PDF</button>
+                                    <button class="btn98" style="padding:3px 8px; min-width:40px;" onclick="downloadPdf('${escapeAttr(file.storage_path)}')">PDF</button>
                                 </span>
-                                <button class="btn98" style="padding:2px 8px; min-width:auto; color:#800000;" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path)}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удалить</button>
+                                <button class="btn98" style="padding:3px 10px; min-width:70px; color:#800000; font-weight:bold; margin-left:auto;" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path)}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удалить</button>
                             </div>
                         </td>
                     </tr>
