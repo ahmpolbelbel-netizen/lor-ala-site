@@ -791,19 +791,11 @@
             <div class="upload-section">
                 <h3>Загрузить результаты обследований</h3>
                 <p style="font-size:13px; color:#666; margin-bottom:12px;">
-                    PDF или фото бланка (JPG/PNG). По умолчанию — <b>максимальное сжатие</b>
-                    (текстовые бланки обычно «граммы»). Если качество плохое — «Оригинал».
+                    Прикрепите PDF или фото бланка (JPG/PNG). Файл автоматически подготовится к отправке.
                 </p>
-                <div class="upload-controls" style="flex-direction:column;align-items:stretch;gap:8px;">
-                    <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/webp,image/jpg" onchange="onFilePicked()">
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="max" checked onchange="onFilePicked()"> Макс.</label>
-                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="balanced" onchange="onFilePicked()"> Обычное</label>
-                        <label style="font-size:13px;"><input type="radio" name="compress-mode" value="mush" onchange="onFilePicked()"> «Каша»</label>
-                        <button type="button" class="btn-primary btn-upload" style="width:auto;padding:10px 16px;" onclick="uploadFile()">Загрузить</button>
-                        <button type="button" id="btn-restore-original" class="btn-download" style="display:none;" onclick="restoreOriginalUpload()">Оригинал</button>
-                    </div>
-                    <div id="compress-preview" style="font-size:13px;color:#555;"></div>
+                <div class="upload-controls">
+                    <input type="file" id="file-input" accept="application/pdf,image/jpeg,image/png,image/webp,image/jpg">
+                    <button type="button" class="btn-primary btn-upload" onclick="uploadFile()">Загрузить</button>
                 </div>
                 <div id="upload-status"></div>
                 <div id="files-list"></div>
@@ -1122,8 +1114,8 @@
         let useOriginalUpload = false;
 
         function getCompressMode() {
-            const el = document.querySelector('input[name="compress-mode"]:checked');
-            return (el && el.value) || 'max';
+            // Пациенту режимы не показываем — всегда аккуратное сжатие «max»
+            return 'max';
         }
 
         function compressParams(mode) {
@@ -1300,17 +1292,12 @@
                 return;
             }
 
-            status.innerHTML = '<span style="color:#009ca0;">Подготовка…</span>';
+            status.innerHTML = '<span style="color:#009ca0;">Подготовка файла…</span>';
 
             let prepared;
             try {
-                if (useOriginalUpload) {
-                    prepared = await prepareUploadBlob(file, status, true);
-                } else if (pendingPrepared && pendingOriginalFile === file) {
-                    prepared = pendingPrepared;
-                } else {
-                    prepared = await prepareUploadBlob(file, status, false);
-                }
+                // Тихое сжатие без «кухни» для пациента
+                prepared = await prepareUploadBlob(file, status, false);
             } catch (err) {
                 status.innerHTML = '<span style="color:#e74c3c;">' + err.message + '</span>';
                 return;
