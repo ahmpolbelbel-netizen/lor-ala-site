@@ -877,18 +877,15 @@
             if (!raw) return '';
             let text = escapeHtml(raw);
 
-            // Статусы от парсера демона
-            text = text.replace(/\bПОВЫШЕН\b/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
-            text = text.replace(/\bСНИЖЕН\b/g, '<span class="abnormal">▼ СНИЖЕН</span>');
-            text = text.replace(/\bНОРМА\b/g, '<span class="status-norm">● НОРМА</span>');
+            // Статусы со значками
+            text = text.replace(/▲?\s*ПОВЫШЕН/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
+            text = text.replace(/▼?\s*СНИЖЕН/g, '<span class="abnormal">▼ СНИЖЕН</span>');
+            text = text.replace(/●?\s*НОРМА/g, '<span class="status-norm">● НОРМА</span>');
 
-            // Стрелки
-            text = text.replace(/([↑↓⇑⇓])/g, '<span class="abnormal">$1</span>');
-
-            // Заголовки секций ══ ... ══
+            // Заголовки секций
             text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
 
-            // Строки с датой
+            // Дата
             text = text.replace(/(Дата\s+[^:\n]+:\s*[^\n]+)/g, '<b>$1</b>');
 
             return text;
