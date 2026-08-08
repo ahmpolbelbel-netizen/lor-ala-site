@@ -427,6 +427,138 @@
             background: #007a87;
         }
 
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-view-text {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .btn-view-text:hover {
+            background: #1e8449;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        /* Модалка просмотра текста (пациент) */
+        .text-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .text-modal-overlay.visible { display: flex; }
+
+        .text-modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 720px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+        }
+
+        .text-modal-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .text-modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #009ca0;
+            word-break: break-all;
+        }
+
+        .text-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            line-height: 1;
+            padding: 0 4px;
+        }
+
+        .text-modal-body {
+            padding: 16px 18px;
+            overflow: auto;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            color: #222;
+        }
+
+        .text-modal-body .abnormal {
+            background: #ffe0e0;
+            color: #c0392b;
+            font-weight: bold;
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+
+        .text-modal-body .section-title {
+            font-weight: bold;
+            color: #009ca0;
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+
+        .text-modal-footer {
+            padding: 12px 18px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .text-modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             body { overflow-x: hidden; }
 
@@ -589,6 +721,22 @@
             </div>
 
             <button class="btn-logout" onclick="logout()">Выйти из кабинета</button>
+        </div>
+    </div>
+
+    <!-- Модалка просмотра текста анализа -->
+    <div id="patient-text-modal" class="text-modal-overlay">
+        <div class="text-modal">
+            <div class="text-modal-header">
+                <h3 id="patient-modal-title">Текст анализа</h3>
+                <button class="text-modal-close" onclick="closePatientTextModal()" title="Закрыть">&times;</button>
+            </div>
+            <div class="text-modal-body" id="patient-modal-body"></div>
+            <div class="text-modal-footer">
+                <button style="background:#009ca0;color:#fff;" onclick="copyPatientModalText()">Копировать</button>
+                <button style="background:#555;color:#fff;" onclick="downloadPatientModalText()">Скачать TXT</button>
+                <button style="background:#e2e8f0;color:#333;" onclick="closePatientTextModal()">Закрыть</button>
+            </div>
         </div>
     </div>
 
@@ -915,7 +1063,6 @@
             listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Загрузка списка файлов...</p>';
 
             try {
-                // Читаем из таблицы patient_files (там есть оригинальные имена)
                 const response = await fetch(
                     SUPABASE_URL + '/rest/v1/patient_files?patient_id=eq.' + parseInt(currentPatientId) + '&order=uploaded_at.desc&select=*',
                     {
@@ -944,15 +1091,27 @@
                     const displayName = file.original_name || file.safe_name || 'Файл';
                     const statusLabel = file.status === 'processed' ? '✓' : (file.status === 'error' ? '!' : '•');
                     const statusColor = file.status === 'processed' ? '#27ae60' : (file.status === 'error' ? '#e74c3c' : '#888');
+                    const hasText = file.full_text && file.full_text.trim().length > 20;
+                    const safePath = (file.storage_path || '').replace(/'/g, "\\'");
+                    const safeName = (displayName || '').replace(/'/g, "\\'");
 
                     const item = document.createElement('div');
                     item.className = 'file-item';
+                    item.id = 'file-row-' + file.id;
+
+                    let actionsHtml = '';
+                    if (hasText) {
+                        actionsHtml += `<button class="btn-view-text" onclick="viewPatientText(${file.id})">Текст</button>`;
+                    }
+                    actionsHtml += `<button class="btn-download" onclick="downloadFile('${safePath}')">Скачать</button>`;
+                    actionsHtml += `<button class="btn-delete" onclick="deletePatientFile(${file.id}, '${safePath}', '${safeName}')">Удалить</button>`;
+
                     item.innerHTML = `
                         <span title="${file.safe_name || ''}">
                             <span style="color:${statusColor}; font-weight:bold; margin-right:6px;">${statusLabel}</span>
-                            ${displayName}
+                            ${escapeHtml(displayName)}
                         </span>
-                        <button class="btn-download" onclick="downloadFile('${file.storage_path}')">Скачать</button>
+                        <div class="file-actions">${actionsHtml}</div>
                     `;
                     listDiv.appendChild(item);
                 });
@@ -987,6 +1146,171 @@
                 alert('Ошибка скачивания: ' + err.message);
             }
         }
+
+        // ========== УДАЛЕНИЕ ФАЙЛА (пациент) ==========
+        async function deletePatientFile(fileId, storagePath, displayName) {
+            const msg = 'Удалить файл?\n\n' +
+                'Имя: ' + displayName + '\n\n' +
+                'Будет удалено:\n' +
+                '• PDF из хранилища\n' +
+                '• Запись и распознанный текст из базы\n\n' +
+                'Это действие нельзя отменить.';
+
+            if (!confirm(msg)) return;
+
+            const statusEl = document.getElementById('upload-status');
+            if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Удаление...</span>';
+
+            try {
+                // 1. Удаляем из Storage
+                const storageResp = await fetch(
+                    SUPABASE_URL + '/storage/v1/object/patient-files/' + storagePath,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY
+                        }
+                    }
+                );
+                // Storage может вернуть 200 или 400 если файла уже нет — продолжаем
+
+                // 2. Удаляем запись из таблицы
+                const dbResp = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files?id=eq.' + fileId,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY,
+                            'Prefer': 'return=minimal'
+                        }
+                    }
+                );
+
+                if (!dbResp.ok) {
+                    const errText = await dbResp.text();
+                    throw new Error(errText || ('Код ' + dbResp.status));
+                }
+
+                if (statusEl) statusEl.innerHTML = '<span style="color:#27ae60;">Файл удалён</span>';
+                // Убираем строку сразу
+                const row = document.getElementById('file-row-' + fileId);
+                if (row) row.remove();
+
+                // Если список пуст — показываем сообщение
+                const listDiv = document.getElementById('files-list');
+                if (listDiv && listDiv.children.length === 0) {
+                    listDiv.innerHTML = '<p style="color:#888; font-size:14px;">Файлов пока нет</p>';
+                }
+            } catch (err) {
+                console.error(err);
+                if (statusEl) statusEl.innerHTML = '<span style="color:#e74c3c;">Ошибка удаления: ' + err.message + '</span>';
+                alert('Ошибка удаления: ' + err.message);
+            }
+        }
+
+        // ========== ПРОСМОТР ТЕКСТА (пациент) ==========
+        let patientModalText = '';
+        let patientModalName = '';
+
+        async function viewPatientText(fileId) {
+            try {
+                const response = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files?id=eq.' + fileId + '&select=original_name,safe_name,full_text',
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + SUPABASE_KEY
+                        }
+                    }
+                );
+                if (!response.ok) throw new Error('Не удалось загрузить текст');
+
+                const rows = await response.json();
+                if (!rows || !rows[0]) throw new Error('Файл не найден');
+
+                const file = rows[0];
+                patientModalText = file.full_text || '(текст отсутствует)';
+                patientModalName = file.original_name || file.safe_name || 'Анализ';
+
+                document.getElementById('patient-modal-title').textContent = patientModalName;
+                document.getElementById('patient-modal-body').innerHTML = formatLabText(patientModalText);
+                document.getElementById('patient-text-modal').classList.add('visible');
+            } catch (err) {
+                alert('Ошибка: ' + err.message);
+            }
+        }
+
+        function closePatientTextModal() {
+            document.getElementById('patient-text-modal').classList.remove('visible');
+        }
+
+        function copyPatientModalText() {
+            navigator.clipboard.writeText(patientModalText).then(function () {
+                alert('Текст скопирован');
+            }).catch(function () {
+                const ta = document.createElement('textarea');
+                ta.value = patientModalText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                alert('Текст скопирован');
+            });
+        }
+
+        function downloadPatientModalText() {
+            const blob = new Blob([patientModalText], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (patientModalName.replace(/\.pdf$/i, '') || 'analiz') + '.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Форматирование текста анализа: подсветка отклонений + читаемость
+        function formatLabText(raw) {
+            if (!raw) return '';
+            let text = escapeHtml(raw);
+
+            // Подсветка типичных маркеров отклонений
+            const abnormalPatterns = [
+                /([↑↓⇑⇓])/g,
+                /\b([HL])\b(?=\s|$|,|;|\))/g,
+                /(\*[^*\n]{0,40}\*)/g,
+                /(повышен[аоы]?|снижен[аоы]?|выше\s+нормы|ниже\s+нормы|отклонени[ея]|вне\s+референс)/gi
+            ];
+
+            abnormalPatterns.forEach(function (re) {
+                text = text.replace(re, '<span class="abnormal">$1</span>');
+            });
+
+            // Выделяем возможные заголовки разделов (строки в ВЕРХНЕМ РЕГИСТРЕ или заканчивающиеся на :)
+            text = text.replace(/(^|\n)([А-ЯA-ZЁ][А-ЯA-ZЁ\s\d\-—–]{3,60}:?)(\n|$)/g,
+                '$1<span class="section-title">$2</span>$3');
+
+            return text;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Закрытие модалки по Escape / клику на фон
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePatientTextModal();
+        });
+        document.getElementById('patient-text-modal').addEventListener('click', function (e) {
+            if (e.target === this) closePatientTextModal();
+        });
     </script>
 </body>
                                                      </html>
