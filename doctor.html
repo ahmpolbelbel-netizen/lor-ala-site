@@ -289,7 +289,7 @@
         }
 
         .modal-body {
-            padding: 12px 14px;
+            padding: 14px 16px;
             overflow: auto;
             flex: 1;
             background: #ffffff;
@@ -298,25 +298,27 @@
             font-family: "Consolas", "Courier New", "Lucida Console", monospace;
             font-size: 13px;
             white-space: pre;
-            line-height: 1.45;
-            color: #000;
+            line-height: 1.5;
+            color: #222;
         }
 
+        /* Отклонения — ярко, сразу видно */
         .modal-body .abnormal {
-            background: #ffcccc;
-            color: #990000;
+            background: #e74c3c;
+            color: #ffffff !important;
             font-weight: bold;
-            padding: 0 2px;
+            padding: 1px 6px;
+            border-radius: 3px;
         }
 
         .modal-body .status-norm {
-            color: #006600;
+            color: #1e8449;
             font-weight: bold;
         }
 
         .modal-body .section-title {
             font-weight: bold;
-            color: #000080;
+            color: #009ca0;
             display: inline;
         }
 
@@ -325,10 +327,21 @@
             text-align: right;
             border-top: 1px solid #808080;
             flex-shrink: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
         }
 
         .modal-footer .btn98 {
-            margin-left: 6px;
+            margin-left: 0;
+        }
+
+        .btn-ai {
+            background: #6c3483 !important;
+            color: #fff !important;
+            font-weight: bold;
         }
 
         /* ===== Фильтры ===== */
@@ -517,7 +530,8 @@
             </div>
             <div class="modal-body" id="modal-text">Загрузка...</div>
             <div class="modal-footer">
-                <button class="btn98" onclick="copyModalText()">Копировать текст</button>
+                <button class="btn98 btn-ai" onclick="requestAiImprove()" title="Отправить на доп. очистку через ИИ (нужен groq_key.txt)">ИИ-улучшение</button>
+                <button class="btn98" onclick="copyModalText()">Копировать</button>
                 <button class="btn98" onclick="downloadModalText()">Скачать TXT</button>
                 <button class="btn98 primary" onclick="closeTextModal()">Закрыть</button>
             </div>
@@ -830,11 +844,13 @@
         // ========== ПРОСМОТР ТЕКСТА ==========
         let currentModalText = '';
         let currentModalName = '';
+        let currentModalFileId = null;
 
         function viewText(fileId) {
             const file = allFiles.find(f => f.id === fileId);
             if (!file) return;
 
+            currentModalFileId = fileId;
             currentModalText = file.full_text || '(текст отсутствует)';
             currentModalName = file.original_name || file.safe_name || 'file';
             const pname = patientNameCache[file.patient_id] || ('ID ' + file.patient_id);
@@ -846,6 +862,7 @@
 
         function closeTextModal() {
             document.getElementById('text-modal').classList.remove('visible');
+            currentModalFileId = null;
         }
 
         function copyModalText() {
@@ -872,23 +889,51 @@
             URL.revokeObjectURL(url);
         }
 
-        // Форматирование: подсветка отклонений + заголовки разделов
+        // Только целые статусы в конце строки / как отдельные токены — не трогаем слово "повышение" в комментариях
         function formatLabText(raw) {
             if (!raw) return '';
             let text = escapeHtml(raw);
 
-            // Статусы со значками
-            text = text.replace(/▲?\s*ПОВЫШЕН/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
-            text = text.replace(/▼?\s*СНИЖЕН/g, '<span class="abnormal">▼ СНИЖЕН</span>');
-            text = text.replace(/●?\s*НОРМА/g, '<span class="status-norm">● НОРМА</span>');
+            text = text.replace(/(▲\s*)?ПОВЫШЕН\b/g, '<span class="abnormal">▲ ПОВЫШЕН</span>');
+            text = text.replace(/(▼\s*)?СНИЖЕН\b/g, '<span class="abnormal">▼ СНИЖЕН</span>');
+            text = text.replace(/(●\s*)?НОРМА\b/g, '<span class="status-norm">● НОРМА</span>');
 
-            // Заголовки секций
             text = text.replace(/(══\s*.+?\s*══)/g, '<span class="section-title">$1</span>');
-
-            // Дата
             text = text.replace(/(Дата\s+[^:\n]+:\s*[^\n]+)/g, '<b>$1</b>');
 
             return text;
+        }
+
+        // Поставить файл в очередь на ИИ-очистку (демон подхватит status=ai_pending)
+        async function requestAiImprove() {
+            if (!currentModalFileId) {
+                alert('Файл не выбран');
+                return;
+            }
+            if (!confirm('Отправить этот анализ на дополнительную очистку через ИИ?\n\nДемон обработает в течение ~1 мин (нужен файл groq_key.txt).')) {
+                return;
+            }
+            try {
+                const resp = await fetch(
+                    SUPABASE_URL + '/rest/v1/patient_files?id=eq.' + currentModalFileId,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({ status: 'ai_pending' })
+                    }
+                );
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                alert('Поставлено в очередь ИИ.\nОбновите список через 1–2 минуты и откройте «Текст» снова.');
+                closeTextModal();
+                loadFiles();
+            } catch (err) {
+                alert('Ошибка: ' + err.message);
+            }
         }
 
         // ========== УДАЛЕНИЕ ФАЙЛА (врач) ==========
