@@ -1426,22 +1426,19 @@
                 return { blob: file, uploadName: file.name, originalName: file.name + ' (оригинал)' };
             }
             const mode = getCompressMode();
+            // Фото — сжимаем (это снимки, текста для извлечения нет)
             if (isImage) {
                 if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Сжатие фото…</span>';
                 const pdfBlob = await compressImageToPdf(file, mode);
                 const base = file.name.replace(/\.[^.]+$/, '') || 'photo';
                 return { blob: pdfBlob, uploadName: base + '_c.pdf', originalName: file.name + ' → PDF' };
             }
-            try {
-                const compressed = await compressPdfFile(file, mode, statusEl);
-                if (compressed && compressed.size < file.size) {
-                    return {
-                        blob: compressed,
-                        uploadName: file.name.replace(/\.pdf$/i, '') + '_c.pdf',
-                        originalName: file.name + ' (сжат)'
-                    };
-                }
-            } catch (e) { console.warn('PDF compress', e); }
+            // PDF лабораторный — НЕ перегоняем в картинки: иначе пропадает текст и
+            // демон пишет "No text extracted". Сжатие PDF (каша/макс) — только в кабинете врача для скачивания.
+            if (isPdf) {
+                if (statusEl) statusEl.innerHTML = '<span style="color:#009ca0;">Загрузка PDF без перекодирования (сохраняем текст)…</span>';
+                return { blob: file, uploadName: file.name, originalName: file.name };
+            }
             return { blob: file, uploadName: file.name, originalName: file.name };
         }
 
