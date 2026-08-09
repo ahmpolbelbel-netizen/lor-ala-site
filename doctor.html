@@ -844,8 +844,7 @@
             <div style="padding:6px 10px; background:#c0c0c0; display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-bottom:1px solid #808080;">
                 <label style="font-size:11px;">Версия:</label>
                 <select id="chart-ai-version" class="input98" style="height:22px; max-width:280px;" onchange="onChartVersionChange()"></select>
-                <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" onclick="generateChartAi(false)" title="Если ещё нет — создать; если есть — открыть сохранённое">Открыть / создать</button>
-                <button class="btn98 btn-ai-interp" style="min-width:0;height:22px;padding:1px 8px;" onclick="generateChartAi(true)" title="Новый разбор с учётом текущих визитов и анализов; старая версия сохранится">Обновить анализ</button>
+                <button class="btn98 btn-ai-interp" style="min-width:0;height:22px;padding:1px 8px;" onclick="generateChartAi(true)" title="Новый разбор; старая версия сохранится">Обновить анализ</button>
                 <button class="btn98" style="min-width:0;height:22px;padding:1px 8px;" id="btn-chart-chat" onclick="toggleChartChat()">Чат с ИИ</button>
                 <span id="chart-ai-meta" style="font-size:11px;color:#404040;margin-left:4px;"></span>
             </div>
@@ -907,8 +906,10 @@
         // Ключ Groq для чата в кабинете (тот же, что в groq_key.txt на ПК демона)
         const GROQ_KEY = ""; // не хранить в странице — только локальный прокси демона
 
-        // Локальный прокси ИИ (ключ в groq_key.txt на ПК, демон слушает 127.0.0.1:8765)
-        const LOR_AI_PROXY = "http://127.0.0.1:8765/api/ai-chat";
+        // ========== ИИ через Supabase Edge Function (ключ GROQ_KEY в секретах Supabase) ==========
+        // Деплой: supabase functions deploy ai-chat && supabase secrets set GROQ_KEY=gsk_...
+        const LOR_AI_FN = SUPABASE_URL + "/functions/v1/ai-chat";
+        const LOR_AI_PROXY = "http://127.0.0.1:8765/api/ai-chat"; // запасной локальный демон
 
         async function lorAiChat(messages, opts) {
             opts = opts || {};
@@ -918,7 +919,29 @@
                 temperature: opts.temperature != null ? opts.temperature : 0.3,
                 max_tokens: opts.max_tokens || 2000
             };
-            // 1) Локальный демон: ключ только в groq_key.txt на этом ПК
+
+            // 1) Supabase Edge Function (вариант C) — ключ только на сервере
+            try {
+                const r = await fetch(LOR_AI_FN, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": "Bearer " + (accessToken || SUPABASE_KEY)
+                    },
+                    body: JSON.stringify(body)
+                });
+                if (r.ok) return await r.json();
+                const errT = await r.text();
+                // если функция ещё не задеплоена — пробуем дальше
+                if (r.status !== 404 && r.status !== 503) {
+                    console.warn("Edge ai-chat:", r.status, errT.slice(0, 200));
+                }
+            } catch (e) {
+                console.warn("Edge ai-chat fail", e);
+            }
+
+            // 2) Локальный демон (если запущен на этом ПК)
             try {
                 const r = await fetch(LOR_AI_PROXY, {
                     method: "POST",
@@ -929,12 +952,13 @@
             } catch (e) {
                 console.warn("local AI proxy unavailable", e);
             }
-            // 2) Ключ сессии (ввёл вручную на этом ПК, не в коде страницы)
-            const sessionKey = (sessionStorage.getItem("lor_groq_session") || "").trim() || (GROQ_KEY || "").trim();
+
+            // 3) Ключ только на эту сессию браузера (не в коде сайта)
+            const sessionKey = (sessionStorage.getItem("lor_groq_session") || "").trim();
             if (!sessionKey) {
                 throw new Error(
-                    "ИИ недоступен. Варианты: 1) запустите демон process_lab_files.py " +
-                    "(прокси 127.0.0.1:8765); 2) кнопка «Ключ ИИ» — вставить из groq_key.txt только в эту сессию браузера."
+                    "ИИ недоступен. Нужен вариант C: задеплойте Edge Function ai-chat в Supabase " +
+                    "и задайте секрет GROQ_KEY. Временно: кнопка «Ключ ИИ» — вставить ключ на эту сессию."
                 );
             }
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -955,8 +979,8 @@
         function setSessionGroqKey() {
             const cur = sessionStorage.getItem("lor_groq_session") || "";
             const v = prompt(
-                "Вставьте ключ из файла groq_key.txt на этом ПК.\n" +
-                "Хранится только в sessionStorage до закрытия вкладки, не в коде сайта.",
+                "Временно: ключ из groq_key.txt только на эту вкладку (sessionStorage).\\n" +
+                "Постоянно: Edge Function ai-chat + секрет GROQ_KEY в Supabase.",
                 cur
             );
             if (v === null) return;
@@ -967,8 +991,9 @@
                 return;
             }
             sessionStorage.setItem("lor_groq_session", t);
-            alert("Ключ сохранён на эту сессию браузера");
+            alert("Ключ сохранён на эту сессию");
         }
+
 
 
         let accessToken = localStorage.getItem('lor_doctor_token') || null;
@@ -1676,7 +1701,6 @@
             const inp = document.getElementById('chart-ai-chat-input');
             const q = (inp && inp.value || '').trim();
             if (!q) return;
-            if (!GROQ_KEY) { alert('Нет GROQ_KEY'); return; }
             if (!chartAiText) { alert('Сначала создайте анализ карты'); return; }
             inp.value = '';
             chartAiPack.chat = chartAiPack.chat || [];
@@ -1758,9 +1782,8 @@
             if (chartAiPack.versions.length) {
                 showChartVersion(chartAiPack.activeId || chartAiPack.versions[chartAiPack.versions.length - 1].id);
             } else {
-                document.getElementById('chart-ai-body').innerHTML =
-                    '<p style="margin:0;">Сохранённого разбора ещё нет. Нажмите «Открыть / создать» или «Обновить анализ».</p>';
-                chartAiText = '';
+                // Один клик «ИИ: вся карта» — сразу считаем, без лишних кнопок
+                generateChartAi(false);
             }
         }
 
@@ -1769,11 +1792,6 @@
                 alert('Сначала откройте историю пациента');
                 return;
             }
-            if (!GROQ_KEY) {
-                alert('Нет GROQ_KEY');
-                return;
-            }
-
             const pid = historyCache.patientId;
             const pname = patientNameCache[pid] || ('ID ' + pid);
             chartAiPatientId = pid;
@@ -2448,10 +2466,6 @@
             const inp = document.getElementById('ai-chat-input');
             const q = (inp && inp.value || '').trim();
             if (!q) return;
-            if (!GROQ_KEY) {
-                alert('Не задан GROQ_KEY в doctor.html');
-                return;
-            }
             inp.value = '';
             // если на экране было только приветствие без history — очистим DOM и начнём чисто
             if (!chatHistory.length) {
