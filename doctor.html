@@ -629,6 +629,7 @@
                 <div class="toolbar">
                     <button class="btn98 primary" onclick="loadFiles()">Обновить список</button>
                     <button class="btn98" onclick="showHelp()">Как обработать файлы?</button>
+                    <button class="btn98" onclick="setSessionGroqKey()" title="Ключ из groq_key.txt только на этот ПК/сессию">Ключ ИИ</button>
                     <button class="btn98" onclick="loadOfflineCache()" title="Показать данные из офлайн-копии">Из кэша</button>
                     <span style="flex:1;"></span>
                     <span id="doctor-label" style="align-self:center; font-weight:bold;"></span>
@@ -904,7 +905,71 @@
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
         // Ключ Groq для чата в кабинете (тот же, что в groq_key.txt на ПК демона)
-        const GROQ_KEY = "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";
+        const GROQ_KEY = ""; // не хранить в странице — только локальный прокси демона
+
+        // Локальный прокси ИИ (ключ в groq_key.txt на ПК, демон слушает 127.0.0.1:8765)
+        const LOR_AI_PROXY = "http://127.0.0.1:8765/api/ai-chat";
+
+        async function lorAiChat(messages, opts) {
+            opts = opts || {};
+            const body = {
+                model: opts.model || "llama-3.3-70b-versatile",
+                messages: messages,
+                temperature: opts.temperature != null ? opts.temperature : 0.3,
+                max_tokens: opts.max_tokens || 2000
+            };
+            // 1) Локальный демон: ключ только в groq_key.txt на этом ПК
+            try {
+                const r = await fetch(LOR_AI_PROXY, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                if (r.ok) return await r.json();
+            } catch (e) {
+                console.warn("local AI proxy unavailable", e);
+            }
+            // 2) Ключ сессии (ввёл вручную на этом ПК, не в коде страницы)
+            const sessionKey = (sessionStorage.getItem("lor_groq_session") || "").trim() || (GROQ_KEY || "").trim();
+            if (!sessionKey) {
+                throw new Error(
+                    "ИИ недоступен. Варианты: 1) запустите демон process_lab_files.py " +
+                    "(прокси 127.0.0.1:8765); 2) кнопка «Ключ ИИ» — вставить из groq_key.txt только в эту сессию браузера."
+                );
+            }
+            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + sessionKey,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+            if (!resp.ok) {
+                const t = await resp.text();
+                throw new Error("Groq HTTP " + resp.status + " " + t.slice(0, 150));
+            }
+            return await resp.json();
+        }
+
+        function setSessionGroqKey() {
+            const cur = sessionStorage.getItem("lor_groq_session") || "";
+            const v = prompt(
+                "Вставьте ключ из файла groq_key.txt на этом ПК.\n" +
+                "Хранится только в sessionStorage до закрытия вкладки, не в коде сайта.",
+                cur
+            );
+            if (v === null) return;
+            const t = v.trim();
+            if (!t) {
+                sessionStorage.removeItem("lor_groq_session");
+                alert("Ключ сессии очищен");
+                return;
+            }
+            sessionStorage.setItem("lor_groq_session", t);
+            alert("Ключ сохранён на эту сессию браузера");
+        }
+
 
         let accessToken = localStorage.getItem('lor_doctor_token') || null;
         let doctorEmail = localStorage.getItem('lor_doctor_email') || null;
@@ -1637,21 +1702,7 @@
             if (box) { box.appendChild(pending); box.scrollTop = box.scrollHeight; }
 
             try {
-                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + GROQ_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: messages,
-                        temperature: 0.3,
-                        max_tokens: 1500
-                    })
-                });
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                const data = await resp.json();
+                const data = await lorAiChat(messages, { temperature: 0.3, max_tokens: 1500 });
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Нет ответа';
                 chartAiPack.chat.push({ role: 'assistant', content: answer });
                 saveChartPack(chartAiPatientId, chartAiPack);
@@ -1783,13 +1834,23 @@
                 '(не сравнивай цифры норм бланков, а тактику и интерпретацию находок).\n' +
                 '— На что смотреть на следующем приёме.\n\n' +
                 'Обязательный подраздел «Направления к смежным специалистам»:\n' +
-                'Всегда оцени, нужны ли рефералы. Если оснований НЕТ — одним абзацем: ' +
-                '«По текущим данным карты отдельных направлений к смежным специалистам не требуется, потому что …».\n' +
-                'Если основания ЕСТЬ — для КАЖДОГО направления отдельный абзац строго в формате:\n' +
+                'ВАЖНО: отклонения в анализах (ОАМ, ОАК, биохимия и т.д.) — это уже основание для оценки реферала, ' +
+                'даже если ЛОР-приёмы «чистые». Нельзя отмахиваться фразой «в карте нет указаний на необходимость консультации» — ' +
+                'смотри на лабораторные отклонения, жалобы и диагнозы.\n' +
+                'Примеры логики (не шаблон, а ориентир):\n' +
+                '— отклонения ОАМ (белок, лейкоциты, эритроциты, бактерии, плотность, уробилиноген и др.) → уролог / нефролог / терапевт: ' +
+                'что подозреваешь (ИМП, нефропатия, дегидратация, холестаз и т.п.) и зачем направление;\n' +
+                '— анемия / выраженный лейкоцитоз / CRP → терапевт / педиатр;\n' +
+                '— аллергический анамнез + ринит → аллерголог;\n' +
+                '— гастросимптомы + ЛОР → гастроэнтеролог при стойких признаках.\n' +
+                'Для КАЖДОГО направления отдельный абзац строго:\n' +
                 'К кому: (специальность).\n' +
-                'Зачем: (клиническая цель).\n' +
-                'Основание в карте: (конкретные жалобы / диагноз / анализы / назначения / даты из текста).\n' +
-                'Не выдумывай направления «на всякий случай». Не пиши длинный список без связи с картой.\n\n' +
+                'Что подозреваю: (1–2 рабочие гипотезы, без категоричного диагноза).\n' +
+                'Зачем: (какая помощь / какое обследование у смежного).\n' +
+                'Основание в карте: (конкретные показатели со статусом ПОВЫШЕН/СНИЖЕН, жалобы, диагноз, даты).\n' +
+                'Если после разбора отклонений реферал реально не нужен — одним абзацем с явной причиной, ' +
+                'ссылаясь на то, какие отклонения вы уже клинически закрыли в тексте, а не «потому что нет указаний».\n' +
+                'Не раздувай список: только прицельные направления.\n\n' +
                 'РАЗДЕЛ 2. ПОСЛЕДНИЙ ЭПИЗОД / ОБОСТРЕНИЕ\n' +
                 '— Что выглядит актуальным эпизодом (даты, жалобы, диагноз, назначения).\n' +
                 '— Есть ли по карте ответ на лечение.\n' +
@@ -1804,27 +1865,10 @@
             );
 
             try {
-                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + GROQ_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: [
-                            { role: 'system', content: system },
-                            { role: 'user', content: user }
-                        ],
-                        temperature: 0.35,
-                        max_tokens: 4000
-                    })
-                });
-                if (!resp.ok) {
-                    const t = await resp.text();
-                    throw new Error('Groq HTTP ' + resp.status + ' ' + t.slice(0, 150));
-                }
-                const data = await resp.json();
+                const data = await lorAiChat([
+                    { role: 'system', content: system },
+                    { role: 'user', content: user }
+                ], { temperature: 0.35, max_tokens: 4000 });
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Пустой ответ';
                 const id = 'v' + Date.now();
                 const label = (asUpdate ? 'Обновление ' : 'Разбор ') + new Date().toLocaleString('ru-RU');
@@ -2436,24 +2480,7 @@
             const pending = box ? box.lastChild : null;
 
             try {
-                const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + GROQ_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: messages,
-                        temperature: 0.3,
-                        max_tokens: 1200
-                    })
-                });
-                if (!resp.ok) {
-                    const errT = await resp.text();
-                    throw new Error('Groq HTTP ' + resp.status + ': ' + errT.slice(0, 120));
-                }
-                const data = await resp.json();
+                const data = await lorAiChat(messages, { temperature: 0.3, max_tokens: 1200 });
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Нет ответа';
                 chatHistory.push({ role: 'assistant', content: answer });
                 if (currentModalFileId != null) saveLabChat(currentModalFileId, chatHistory);
