@@ -912,25 +912,48 @@
             if (!GROQ_KEY) {
                 throw new Error("Не задан GROQ_KEY в doctor.html");
             }
-            const body = {
-                model: opts.model || "llama-3.3-70b-versatile",
-                messages: messages,
-                temperature: opts.temperature != null ? opts.temperature : 0.3,
-                max_tokens: opts.max_tokens || 2000
-            };
-            const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer " + GROQ_KEY,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            });
-            if (!resp.ok) {
-                const t = await resp.text();
-                throw new Error("Groq HTTP " + resp.status + " " + t.slice(0, 150));
+            const primary = opts.model || "llama-3.3-70b-versatile";
+            // запасная модель: больше дневной лимит на free-тарифе Groq
+            const fallback = "llama-3.1-8b-instant";
+            const models = primary === fallback ? [primary] : [primary, fallback];
+
+            let lastErr = null;
+            for (let i = 0; i < models.length; i++) {
+                const model = models[i];
+                const body = {
+                    model: model,
+                    messages: messages,
+                    temperature: opts.temperature != null ? opts.temperature : 0.3,
+                    max_tokens: opts.max_tokens || 2000
+                };
+                try {
+                    const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": "Bearer " + GROQ_KEY,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(body)
+                    });
+                    if (resp.ok) {
+                        if (i > 0) console.warn("Groq: использована запасная модель " + model);
+                        return await resp.json();
+                    }
+                    const t = await resp.text();
+                    lastErr = new Error("Groq HTTP " + resp.status + " " + t.slice(0, 200));
+                    // 429 = лимит — пробуем другую модель; иначе сразу ошибка
+                    if (resp.status !== 429) throw lastErr;
+                    console.warn("Groq 429 на " + model + ", пробуем запасную…");
+                } catch (e) {
+                    lastErr = e;
+                    if (e && e.message && e.message.indexOf("429") < 0 && i === 0 && models.length > 1) {
+                        // сеть и т.п. — всё равно попробовать fallback один раз
+                    } else if (e && e.message && e.message.indexOf("429") < 0) {
+                        throw e;
+                    }
+                }
             }
-            return await resp.json();
+            throw lastErr || new Error("Groq: лимит запросов. Подождите 1–2 минуты или до завтра (дневной лимит).");
         }
 
 
@@ -1766,7 +1789,7 @@
                 ctx += '\n--- Файл #' + (i + 1) + ' ' + (f.original_name || '') + ' ---\n';
                 ctx += (f.full_text || '(нет текста)').slice(0, 4000) + '\n';
             });
-            if (ctx.length > 28000) ctx = ctx.slice(0, 28000) + '\n…[обрезано]';
+            if (ctx.length > 18000) ctx = ctx.slice(0, 18000) + '\n…[обрезано]';
 
             let prevNote = '';
             if (asUpdate && chartAiPack.versions.length) {
@@ -1826,7 +1849,7 @@
                 const data = await lorAiChat([
                     { role: 'system', content: system },
                     { role: 'user', content: user }
-                ], { temperature: 0.35, max_tokens: 4000 });
+                ], { temperature: 0.35, max_tokens: 3000 });
                 const answer = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'Пустой ответ';
                 const id = 'v' + Date.now();
                 const label = (asUpdate ? 'Обновление ' : 'Разбор ') + new Date().toLocaleString('ru-RU');
