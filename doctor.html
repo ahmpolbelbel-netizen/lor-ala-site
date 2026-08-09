@@ -629,7 +629,6 @@
                 <div class="toolbar">
                     <button class="btn98 primary" onclick="loadFiles()">Обновить список</button>
                     <button class="btn98" onclick="showHelp()">Как обработать файлы?</button>
-                    <button class="btn98" onclick="setSessionGroqKey()" title="Ключ из groq_key.txt только на этот ПК/сессию">Ключ ИИ</button>
                     <button class="btn98" onclick="loadOfflineCache()" title="Показать данные из офлайн-копии">Из кэша</button>
                     <span style="flex:1;"></span>
                     <span id="doctor-label" style="align-self:center; font-weight:bold;"></span>
@@ -904,67 +903,25 @@
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
         // Ключ Groq для чата в кабинете (тот же, что в groq_key.txt на ПК демона)
-        const GROQ_KEY = ""; // не хранить в странице — только локальный прокси демона
-
-        // ========== ИИ через Supabase Edge Function (ключ GROQ_KEY в секретах Supabase) ==========
-        // Деплой: supabase functions deploy ai-chat && supabase secrets set GROQ_KEY=gsk_...
-        const LOR_AI_FN = SUPABASE_URL + "/functions/v1/ai-chat";
-        const LOR_AI_PROXY = "http://127.0.0.1:8765/api/ai-chat"; // запасной локальный демон
+        // Ключ Groq (как было): один раз в этом файле. На Win7 без CLI/Edge.
+        // При компрометации — новый ключ на console.groq.com и замена этой строки.
+        const GROQ_KEY = "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";
 
         async function lorAiChat(messages, opts) {
             opts = opts || {};
+            if (!GROQ_KEY) {
+                throw new Error("Не задан GROQ_KEY в doctor.html");
+            }
             const body = {
                 model: opts.model || "llama-3.3-70b-versatile",
                 messages: messages,
                 temperature: opts.temperature != null ? opts.temperature : 0.3,
                 max_tokens: opts.max_tokens || 2000
             };
-
-            // 1) Supabase Edge Function (вариант C) — ключ только на сервере
-            try {
-                const r = await fetch(LOR_AI_FN, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "apikey": SUPABASE_KEY,
-                        "Authorization": "Bearer " + (accessToken || SUPABASE_KEY)
-                    },
-                    body: JSON.stringify(body)
-                });
-                if (r.ok) return await r.json();
-                const errT = await r.text();
-                // если функция ещё не задеплоена — пробуем дальше
-                if (r.status !== 404 && r.status !== 503) {
-                    console.warn("Edge ai-chat:", r.status, errT.slice(0, 200));
-                }
-            } catch (e) {
-                console.warn("Edge ai-chat fail", e);
-            }
-
-            // 2) Локальный демон (если запущен на этом ПК)
-            try {
-                const r = await fetch(LOR_AI_PROXY, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
-                if (r.ok) return await r.json();
-            } catch (e) {
-                console.warn("local AI proxy unavailable", e);
-            }
-
-            // 3) Ключ только на эту сессию браузера (не в коде сайта)
-            const sessionKey = (sessionStorage.getItem("lor_groq_session") || "").trim();
-            if (!sessionKey) {
-                throw new Error(
-                    "ИИ недоступен. Нужен вариант C: задеплойте Edge Function ai-chat в Supabase " +
-                    "и задайте секрет GROQ_KEY. Временно: кнопка «Ключ ИИ» — вставить ключ на эту сессию."
-                );
-            }
             const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer " + sessionKey,
+                    "Authorization": "Bearer " + GROQ_KEY,
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(body)
@@ -976,23 +933,6 @@
             return await resp.json();
         }
 
-        function setSessionGroqKey() {
-            const cur = sessionStorage.getItem("lor_groq_session") || "";
-            const v = prompt(
-                "Временно: ключ из groq_key.txt только на эту вкладку (sessionStorage).\\n" +
-                "Постоянно: Edge Function ai-chat + секрет GROQ_KEY в Supabase.",
-                cur
-            );
-            if (v === null) return;
-            const t = v.trim();
-            if (!t) {
-                sessionStorage.removeItem("lor_groq_session");
-                alert("Ключ сессии очищен");
-                return;
-            }
-            sessionStorage.setItem("lor_groq_session", t);
-            alert("Ключ сохранён на эту сессию");
-        }
 
 
 
