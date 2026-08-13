@@ -646,6 +646,156 @@
             .table98 { font-size: 11px; }
             .filter-row { flex-direction: column; align-items: flex-start; }
         }
+    
+        /* Режим двух панелей */
+        body.dual-mode #main-screen > .win98-window {
+            max-width: none;
+            width: 49%;
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 0.5%;
+        }
+        body.dual-mode #dual-side-panel {
+            display: inline-block !important;
+            width: 49%;
+            vertical-align: top;
+            max-height: 96vh;
+            overflow: auto;
+        }
+        #dual-side-panel { display: none; }
+        body.dual-mode #patient-card-modal.modal-overlay {
+            position: static;
+            display: block !important;
+            background: transparent;
+            width: 100%;
+            height: auto;
+        }
+        body.dual-mode #patient-card-modal .modal98 {
+            max-width: 100%;
+            width: 100%;
+            max-height: none;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        /* ===== Публичная веб-версия: мобильный просмотр ===== */
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            -webkit-tap-highlight-color: rgba(0,0,128,0.15);
+        }
+        .lor-brand-bar {
+            background: linear-gradient(90deg, #0a5c5e 0%, #009ca0 45%, #0d6b6e 100%);
+            color: #fff;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 2px solid #006666;
+            flex-wrap: wrap;
+        }
+        .lor-brand-bar .lor-brand-name {
+            font-family: Georgia, "Palatino Linotype", "Times New Roman", serif;
+            font-size: 20px;
+            color: #fff;
+            line-height: 1.15;
+        }
+        .lor-brand-bar .lor-brand-name .lor-word-doc { font-style: italic; font-weight: 400; margin-right: 0.12em; }
+        .lor-brand-bar .lor-brand-name .lor-word-lor { font-style: normal; font-weight: 700; letter-spacing: 1px; }
+        .lor-brand-bar .lor-brand-sub {
+            font-size: 11px;
+            font-family: Tahoma, sans-serif;
+            text-align: right;
+            line-height: 1.3;
+            opacity: 0.96;
+        }
+        .login-brand-wrap { text-align: center; margin-bottom: 10px; padding: 6px 4px; }
+        .login-brand-wrap .lor-brand-name {
+            font-family: Georgia, "Palatino Linotype", serif;
+            font-size: 26px;
+            color: #009ca0;
+        }
+        .login-brand-wrap .lor-word-doc { font-style: italic; font-weight: 400; margin-right: 0.12em; }
+        .login-brand-wrap .lor-word-lor { font-weight: 700; letter-spacing: 1px; }
+        .login-brand-wrap .lor-brand-sub { font-size: 11px; color: #404040; margin-top: 4px; }
+        .web-readonly-banner {
+            background: #ffffcc;
+            border: 1px solid #808080;
+            padding: 6px 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+        .web-only-hide { }
+        body.public-web .web-local-only { display: none !important; }
+        body.public-web .hotkey-bar { display: none; }
+
+        /* Карточки файлов на телефоне */
+        .files-cards { display: none; }
+        .file-card {
+            background: #fff;
+            border: 2px solid #808080;
+            margin-bottom: 8px;
+            padding: 10px;
+            box-shadow: 1px 1px 0 #000;
+        }
+        .file-card .fc-top { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-weight: bold; }
+        .file-card .fc-meta { font-size: 12px; color: #303030; margin-bottom: 8px; line-height: 1.35; }
+        .file-card .fc-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+        .file-card .fc-actions .btn98 { min-width: 0; flex: 1 1 auto; height: 36px; font-size: 13px; }
+
+        @media (max-width: 820px) {
+            body { padding: 6px; font-size: 14px; }
+            .win98-window { max-width: 100%; box-shadow: 1px 1px 0 #000; }
+            .win98-titlebar { height: auto; min-height: 28px; font-size: 14px; padding: 4px 6px; }
+            .win98-content { padding: 8px 6px; }
+            .btn98 {
+                min-height: 36px;
+                height: auto;
+                min-width: 64px;
+                font-size: 13px;
+                padding: 6px 12px;
+                line-height: 1.2;
+            }
+            .input98, select.input98, input.input98, textarea.input98 {
+                font-size: 16px !important; /* iOS: без зума */
+                min-height: 40px;
+                height: auto;
+                padding: 8px;
+            }
+            textarea.input98 { min-height: 120px; }
+            .filter-row { flex-direction: column; align-items: stretch; gap: 8px; }
+            .filter-row > div { width: 100%; }
+            .filter-row input.input98, .filter-row select.input98 { width: 100% !important; max-width: 100%; }
+            .toolbar { gap: 8px; }
+            .toolbar .btn98 { flex: 1 1 calc(50% - 8px); }
+            .table98-desktop { display: none !important; }
+            .files-cards { display: block !important; }
+            .login-box { max-width: 100%; margin: 16px auto; }
+            .modal98 { width: 100%; max-width: 100%; max-height: 100vh; border-radius: 0; }
+            .modal-overlay.visible { align-items: stretch; padding: 0; }
+            .modal-body { font-size: 14px; margin: 4px; }
+            .modal-footer { justify-content: stretch; }
+            .modal-footer .btn98 { flex: 1 1 40%; min-height: 40px; }
+            .groupbox { padding: 14px 8px 10px; }
+            .statusbar { flex-wrap: wrap; gap: 4px; }
+            .statusbar-panel { min-width: 0; flex: 1 1 40%; }
+            .today-strip { max-height: 180px; }
+            .today-item { font-size: 14px; padding: 6px 10px; margin: 3px; }
+            #patient-search-results { max-height: 50vh; }
+            .lor-brand-bar .lor-brand-name { font-size: 18px; }
+            .lor-brand-bar .lor-brand-sub { font-size: 10px; text-align: left; width: 100%; }
+            body.dual-mode #main-screen > .win98-window,
+            body.dual-mode #dual-side-panel {
+                width: 100% !important;
+                display: block !important;
+                margin: 0 0 8px 0;
+            }
+            #dual-side-panel { display: none; }
+        }
+        @media (max-width: 420px) {
+            .toolbar .btn98 { flex: 1 1 100%; }
+        }
+
     </style>
 </head>
 <body>
@@ -661,6 +811,10 @@
                 </div>
             </div>
             <div class="win98-content login-form">
+                <div class="login-brand-wrap">
+                    <div class="lor-brand-name"><span class="lor-word-doc">доктор</span><span class="lor-word-lor">ЛОР</span></div>
+                    <div class="lor-brand-sub">Белецкий Георгий Владимирович<br>врач оториноларинголог<br>Веб-просмотр (смартфон / любой браузер)</div>
+                </div>
                 <div class="form-row">
                     <label for="doc-email">Электронная почта:</label>
                     <input type="email" id="doc-email" class="input98" placeholder="doctor@example.com" autocomplete="username">
@@ -672,7 +826,7 @@
                 <div class="form-row" style="margin-bottom:8px;">
                     <label style="font-weight:normal; display:flex; align-items:center; gap:6px; cursor:pointer;">
                         <input type="checkbox" id="doc-remember" style="width:auto; height:auto;">
-                        Запомнить логин и пароль на этом ПК
+                        Запомнить только логин (пароль не сохраняется)
                     </label>
                 </div>
                 <div class="form-actions">
@@ -681,8 +835,9 @@
                 </div>
                 <div id="login-error" class="error-msg"></div>
                 <p class="info-text" style="margin-top:14px; text-align:center;">
-                    Доступ только для врача.<br>
-                    Пациенты на эту страницу попасть не могут.
+                    Веб-кабинет: просмотр карт, анализов и приёмов.<br>
+                    Полный функционал (календарь, ИИ, запись в Access) — только на ПК врача.<br>
+                    Пароль и секретные ключи в эту страницу не сохраняются.
                 </p>
             </div>
         </div>
@@ -695,14 +850,22 @@
                 <div class="title">
                     <span>🏥</span>
                     <span class="brand-mark brand-mark-sm">Доктор ЛОР</span>
-                    <span>Кабинет врача</span>
+                    <span>Белецкий Г.В. — веб-просмотр</span>
                 </div>
                 <div class="controls">
                     <button title="Выйти" onclick="doctorLogout()">×</button>
                 </div>
             </div>
+            <div class="lor-brand-bar">
+                <div class="lor-brand-name"><span class="lor-word-doc">доктор</span><span class="lor-word-lor">ЛОР</span></div>
+                <div class="lor-brand-sub">Белецкий Георгий Владимирович<br>врач оториноларинголог</div>
+            </div>
 
             <div class="win98-content">
+
+                <div class="web-readonly-banner" id="web-mode-banner">
+                    <b>Режим интернета:</b> удобный просмотр с телефона. ИИ, демон Access и Google Calendar — только на рабочем ПК врача.
+                </div>
 
                 <div id="notify-banner">
                     <b>Уведомления:</b>
@@ -710,8 +873,8 @@
                     <span id="notify-status" style="margin-left:8px; color:#404040;">выключены</span>
                     <span style="margin-left:16px;"><b>Сеть:</b> <span id="online-status">онлайн</span></span>
                     <button class="btn98" style="padding:2px 8px; min-width:0; margin-left:8px;" onclick="cacheForOffline()" title="Сохранить список и карточки на устройство">Офлайн-копия</button>
-                    <span style="margin-left:12px;"><b>Демон:</b> <span id="daemon-status" class="daemon-bad">—</span></span>
-                    <span style="margin-left:12px;"><b>Готовых с ИИ:</b> <span id="stat-ready-ai">0</span></span>
+                    <span class="web-local-only" style="margin-left:12px;"><b>Демон:</b> <span id="daemon-status" class="daemon-bad">—</span></span>
+                    <span class="web-local-only" style="margin-left:12px;"><b>Готовых с ИИ:</b> <span id="stat-ready-ai">0</span></span>
                 </div>
 
                 <div class="hotkey-bar" title="Горячие клавиши">
@@ -775,6 +938,8 @@
                 <!-- Панель инструментов -->
                 <div class="toolbar">
                     <button class="btn98 primary" onclick="loadFiles()">Обновить список</button>
+                    <button class="btn98 primary" type="button" onclick="openVisitCompose()" title="Шаблон Word: диагноз, рекомендации, печать">Приём Word</button>
+                    <button class="btn98" type="button" id="dual-mode-btn" onclick="toggleDualMode()" title="Список слева, карта справа">2 монитора: выкл</button>
                     <button class="btn98" onclick="showHelp()">Как обработать файлы?</button>
                     <button class="btn98" onclick="loadOfflineCache()" title="Показать данные из офлайн-копии">Из кэша</button>
                     <span style="flex:1;"></span>
@@ -821,8 +986,9 @@
                     </div>
                 </div>
 
-                <!-- Таблица файлов -->
-                <div style="overflow-x:auto;">
+                <!-- Таблица файлов + карточки для смартфона -->
+                <div id="files-cards" class="files-cards"></div>
+                <div class="table98-desktop" style="overflow-x:auto;">
                     <table class="table98" id="files-table">
                         <thead>
                             <tr>
@@ -858,6 +1024,16 @@
 
 
     <!-- ========== КАРТА ПАЦИЕНТА (Win98, вкладки) ========== -->
+
+        <div id="dual-side-panel" class="win98-window">
+            <div class="win98-titlebar">
+                <div class="title"><span class="brand-mark brand-mark-sm">Доктор ЛОР</span> Панель карты (режим 2 монитора)</div>
+            </div>
+            <div class="win98-content" id="dual-side-content" style="min-height:200px; font-size:12px; color:#404040;">
+                Откройте карту пациента — она появится здесь справа. Кнопка «2 монитора» снова выключит режим.
+            </div>
+        </div>
+
     <div id="patient-card-modal" class="modal-overlay">
         <div class="modal98" style="max-width:1020px; max-height:94vh;">
             <div class="win98-titlebar">
@@ -969,6 +1145,7 @@
                         <button class="btn98" type="button" onclick="setPcardHistPreset('today')">Сегодня</button>
                         <button class="btn98" type="button" onclick="setPcardHistPreset('yesterday')">Вчера</button>
                         <button class="btn98" type="button" onclick="setPcardHistPreset('clear')">Все даты</button>
+                        <button class="btn98 primary" type="button" onclick="openVisitComposeFromCard()">Приём Word</button>
                         <button class="btn98" type="button" onclick="exportCourseCalendar()">Календарь курса</button>
                         <button class="btn98" type="button" onclick="filterByPatientIdFromCard()">Файлы в списке</button>
                     </div>
@@ -1020,6 +1197,137 @@
                 <button class="btn98 primary" type="button" onclick="savePatientCardProfile()">Сохранить</button>
                 <button class="btn98" type="button" onclick="printPatientCard()">Печать</button>
                 <button class="btn98" type="button" onclick="closePatientCardModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========== ПРИЁМ (шаблон Word / VBA) ========== -->
+    <div id="visit-compose-modal" class="modal-overlay">
+        <div class="modal98" style="max-width:1100px; max-height:96vh;">
+            <div class="win98-titlebar">
+                <div class="title">
+                    <span>📝</span>
+                    <span class="brand-mark brand-mark-sm">Доктор ЛОР</span>
+                    <span>Приём — шаблон Word</span>
+                </div>
+                <div class="controls">
+                    <button type="button" onclick="closeVisitCompose()">×</button>
+                </div>
+            </div>
+            <div style="padding:6px 8px; background:#c0c0c0; border-bottom:1px solid #808080;">
+                <div class="toolbar" style="margin:0; flex-wrap:wrap; gap:4px;">
+                    <button class="btn98 primary" type="button" onclick="vcPastePatient()" title="Как MACROBUTTON Пациент">Пациент</button>
+                    <button class="btn98" type="button" onclick="vcOpenRecs()" title="Выбор шаблона рекомендаций">Рекомендации</button>
+                    <button class="btn98" type="button" onclick="vcGenerateTable()" title="Таблица назначений на 2-й стр.">Сгенерировать таблицу</button>
+                    <button class="btn98" type="button" onclick="vcCopyAll()" title="Текст для Google Calendar">Копировать</button>
+                    <button class="btn98" type="button" onclick="vcOpenGoogleCalendar()" title="Открыть событие в Google Calendar">Календарь</button>
+                    <button class="btn98" type="button" onclick="vcCourseToCalendar()" title="Курс в календарь (несколько дней, без пятниц)">Курс→календарь</button>
+                    <button class="btn98" type="button" onclick="vcClearSmart()" title="Умная очистка">Очистить</button>
+                    <button class="btn98" type="button" onclick="vcSaveAccess()" title="В patients_sync / базу">Сохранить в базу</button>
+                    <button class="btn98" type="button" onclick="vcOpenSearch()" title="Поиск приёмов">Поиск</button>
+                    <button class="btn98" type="button" onclick="vcPrintPdf()" title="Печать / PDF">Печать</button>
+                    <button class="btn98" type="button" onclick="vcDictation()" title="Диктовка (микрофон браузера)">Диктовка</button>
+                    <button class="btn98" type="button" onclick="vcBuildPreview()">Обновить текст</button>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; padding:8px; background:#c0c0c0; overflow:auto; max-height:calc(96vh - 90px);">
+                <div style="flex:1; min-width:320px;">
+                    <div class="groupbox" style="margin-bottom:8px;">
+                        <div class="groupbox-title">Пациент</div>
+                        <div class="filter-row">
+                            <label>ФИО + ДР (как из карты):</label>
+                            <input type="text" id="vc-patient" class="input98" style="flex:1; min-width:220px;" placeholder="Вставьте или Пациент из буфера / карты">
+                            <input type="hidden" id="vc-patient-id">
+                        </div>
+                        <div class="filter-row" style="margin-top:4px;">
+                            <label>Дата:</label>
+                            <input type="date" id="vc-date" class="input98">
+                            <label>Время:</label>
+                            <input type="time" id="vc-time" class="input98">
+                        </div>
+                    </div>
+                    <div class="groupbox" style="margin-bottom:8px;">
+                        <div class="groupbox-title">Диагноз (5 полей, как в Word)</div>
+                        <select id="vc-dx1" class="input98" style="width:100%; height:22px; margin-bottom:3px;"></select>
+                        <select id="vc-dx2" class="input98" style="width:100%; height:22px; margin-bottom:3px;"></select>
+                        <select id="vc-dx3" class="input98" style="width:100%; height:22px; margin-bottom:3px;"></select>
+                        <select id="vc-dx4" class="input98" style="width:100%; height:22px; margin-bottom:3px;"></select>
+                        <select id="vc-dx5" class="input98" style="width:100%; height:22px;"></select>
+                    </div>
+                    <div class="groupbox" style="margin-bottom:8px;">
+                        <div class="groupbox-title">Жалобы / анамнез / осмотр</div>
+                        <textarea id="vc-body" class="input98" style="width:100%; height:140px; resize:vertical;" placeholder="Свободный текст или диктовка…"></textarea>
+                    </div>
+                    <div class="groupbox" style="margin-bottom:8px;">
+                        <div class="groupbox-title">Рек-но:</div>
+                        <div id="vc-rec-label" style="font-size:11px; color:#404040; margin-bottom:4px;">Шаблон не выбран</div>
+                        <textarea id="vc-recs" class="input98" style="width:100%; height:180px; resize:vertical;"></textarea>
+                    </div>
+                </div>
+                <div style="flex:1; min-width:300px; display:flex; flex-direction:column;">
+                    <div class="groupbox" style="flex:1; margin-bottom:8px;">
+                        <div class="groupbox-title">Текст приёма (превью)</div>
+                        <textarea id="vc-preview" class="input98" style="width:100%; height:420px; resize:vertical; font-family:Consolas,monospace;"></textarea>
+                    </div>
+                    <div class="groupbox" style="margin-bottom:0;">
+                        <div class="groupbox-title">Таблица назначений (2-я «страница»)</div>
+                        <div id="vc-table-box" style="background:#fff; border:2px inset #808080; padding:6px; max-height:160px; overflow:auto; font-size:11px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn98 primary" type="button" onclick="vcSaveAccess()">Сохранить в базу</button>
+                <button class="btn98" type="button" onclick="vcCopyAll()">Копировать</button>
+                <button class="btn98" type="button" onclick="closeVisitCompose()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Выбор шаблона рекомендаций (UserForm2) -->
+    <div id="vc-recs-modal" class="modal-overlay" style="z-index:1100;">
+        <div class="modal98" style="max-width:640px;">
+            <div class="win98-titlebar">
+                <div class="title"><span class="brand-mark brand-mark-sm">Доктор ЛОР</span> Выбор шаблона ЛОР</div>
+                <div class="controls"><button type="button" onclick="closeVcRecs()">×</button></div>
+            </div>
+            <div style="padding:10px; background:#c0c0c0;">
+                <label>Категория:</label>
+                <select id="vc-rec-cat" class="input98" style="height:22px; margin-bottom:6px;" onchange="vcFilterRecList()"></select>
+                <div style="background:#fff; border:2px inset #808080; max-height:280px; overflow:auto;">
+                    <select id="vc-rec-list" size="12" style="width:100%; border:none; font-family:Tahoma; font-size:12px;"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn98 primary" type="button" onclick="vcInsertRec()">Вставить рекомендацию</button>
+                <button class="btn98" type="button" onclick="closeVcRecs()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Поиск приёмов (UserFormSearch) -->
+    <div id="vc-search-modal" class="modal-overlay" style="z-index:1100;">
+        <div class="modal98" style="max-width:720px;">
+            <div class="win98-titlebar">
+                <div class="title"><span class="brand-mark brand-mark-sm">Доктор ЛОР</span> Поиск приёмов</div>
+                <div class="controls"><button type="button" onclick="closeVcSearch()">×</button></div>
+            </div>
+            <div style="padding:10px; background:#c0c0c0;">
+                <div class="filter-row">
+                    <label>Фамилия:</label>
+                    <input type="text" id="vc-search-q" class="input98" style="width:180px;" onkeydown="if(event.key==='Enter')vcDoSearch()">
+                    <label>С:</label>
+                    <input type="date" id="vc-search-from" class="input98">
+                    <label>По:</label>
+                    <input type="date" id="vc-search-to" class="input98">
+                    <button class="btn98 primary" type="button" onclick="vcDoSearch()">Найти</button>
+                </div>
+                <div id="vc-search-list" style="background:#fff; border:2px inset #808080; max-height:260px; overflow:auto; margin-top:8px; font-size:12px;"></div>
+                <div id="vc-search-view" class="hidden" style="margin-top:8px; background:#fff; border:2px inset #808080; padding:8px; max-height:220px; overflow:auto; white-space:pre-wrap; font-size:12px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn98" type="button" onclick="vcSearchToDoc()">Сформировать в приём</button>
+                <button class="btn98" type="button" onclick="closeVcSearch()">Закрыть</button>
             </div>
         </div>
     </div>
@@ -1217,22 +1525,31 @@
             pdfjsLib.GlobalWorkerOptions.workerSrc =
                 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
+        /* Публичная страница: только publishable-ключ Supabase (RLS + вход врача).
+           Секретные ключи (service_role, Groq, OAuth secret) СЮДА НЕ КЛАСТЬ. */
         const RAW_URL = "https://dptaczshbxmgtybmbnuw.supabase.co";
         const RAW_KEY = "sb_publishable_v9r0WuysY6zWfxke-7lQtQ_XegOBUHZ";
         const SUPABASE_URL = RAW_URL.trim().replace(/[^\x00-\x7F]/g, "");
         const SUPABASE_KEY = RAW_KEY.trim().replace(/[^\x00-\x7F]/g, "");
-        // Ключ API только в groq_key.txt на диске — в этом файле его НЕТ.
-        // Можно: 1) http://127.0.0.1:8765/doctor.html  2) просто открыть doctor.html с диска (file://)
-        // В обоих случаях демон process_lab_files.py должен быть запущен — он отдаёт ИИ.
-        // С Vercel ИИ не работает (ключ не светится в интернете).
-        const GROQ_KEY = ""; // намеренно пусто
+        const GROQ_KEY = ""; // запрещено в вебе
         const LOR_AI_PROXY = "http://127.0.0.1:8765/api/ai-chat";
+        const LOR_PUBLIC_WEB = true; // эта сборка — интернет, не локальный doctor.html
 
         function isLocalDoctorMode() {
+            // Публичная веб-сборка: локальные функции (ИИ/демон) всегда выключены
+            if (typeof LOR_PUBLIC_WEB !== 'undefined' && LOR_PUBLIC_WEB) return false;
             const h = location.hostname;
             if (h === "127.0.0.1" || h === "localhost") return true;
             if (location.protocol === "file:") return true;
             return false;
+        }
+
+        function applyPublicWebUi() {
+            try {
+                if (typeof LOR_PUBLIC_WEB !== 'undefined' && LOR_PUBLIC_WEB) {
+                    document.body.classList.add('public-web');
+                }
+            } catch (e) {}
         }
 
         function aiEndpoint() {
@@ -1486,15 +1803,15 @@
                     });
                 } catch (e) {}
             }
-            // Восстановить сохранённые логин/пароль
+            // Восстановить только логин (пароль в вебе не храним)
             try {
+                localStorage.removeItem('lor_doctor_saved_password');
                 const rem = localStorage.getItem('lor_doctor_remember') === '1';
                 const se = localStorage.getItem('lor_doctor_saved_email') || localStorage.getItem('lor_doctor_email') || '';
-                const sp = localStorage.getItem('lor_doctor_saved_password') || '';
                 const cb = document.getElementById('doc-remember');
                 if (cb) cb.checked = rem;
                 if (se) document.getElementById('doc-email').value = se;
-                if (rem && sp) document.getElementById('doc-password').value = sp;
+                document.getElementById('doc-password').value = '';
             } catch (e) {}
 
             if (accessToken) {
@@ -1516,12 +1833,14 @@
         });
 
         function showLoginScreen() {
+            applyPublicWebUi();
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('main-screen').classList.add('hidden');
             stopPolling();
         }
 
         function showMainScreen() {
+            applyPublicWebUi();
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-screen').classList.remove('hidden');
             document.getElementById('doctor-label').textContent = doctorEmail ? ('Врач: ' + doctorEmail) : 'Врач';
@@ -1573,13 +1892,13 @@
                 localStorage.setItem('lor_doctor_email', doctorEmail);
 
                 const remember = document.getElementById('doc-remember') && document.getElementById('doc-remember').checked;
+                // Пароль НИКОГДА не пишем в localStorage (веб / чужие устройства)
+                localStorage.removeItem('lor_doctor_saved_password');
                 if (remember) {
                     localStorage.setItem('lor_doctor_remember', '1');
                     localStorage.setItem('lor_doctor_saved_email', email);
-                    localStorage.setItem('lor_doctor_saved_password', password);
                 } else {
                     localStorage.setItem('lor_doctor_remember', '0');
-                    localStorage.removeItem('lor_doctor_saved_password');
                     localStorage.setItem('lor_doctor_saved_email', email);
                 }
 
@@ -1599,11 +1918,11 @@
             allFiles = [];
             stopPolling();
             showLoginScreen();
+            localStorage.removeItem('lor_doctor_saved_password');
             const rem = localStorage.getItem('lor_doctor_remember') === '1';
             const se = localStorage.getItem('lor_doctor_saved_email') || '';
-            const sp = localStorage.getItem('lor_doctor_saved_password') || '';
             document.getElementById('doc-email').value = se;
-            document.getElementById('doc-password').value = rem ? sp : '';
+            document.getElementById('doc-password').value = '';
             const cb = document.getElementById('doc-remember');
             if (cb) cb.checked = rem;
             document.getElementById('login-error').textContent = '';
@@ -1618,7 +1937,7 @@
             document.getElementById('doc-password').value = '';
             const cb = document.getElementById('doc-remember');
             if (cb) cb.checked = false;
-            alert('Сохранённые логин и пароль удалены с этого ПК.');
+            alert('Сохранённый логин удалён с этого устройства.');
         }
 
         // ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -2926,6 +3245,10 @@
         let compressTargetFile = null;
 
         function openCompressModal(fileId) {
+            if (typeof LOR_PUBLIC_WEB !== 'undefined' && LOR_PUBLIC_WEB) {
+                alert('Сжатие PDF в веб-версии отключено.');
+                return;
+            }
             const f = allFiles.find(function (x) { return x.id === fileId; });
             if (!f) {
                 alert('Файл не найден');
@@ -3287,13 +3610,16 @@
         // ========== ОТРИСОВКА ТАБЛИЦЫ ==========
         function renderTable(files) {
             const tbody = document.getElementById('files-tbody');
+            const cards = document.getElementById('files-cards');
 
             if (!files || files.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#666;">Нет файлов по выбранному фильтру</td></tr>';
+                if (tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#666;">Нет файлов по выбранному фильтру</td></tr>';
+                if (cards) cards.innerHTML = '<div style="padding:16px;color:#666;text-align:center;">Нет файлов по выбранному фильтру</div>';
                 return;
             }
 
             let html = '';
+            let cardsHtml = '';
             files.forEach((file, idx) => {
                 let statusClass = 'status-new';
                 let statusText = 'Новый';
@@ -3316,6 +3642,16 @@
 
                 const origName = file.original_name || file.safe_name || 'файл';
                 const shortName = origName.length > 42 ? (origName.slice(0, 38) + '…') : origName;
+                const textBtn = hasText
+                    ? `<button class="btn98" onclick="viewText(${file.id})" title="${hasConclusion ? 'Текст + ИИ-заключение' : 'Текст'}">Текст</button>`
+                    : `<button class="btn98" disabled title="Ещё обрабатывается">Текст</button>`;
+                const cardBtn = hasText
+                    ? `<button class="btn98 primary" onclick="viewText(${file.id})">Текст</button>`
+                    : `<button class="btn98" disabled>Текст</button>`;
+                const openCardBtn = file.patient_id
+                    ? `<button class="btn98" onclick="openPatientCard(${file.patient_id})">Карта</button>`
+                    : '';
+
                 html += `
                     <tr id="doc-row-${file.id}" ondblclick="viewText(${file.id})" title="Двойной клик — открыть текст">
                         <td>${idx + 1}</td>
@@ -3326,19 +3662,35 @@
                         <td class="col-file" title="${escapeHtml(origName)}">${escapeHtml(shortName)}</td>
                         <td>${sizeStr}</td>
                         <td class="col-actions">
-                            ${hasText
-                                ? `<button class="btn98" onclick="viewText(${file.id})" title="${hasConclusion ? 'Текст + ИИ-заключение' : 'Текст'}">Текст</button>`
-                                : `<button class="btn98" disabled title="Ещё обрабатывается">Текст</button>`
-                            }
+                            ${textBtn}
                             <button class="btn98" onclick="downloadPdf('${escapeAttr(file.storage_path || '')}')">PDF</button>
-                            <button class="btn98" onclick="openCompressModal(${file.id})" title="Сжать PDF перед пересылкой">Сжать</button>
-                            <button class="btn98 btn-del" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path || '')}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удал.</button>
+                            <button class="btn98 web-local-only" onclick="openCompressModal(${file.id})" title="Сжать PDF перед пересылкой">Сжать</button>
+                            <button class="btn98 btn-del web-local-only" onclick="deleteDoctorFile(${file.id}, '${escapeAttr(file.storage_path || '')}', '${escapeAttr(origName)}', ${file.patient_id || 0})">Удал.</button>
                         </td>
                     </tr>
                 `;
+                cardsHtml += `
+                    <div class="file-card" id="doc-card-${file.id}">
+                        <div class="fc-top">
+                            <span><span class="status-dot ${statusClass}"></span>${statusText}</span>
+                            <span style="font-size:12px;font-weight:normal;color:#404040;">#${idx + 1}</span>
+                        </div>
+                        <div class="fc-meta">
+                            <div><b>${escapeHtml(name)}</b> · ID ${file.patient_id || '—'}</div>
+                            <div>${escapeHtml(dateStr)} · ${sizeStr}</div>
+                            <div style="word-break:break-word;">${escapeHtml(origName)}</div>
+                        </div>
+                        <div class="fc-actions">
+                            ${cardBtn}
+                            <button class="btn98" onclick="downloadPdf('${escapeAttr(file.storage_path || '')}')">PDF</button>
+                            ${openCardBtn}
+                        </div>
+                    </div>
+                `;
             });
 
-            tbody.innerHTML = html;
+            if (tbody) tbody.innerHTML = html;
+            if (cards) cards.innerHTML = cardsHtml;
         }
 
         function updateStatusBar(filtered) {
@@ -3762,6 +4114,10 @@
 
         // ========== УДАЛЕНИЕ ФАЙЛА (врач) ==========
         async function deleteDoctorFile(fileId, storagePath, displayName, patientId) {
+            if (typeof LOR_PUBLIC_WEB !== 'undefined' && LOR_PUBLIC_WEB) {
+                alert('Удаление файлов в веб-версии отключено.\nПолный кабинет — на ПК врача.');
+                return;
+            }
             const pname = patientNameCache[patientId] || ('ID ' + patientId);
             const msg = 'УДАЛИТЬ ФАЙЛ?\n\n' +
                 'Пациент: ' + pname + '\n' +
@@ -3893,6 +4249,9 @@
                 closeChartAiModal();
                 closeCompressModal();
                 closePatientCardModal();
+                closeVisitCompose();
+                closeVcRecs();
+                closeVcSearch();
                 return;
             }
             if (e.key === 'F5') {
@@ -3969,7 +4328,9 @@
             pcardTab('visits');
         }
 
-        /** Лента «Пациенты сегодня/вчера» — только в блок ленты, не в таблицу поиска внизу */
+
+        const LOR_VISIT_DATA = {"diagnoses": ["J00 —Острый ринит.", "J00 —Острый ринофарингит.", "J01.9 — Острый синусит?", "J01.0 — Острый верхнечелюстной синусит.", "J01.8 — Острый полисинусит.", "R04.0 — Вазопатия зоны Киссельбаха.", "T17.0 — Инородное тело носа.", "J34.0 —Фурункул носа.", "J31.0 — Хронический ринит.", "J30.3 —Аллергический ринит.", "J32 — Хронический синусит.", "J34.2 — Искривление перегородки носа.", "J33 — Хронический полипозный риносинусит.", "J02.9 — Острый фарингит.", "J03.9 — Лакунарная ангина.", "J03.9 — Острый тонзиллит.", "J04.0 — Острый ларингит.", "J04.1 — Острый трахеит?", "J04.2 — Острый ларинготрахеит.", "J20.9 — острый бронхит?", "J36 — Паратонзиллярный абсцесс.", "J35.0 — Хронический тонзиллит, простая форма.", "J31.2 — Хронический фарингит.", "J31.1 — Хронический ринофарингит.", "J35.2 — Аденоиды 2-3 ст.", "J35.3 — Аденоиды 2-3 ст. ГНМ 2-3 ст.", "J37.0 — Хронический ларингит.", "H66.9 — Острый неперфоративный средний отит.", "H66.0 — Острый гнойный средний отит.", "H68.0 — Острый евстахиит.", "H60.3 — Наружный отит.", "H65.2 — Хронический экссудативный отит.", "H66.3 — Хронический мезотимпанит.", "H61.2 — Серная пробка.", "H91.9 — Острая сенсоневральная тугоухость?", "H81.1 — Вестибулопатия?"], "recommendations": [{"name": "Хр тонзиллит", "category": "ГОРЛО", "text": "В плановом порядке лечение хронического тонзиллита:\nОАК, ОАМ, АСЛО, ревматоидный фактор, посев из зева на микрофлору\nПроцедуры в ЛОР-кабинете (10-15 процедур):\n- Тонзиллор\n- Фонофорез"}, {"name": "Аллергический ринит", "category": "НОС", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nВозможно повторение этого курса через 1.5 мес\nМедикаментозная терапия (длительность 3 мес, с ежемесячным осмотром у ЛОР-врача):\nВ нос Авамис (2 впрыска × 2 раза в день)\nЦетиризин 10 мг на ночь\nВ нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nЦетиризин (Зодак, Зиртек, Цетрин, Парлазин, Летизен, Аллертек)\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Хр ринит", "category": "НОС", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).              По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (2 впрыска × 2 раза в день)\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).              По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-35:\nВ нос Авамис (2 впрыска × 2 раза в день)\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин детский → через 10 минут → Полидекса (1 впрыск × 3 раза в день). По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (1 впрыск × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Синусит с Амоксиклавом", "category": "НОС", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\n- Дни 1-7:\nАмоксиклав (875+125) мг 2 раза в день 7 дней после еды\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день)\nПо окончании 7 дней эти препараты необходимо закончить\n- Дни 8-35:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nАмоксиклав 1000 мг (875+125 мг амоксициллина и клавулановой кислоты соответственно). Можно любой аналог с таким же составом. Клавулановая кислота должна быть обязательно! Аугментин, Флемоклав Солютаб, Панклав, Кламокс, Клавам, Азмак, Бетаклав, Экоклав, Новаклав\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Средний отит", "category": "УШИ", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально и эндаурально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).\nВ правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ правое ухо мазь Левомеколь на ночь 7 дней\nВ левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ левое ухо мазь Левомеколь на ночь 7 дней\nВ оба уха Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ оба уха мазь Левомеколь на ночь 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (2 впрыска × 2 раза в день)\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).\nВ правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ правое ухо мазь Левомеколь на ночь 7 дней\nВ левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ левое ухо мазь Левомеколь на ночь 7 дней\nВ оба уха Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ оба уха мазь Левомеколь на ночь 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-35:\nВ нос Авамис (2 впрыска × 2 раза в день)\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин детский → через 10 минут → Полидекса (1 впрыск × 3 раза в день).\nВ правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ правое ухо мазь Левомеколь на ночь 7 дней\nВ левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ левое ухо мазь Левомеколь на ночь 7 дней\nВ оба уха Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ оба уха мазь Левомеколь на ночь 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (1 впрыск × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли\nКомбинил дуо\nЛевомеколь"}, {"name": "Ремо-вакс", "category": "УШИ", "text": "В правое ухо Ремо-вакс 5 кап 4-5 раз в день 7 дней\nВ левое ухо Ремо-вакс 5 кап 4-5 раз в день 7 дней\nВ оба уха Ремо-вакс 5 кап 4-5 раз в день 7 дней"}, {"name": "Серные пробки удаление", "category": "УШИ", "text": "Под видеоконтролем проведено удаление серных пробок, слуховые проходы телесного цвета, барабанные перепонки серые.\nПод видеоконтролем проведено удаление серной пробки справа, слуховые проходы телесного цвета, барабанные перепонки серые.\nПод видеоконтролем проведено удаление серной пробки слева, слуховые проходы телесного цвета, барабанные перепонки серые."}, {"name": "Хр тонзиллит +Хр ринит", "category": "ГОРЛО", "text": "ОАК, ОАМ, АСЛО, ревматоидный фактор, посев из зева на микрофлору\nПроцедуры в ЛОР-кабинете (10-15 процедур):\n- Тонзиллор\n- Фонофорез\nПроцедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).              По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-35:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Ремо-вакс в оба уха", "category": "Общие", "text": "В оба уха Ремо-вакс 5 кап 4-5 раз в день 7 дней"}, {"name": "Ремо-вакс слева", "category": "Общие", "text": "В левое ухо Ремо-вакс 5 кап 4-5 раз в день 7 дней"}, {"name": "Без АБ Наружный отит справа", "category": "Общие", "text": "В правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ правое ухо мазь Левомеколь на ночь 7 дней\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКомбинил дуо\nЛевомеколь"}, {"name": "Ремо-вакс справа", "category": "Общие", "text": "В правое ухо Ремо-вакс 5 кап 4-5 раз в день 7 дней"}, {"name": "АБ Наружный отит справа", "category": "Общие", "text": "Ципрофлоксацин (Ципролет) 500 мг 2 раза в день 7 дней\nВ правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ правое ухо мазь Левомеколь на ночь 7 дней\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКомбинил дуо\nЛевомеколь\nЦипрофлоксацин (Ципролет)"}, {"name": "АБ Наружный отит слева", "category": "Общие", "text": "Ципрофлоксацин (Ципролет) 500 мг 2 раза в день 7 дней\nВ левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ левое ухо мазь Левомеколь на ночь 7 дней\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКомбинил дуо\nЛевомеколь\nЦипрофлоксацин (Ципролет)"}, {"name": "Без АБ Наружный отит слева", "category": "Общие", "text": "В левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nВ левое ухо мазь Левомеколь на ночь 7 дней\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКомбинил дуо\nЛевомеколь"}, {"name": "Слева Детский Ср отит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально и эндаурально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин детский → через 10 минут → Полидекса (1 впрыск × 3 раза в день).\nВ левое ухо Комбинил дуо 3 кап 4-5 раз в день 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (1 впрыск × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли\nКомбинил дуо"}, {"name": "Справа Детский Ср отит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально и эндаурально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин детский → через 10 минут → Полидекса (1 впрыск × 3 раза в день).\nВ правое ухо Комбинил дуо 3 кап 4-5 раз в день 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (1 впрыск × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли\nКомбинил дуо"}, {"name": "Слева Взрослый Ср отит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально и эндаурально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).\nВ левое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли\nКомбинил дуо"}, {"name": "Справа Взрослый Ср отит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально и эндаурально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).\nВ правое ухо Комбинил дуо 5 кап 4-5 раз в день 7 дней\nПо окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли\nКомбинил дуо"}, {"name": "Кор Детский Хр ринит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин детский → через 10 минут → Полидекса (1 впрыск × 3 раза в день). По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (1 впрыск × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Длин Взрослый Хр ринит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).              По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-35:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Кор Взрослый Хр ринит", "category": "Общие", "text": "Процедуры в ЛОР-кабинете (10 процедур):\n- Анемизация\n- Промывание носа по Проетцу\n- Фонофорез эндоназально\nМедикаментозная терапия:\n- Дни 1-7:\nВ нос Ксилометазолин → через 10 минут → Полидекса (2 впрыска × 3 раза в день).              По окончании 7 дней эти препараты необходимо закончить.\n- Дни 8-21:\nВ нос Авамис (2 впрыска × 2 раза в день)\nНа протяжении всего курса в нос изотонический раствор (Аква-Марис, Аквалор, физ раствор) 5-6 раз в день\nПри применении всех лекарств в нос необходимо лечь или запрокинуть голову назад, дождаться попадания лекарства в горло. Избегайте наклонов головы вбок.\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nКсилометазолин - Отризол-DF, Отривин, Ксимелин, Снуп, Тизин, Галазолин, ДляНос, Ксилен, Ксимелин, Отривин, Отризол-DF, Ринонорм, Риностоп, Риномарис\nПолидекса - Неодекс, Неладекс\nАвамис - Назарел, Фликсоназе, Флутинекс, Флутел-Ф\nИзотонический раствор- Аква Марис, Аквалор, ЛинАква, Хьюмер, Маример, Физиомер, Но-Соль, Пшик, Мореназал, Салин, физ раствор; спрей или капли"}, {"name": "Ангина", "category": "ГОРЛО", "text": "ОАК, ОАМ, АСЛО, ревматоидный фактор, посев из зева на микрофлору и BL\nМедикаментозная терапия:\nДни 1-7\nАмоксиклав (875+125) мг 2 раза в день 7 дней после еды\nЛюголь спрей в горло 2 раза в день 7 дней\nХлоргексидин - полоскание горла 3-4 раза в день 7 дней\n----------------------------------------------------\nПосле снятия острых явлений Процедуры в ЛОР-кабинете (10-15 процедур):\n- Тонзиллор\n- Фонофорез\nВсе назначения основаны на международных протоколах и индивидуальных особенностях Вашего случая. Возможно расхождение с информацией, представленной в инструкции.\nСписок лекарств и комментарии\nАмоксиклав 1000 мг (875+125 мг амоксициллина и клавулановой кислоты соответственно). Можно любой аналог с таким же составом. Клавулановая кислота должна быть обязательно! Аугментин, Флемоклав Солютаб, Панклав, Кламокс, Клавам, Азмак, Бетаклав, Экоклав, Новаклав\nРаствор Люголя\nХлоргексидин- водный, 0.05%, разбавлять не надо"}]};
+/** Лента «Пациенты сегодня/вчера» — только в блок ленты, не в таблицу поиска внизу */
         async function loadStripPatients(preset) {
             preset = preset || 'today';
             const strip = document.getElementById('today-strip');
@@ -4091,6 +4452,672 @@
                     x.id + ')">' + escapeHtml((x.name || '').slice(0, 28)) + ' #' + x.id + '</button>';
             }).join(' ');
         }
+
+
+        // ========== ПРИЁМ WORD (отдельное окно) ==========
+        let vcSelectedRecName = '';
+        let vcSearchCache = [];
+        let vcSearchViewText = '';
+
+        
+        function toggleDualMode() {
+            const on = document.body.classList.toggle('dual-mode');
+            const btn = document.getElementById('dual-mode-btn');
+            if (btn) btn.textContent = on ? '2 монитора: вкл' : '2 монитора: выкл';
+            try { localStorage.setItem('lor_dual_mode', on ? '1' : '0'); } catch (e) {}
+            const side = document.getElementById('dual-side-content');
+            if (on && side && currentCardPatientId != null) {
+                side.innerHTML = '<p style="padding:8px;">Карта открыта в обычном окне. В режиме 2 монитора удобно держать список слева и не закрывать его.</p>' +
+                    '<button class="btn98 primary" type="button" onclick="openPatientCard(' + currentCardPatientId + ')">Обновить карту справа</button>';
+            }
+            if (!on && side) {
+                side.innerHTML = 'Режим выключен. Список снова на всю ширину.';
+            }
+        }
+
+        function applyDualModeOnLoad() {
+            try {
+                if (localStorage.getItem('lor_dual_mode') === '1') {
+                    document.body.classList.add('dual-mode');
+                    const btn = document.getElementById('dual-mode-btn');
+                    if (btn) btn.textContent = '2 монитора: вкл';
+                }
+            } catch (e) {}
+        }
+
+
+        function openVisitCompose() {
+            const m = document.getElementById('visit-compose-modal');
+            if (!m) return;
+            vcInitDxSelects();
+            const now = new Date();
+            const de = document.getElementById('vc-date');
+            const te = document.getElementById('vc-time');
+            if (de && !de.value) de.value = ymdLocal(now);
+            if (te && !te.value) {
+                const hh = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                te.value = hh + ':' + mm;
+            }
+            // из открытой карты
+            if (currentCardPatientId != null) {
+                document.getElementById('vc-patient-id').value = String(currentCardPatientId);
+                const nm = document.getElementById('pcard-name');
+                const birth = document.getElementById('pcard-birth');
+                let line = (nm && nm.value) ? nm.value : (patientNameCache[currentCardPatientId] || '');
+                if (birth && birth.value) {
+                    const b = birth.value; // YYYY-MM-DD
+                    const p = b.split('-');
+                    if (p.length === 3) line = line + ' ' + p[2] + '.' + p[1] + '.' + p[0];
+                }
+                if (line) document.getElementById('vc-patient').value = line;
+            }
+            m.classList.add('visible');
+            vcBuildPreview();
+        }
+
+        function openVisitComposeFromCard() {
+            openVisitCompose();
+        }
+
+        function closeVisitCompose() {
+            const m = document.getElementById('visit-compose-modal');
+            if (m) m.classList.remove('visible');
+        }
+
+        function vcInitDxSelects() {
+            const list = (LOR_VISIT_DATA && LOR_VISIT_DATA.diagnoses) || [];
+            ['vc-dx1','vc-dx2','vc-dx3','vc-dx4','vc-dx5'].forEach(function (id) {
+                const sel = document.getElementById(id);
+                if (!sel || sel.getAttribute('data-ready') === '1') return;
+                sel.innerHTML = '<option value="">—</option>';
+                list.forEach(function (d) {
+                    const o = document.createElement('option');
+                    o.value = d;
+                    o.textContent = d;
+                    sel.appendChild(o);
+                });
+                sel.setAttribute('data-ready', '1');
+                sel.addEventListener('change', vcBuildPreview);
+            });
+            ['vc-patient','vc-body','vc-recs','vc-date','vc-time'].forEach(function (id) {
+                const el = document.getElementById(id);
+                if (el && !el._vcBound) {
+                    el.addEventListener('input', vcBuildPreview);
+                    el._vcBound = true;
+                }
+            });
+        }
+
+        async function vcPastePatient() {
+            const inp = document.getElementById('vc-patient');
+            try {
+                const t = await navigator.clipboard.readText();
+                if (t && t.trim()) {
+                    inp.value = t.trim().replace(/\s+/g, ' ');
+                    vcBuildPreview();
+                    return;
+                }
+            } catch (e) {}
+            // fallback: карта
+            if (currentCardPatientId != null) {
+                openVisitCompose();
+            } else {
+                alert('Скопируйте ФИО+ДР в буфер (из карты) или откройте карту пациента.');
+            }
+        }
+
+        function vcBuildPreview() {
+            const fio = (document.getElementById('vc-patient').value || '').trim();
+            const dx = [1,2,3,4,5].map(function (i) {
+                return (document.getElementById('vc-dx' + i).value || '').trim();
+            }).filter(Boolean);
+            const body = (document.getElementById('vc-body').value || '').trim();
+            const recs = (document.getElementById('vc-recs').value || '').trim();
+            const d = document.getElementById('vc-date').value;
+            const t = document.getElementById('vc-time').value;
+            let dateRu = d;
+            if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                const p = d.split('-');
+                dateRu = p[2] + '.' + p[1] + '.' + p[0];
+            }
+            let text = '';
+            text += 'Пациент: ' + (fio || '') + '\n';
+            text += 'Диагноз: ' + (dx.length ? dx.join('     ') : '') + '\n';
+            if (dateRu) text += dateRu + (t ? ('\n' + t) : '') + '\n';
+            text += '\n';
+            if (body) text += body + '\n\n';
+            text += 'Рек-но:\n';
+            if (recs) text += recs + '\n';
+            document.getElementById('vc-preview').value = text;
+            return text;
+        }
+
+        function vcOpenRecs() {
+            const cats = {};
+            ((LOR_VISIT_DATA && LOR_VISIT_DATA.recommendations) || []).forEach(function (b) {
+                cats[b.category || 'Общие'] = true;
+            });
+            const sel = document.getElementById('vc-rec-cat');
+            sel.innerHTML = '<option value="">Все</option>';
+            Object.keys(cats).sort().forEach(function (c) {
+                const o = document.createElement('option');
+                o.value = c; o.textContent = c;
+                sel.appendChild(o);
+            });
+            vcFilterRecList();
+            document.getElementById('vc-recs-modal').classList.add('visible');
+        }
+
+        function closeVcRecs() {
+            document.getElementById('vc-recs-modal').classList.remove('visible');
+        }
+
+        function vcFilterRecList() {
+            const cat = document.getElementById('vc-rec-cat').value;
+            const list = document.getElementById('vc-rec-list');
+            list.innerHTML = '';
+            ((LOR_VISIT_DATA && LOR_VISIT_DATA.recommendations) || []).forEach(function (b, idx) {
+                if (cat && b.category !== cat) return;
+                const o = document.createElement('option');
+                o.value = String(idx);
+                o.textContent = (b.category ? ('[' + b.category + '] ') : '') + b.name;
+                list.appendChild(o);
+            });
+        }
+
+        function vcInsertRec() {
+            const list = document.getElementById('vc-rec-list');
+            const idx = list.value;
+            if (idx === '' || idx == null) {
+                alert('Выберите шаблон');
+                return;
+            }
+            // idx is index in filtered? use global index from option value - we stored original index in filter
+            // rebuild: find by text
+            const opt = list.options[list.selectedIndex];
+            if (!opt) return;
+            const all = (LOR_VISIT_DATA && LOR_VISIT_DATA.recommendations) || [];
+            // value is index in full array from filter - need fix filter to use name
+            const label = opt.textContent;
+            let block = null;
+            for (let i = 0; i < all.length; i++) {
+                const b = all[i];
+                const lab = (b.category ? ('[' + b.category + '] ') : '') + b.name;
+                if (lab === label) { block = b; break; }
+            }
+            if (!block) {
+                alert('Шаблон не найден');
+                return;
+            }
+            const ta = document.getElementById('vc-recs');
+            ta.value = (ta.value ? ta.value.replace(/\s+$/, '') + '\n\n' : '') + block.text;
+            vcSelectedRecName = block.name;
+            document.getElementById('vc-rec-label').textContent = 'Шаблон: ' + block.name + ' (' + (block.category || '') + ')';
+            closeVcRecs();
+            vcBuildPreview();
+        }
+
+        function vcGenerateTable() {
+            const recs = document.getElementById('vc-recs').value || '';
+            if (!/Медикаментозная терапия/i.test(recs) && !/(Ксилометазолин|Полидекса|Авамис|Амоксиклав)/i.test(recs)) {
+                alert('В рекомендациях нет блока медикаментов.\nВставьте шаблон с «Медикаментозная терапия».');
+                return;
+            }
+            const startStr = prompt('Дата первого дня лечения (ДД.ММ.ГГГГ):', (function () {
+                const d = document.getElementById('vc-date').value;
+                if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                    const p = d.split('-');
+                    return p[2] + '.' + p[1] + '.' + p[0];
+                }
+                const n = new Date();
+                return String(n.getDate()).padStart(2,'0') + '.' + String(n.getMonth()+1).padStart(2,'0') + '.' + n.getFullYear();
+            })());
+            if (!startStr) return;
+            const startParts = startStr.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+            if (!startParts) { alert('Формат даты: ДД.ММ.ГГГГ'); return; }
+            const start = new Date(+startParts[3], +startParts[2]-1, +startParts[1]);
+
+            const masterMeds = [
+                'Ксилометазолин', 'Полидекса', 'Амоксиклав', 'Комбинил дуо', 'Авамис',
+                'Ремо-вакс', 'Люголь', 'Хлоргексидин', 'Цетиризин'
+            ];
+            let section = recs;
+            const mIdx = section.search(/Медикаментозная терапия/i);
+            if (mIdx >= 0) section = section.slice(mIdx);
+            const endIdx = section.search(/На протяжении всего курса/i);
+            if (endIdx > 0) section = section.slice(0, endIdx);
+
+            const lines = section.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+            let curStart = 1, curEnd = 7, maxDay = 7;
+            const meds = [];
+
+            function freqFromLine(line) {
+                const l = line.toLowerCase();
+                if (/4\s*-\s*5\s*раз|5\s*раз|4\s*раз|3\s*раз/.test(l)) {
+                    return { n: 3, html: 'утро +<br>день +<br>вечер +' };
+                }
+                if (/2\s*раз/.test(l) || /[×x]\s*2/i.test(line)) {
+                    return { n: 2, html: 'утро +<br>вечер +' };
+                }
+                if (/1\s*раз|на ночь|на ноч/.test(l)) {
+                    return { n: 1, html: ( /ночь|ноч/.test(l) ? 'вечер +' : 'утро +') };
+                }
+                return { n: 2, html: 'утро +<br>вечер +' };
+            }
+
+            lines.forEach(function (line) {
+                const dm = line.match(/Дни?\s*(\d+)\s*[-–—]\s*(\d+)/i);
+                if (dm) {
+                    curStart = +dm[1];
+                    curEnd = +dm[2];
+                    if (curEnd > maxDay) maxDay = curEnd;
+                    return;
+                }
+                const lower = line.toLowerCase();
+                masterMeds.forEach(function (med) {
+                    if (lower.indexOf(med.toLowerCase()) >= 0) {
+                        const f = freqFromLine(line);
+                        meds.push({ name: med, start: curStart, end: curEnd, schedule: f.html });
+                    }
+                });
+            });
+
+            const uniq = [];
+            const seen = {};
+            meds.forEach(function (m) {
+                const k = m.name + '|' + m.start + '-' + m.end;
+                if (seen[k]) return;
+                seen[k] = true;
+                uniq.push(m);
+            });
+
+            if (!uniq.length) {
+                alert('Не удалось разобрать препараты. Нужны строки с названиями и «Дни 1-7».');
+                return;
+            }
+            if (maxDay > 45) maxDay = 45;
+
+            const daysPerBlock = 7;
+            let htmlOut = '';
+            for (let blockStart = 1; blockStart <= maxDay; blockStart += daysPerBlock) {
+                const blockEnd = Math.min(blockStart + daysPerBlock - 1, maxDay);
+                const active = uniq.filter(function (m) {
+                    return m.start <= blockEnd && m.end >= blockStart;
+                });
+                if (!active.length) continue;
+                htmlOut += '<div style="margin-bottom:10px;overflow:auto;"><table class="table98" style="width:auto;font-size:11px;border-collapse:collapse;">';
+                htmlOut += '<thead><tr><th style="min-width:90px;">Препарат</th>';
+                for (let d = blockStart; d <= blockEnd; d++) {
+                    const dt = new Date(start.getFullYear(), start.getMonth(), start.getDate() + (d - 1));
+                    const ds = String(dt.getDate()).padStart(2,'0') + '.' + String(dt.getMonth()+1).padStart(2,'0');
+                    htmlOut += '<th style="text-align:center;min-width:52px;">д.' + d + '<br><span style="font-weight:normal;">' + ds + '</span></th>';
+                }
+                htmlOut += '</tr></thead><tbody>';
+                active.forEach(function (m) {
+                    htmlOut += '<tr><td><b>' + escapeHtml(m.name) + '</b></td>';
+                    for (let d = blockStart; d <= blockEnd; d++) {
+                        if (d >= m.start && d <= m.end) {
+                            htmlOut += '<td style="text-align:center;vertical-align:middle;line-height:1.25;white-space:nowrap;">' + m.schedule + '</td>';
+                        } else {
+                            htmlOut += '<td></td>';
+                        }
+                    }
+                    htmlOut += '</tr>';
+                });
+                htmlOut += '</tbody></table></div>';
+            }
+            document.getElementById('vc-table-box').innerHTML = htmlOut;
+            window._vcMedTableHtml = htmlOut;
+        }
+
+function vcCopyAll() {
+            const t = vcBuildPreview();
+            navigator.clipboard.writeText(t).then(function () {
+                // также предложить открыть форму события Google Calendar
+                if (confirm('Текст скопирован.\n\nОткрыть Google Calendar с этим текстом события?\n(цвет «Павлиний» задаётся в настройках календаря или через API — см. подсказку)')) {
+                    vcOpenGoogleCalendar();
+                }
+            }).catch(function () {
+                const ta = document.getElementById('vc-preview');
+                ta.select();
+                document.execCommand('copy');
+                alert('Текст скопирован');
+            });
+        }
+
+        
+        /** Серия событий: дни лечения, пропуск пятниц, локальное время */
+        function vcCourseToCalendar() {
+            const fio = (document.getElementById('vc-patient').value || '').trim() || 'Пациент';
+            const recs = (document.getElementById('vc-recs').value || '').trim();
+            const text = vcBuildPreview();
+            const d = document.getElementById('vc-date').value;
+            if (!d) { alert('Укажите дату начала'); return; }
+            let days = parseInt(prompt('Сколько дней курса поставить в календарь?', '10'), 10);
+            if (!days || days < 1) return;
+            if (days > 40) days = 40;
+            const time = document.getElementById('vc-time').value || '09:00';
+            const skipFri = confirm('Пропускать пятницы? (ОК = да, как вы просили)');
+            // Без OAuth Google нельзя создать 10 событий «само» в нужном цвете.
+            // 1) Скачиваем ICS (импорт в Google за 2 клика, цвет календаря «Павлиний» если импорт в тот календарь)
+            // 2) Либо API — см. инструкцию в alert в конце
+            let ics = 'BEGIN:VCALENDAR\\r\\nVERSION:2.0\\r\\nPRODID:-//DoctorLOR//RU\\r\\nCALSCALE:GREGORIAN\\r\\n';
+            const start = new Date(d + 'T' + time + ':00');
+            let added = 0;
+            for (let i = 0; i < days + 10 && added < days; i++) {
+                const dt = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i, start.getHours(), start.getMinutes());
+                if (skipFri && dt.getDay() === 5) continue; // Friday
+                added++;
+                const y = dt.getFullYear();
+                const mo = String(dt.getMonth()+1).padStart(2,'0');
+                const da = String(dt.getDate()).padStart(2,'0');
+                const hh = String(dt.getHours()).padStart(2,'0');
+                const mm = String(dt.getMinutes()).padStart(2,'0');
+                const stamp = '' + y + mo + da + 'T' + hh + mm + '00';
+                // end +20 min
+                const dt2 = new Date(dt.getTime() + 20*60000);
+                const stamp2 = '' + dt2.getFullYear() + String(dt2.getMonth()+1).padStart(2,'0') + String(dt2.getDate()).padStart(2,'0') + 'T' + String(dt2.getHours()).padStart(2,'0') + String(dt2.getMinutes()).padStart(2,'0') + '00';
+                const uid = 'lor-' + stamp + '-' + added + '@doctor-lor.local';
+                let desc = text.replace(/\\r/g, '').replace(/\\n/g, '\\\\n').slice(0, 3000);
+                ics += 'BEGIN:VEVENT\\r\\n';
+                ics += 'UID:' + uid + '\\r\\n';
+                ics += 'DTSTAMP:' + stamp + '\\r\\n';
+                ics += 'DTSTART:' + stamp + '\\r\\n';
+                ics += 'DTEND:' + stamp2 + '\\r\\n';
+                ics += 'SUMMARY:ЛОР: ' + fio.replace(/[,;]/g, ' ') + '\\r\\n';
+                ics += 'DESCRIPTION:' + desc + '\\r\\n';
+                ics += 'CATEGORIES:ЛОР,лечение\\r\\n';
+                ics += 'END:VEVENT\\r\\n';
+            }
+            ics += 'END:VCALENDAR\\r\\n';
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'lor_course_' + (fio.split(' ')[0] || 'patient') + '.ics';
+            a.click();
+            alert(
+                'Скачан файл курса (' + added + ' событий' + (skipFri ? ', без пятниц' : '') + ').\\n\\n' +
+                'Чтобы они стали «Павлиньими»:\\n' +
+                'Google Calendar → слева выберите календарь с цветом «Павлиний» →\\n' +
+                'Настройки → Импорт → этот ICS.\\n\\n' +
+                'Полностью одной кнопкой без импорта — только Google Calendar API (OAuth).\\n' +
+                'Инструкция: файл artifacts/GOOGLE_CALENDAR_API.txt (см. сообщение ассистента).'
+            );
+        }
+
+
+        function vcOpenGoogleCalendar() {
+            const t = vcBuildPreview();
+            const fio = (document.getElementById('vc-patient').value || '').trim() || 'Приём ЛОР';
+            const d = document.getElementById('vc-date').value; // YYYY-MM-DD
+            const tm = document.getElementById('vc-time').value || '10:00';
+            let start = '';
+            let end = '';
+            if (d) {
+                const parts = tm.split(':');
+                const hh = parts[0] || '10';
+                const mm = parts[1] || '00';
+                start = d.replace(/-/g, '') + 'T' + hh + mm + '00';
+                // +30 min rough
+                let h2 = parseInt(hh, 10);
+                let m2 = parseInt(mm, 10) + 30;
+                if (m2 >= 60) { h2 += 1; m2 -= 60; }
+                end = d.replace(/-/g, '') + 'T' + String(h2).padStart(2,'0') + String(m2).padStart(2,'0') + '00';
+            }
+            // action=TEMPLATE — открывает форму создания; цвет календаря выбирается календарём по умолчанию
+            let url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+                + '&text=' + encodeURIComponent('ЛОР: ' + fio)
+                + '&details=' + encodeURIComponent(t.slice(0, 7000));
+            if (start && end) {
+                url += '&dates=' + start + '/' + end;
+            }
+            window.open(url, '_blank');
+        }
+
+
+        function vcClearSmart() {
+            if (!confirm('Очистить поля приёма (диагнозы, жалобы, рекомендации), оставив структуру?')) return;
+            [1,2,3,4,5].forEach(function (i) {
+                document.getElementById('vc-dx' + i).value = '';
+            });
+            document.getElementById('vc-body').value = '';
+            document.getElementById('vc-recs').value = '';
+            document.getElementById('vc-rec-label').textContent = 'Шаблон не выбран';
+            document.getElementById('vc-table-box').innerHTML = '';
+            // patient and date keep
+            vcBuildPreview();
+        }
+
+        async function vcSaveAccess() {
+            if (typeof LOR_PUBLIC_WEB !== 'undefined' && LOR_PUBLIC_WEB) {
+                alert('В веб-версии сохранение в Access/базу отключено.\nИспользуйте полный кабинет на ПК врача (doctor.html + демон).');
+                return;
+            }
+            const text = vcBuildPreview();
+            const fio = (document.getElementById('vc-patient').value || '').trim();
+            if (!fio) {
+                alert('Укажите пациента (кнопка «Пациент» или ФИО вручную)');
+                return;
+            }
+            let pid = document.getElementById('vc-patient-id').value;
+            if (!pid && currentCardPatientId != null) pid = String(currentCardPatientId);
+            const d = document.getElementById('vc-date').value;
+            const t = document.getElementById('vc-time').value || '';
+            let dateRu = d;
+            if (d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                const p = d.split('-');
+                dateRu = p[2] + '.' + p[1] + '.' + p[0];
+            } else if (!dateRu) {
+                const n = new Date();
+                dateRu = String(n.getDate()).padStart(2,'0') + '.' + String(n.getMonth()+1).padStart(2,'0') + '.' + n.getFullYear();
+            }
+
+            const payload = {
+                patient_name: fio,
+                doc_date: dateRu,
+                doc_time: t || (function () {
+                    const n = new Date();
+                    return String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+                })(),
+                doc_text: text,
+                patient_id: pid ? Number(pid) : null
+            };
+
+            // 1) Локальный демон → Access MyDocs + сразу Supabase (как Word + sync)
+            try {
+                const resp = await fetch('http://127.0.0.1:8765/api/save-visit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await resp.json();
+                if (data && data.ok) {
+                    document.getElementById('vc-patient-id').value = String(data.patient_id);
+                    let msg = 'Сохранено в Access (MyDocs).\nID пациента: ' + data.patient_id;
+                    if (data.record_code) msg += '\nКод записи: ' + data.record_code;
+                    if (data.synced) msg += '\nСразу отправлено в Supabase (patients_sync).';
+                    else msg += '\nSupabase: отложенно или ошибка: ' + (data.sync_error || 'нет ключа/сети');
+                    alert(msg);
+                    pushRecentPatient(data.patient_id, fio);
+                    return;
+                }
+                throw new Error((data && data.error) || ('HTTP ' + resp.status + ' — обновите process_lab_files.py и перезапустите демон (stop → start)'));
+            } catch (e) {
+                // 2) Запас: только Supabase (если демон не запущен)
+                if (!payload.patient_id) {
+                    alert(
+                        'Сохранение в Access через демон не удалось.\n\n' +
+                        '1) Остановите старый процесс (LOR_демон_стоп / stop_daemon)\n' +
+                        '2) Скопируйте новый process_lab_files.py в папку демона\n' +
+                        '3) Запустите старт снова\n' +
+                        '4) Откройте кабинет через http://127.0.0.1:8765/doctor.html\n\n' +
+                        'Ошибка: ' + e.message
+                    );
+                    return;
+                }
+                try {
+                    const body = {
+                        id: Number(payload.patient_id),
+                        patient_name: fio,
+                        doc_date: dateRu,
+                        doc_time: payload.doc_time,
+                        doc_text: text,
+                        record_code: Number(String(Date.now()).slice(-9))
+                    };
+                    const resp2 = await fetch(SUPABASE_URL + '/rest/v1/patients_sync', {
+                        method: 'POST',
+                        headers: authHeaders({
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        }),
+                        body: JSON.stringify(body)
+                    });
+                    if (!resp2.ok) throw new Error(await resp2.text());
+                    alert('Демон недоступен. Запись только в Supabase (без Access).');
+                } catch (e2) {
+                    alert('Не удалось сохранить: ' + e2.message);
+                }
+            }
+        }
+
+        function vcOpenSearch() {
+            document.getElementById('vc-search-modal').classList.add('visible');
+            document.getElementById('vc-search-view').classList.add('hidden');
+            vcSearchViewText = '';
+        }
+
+        function closeVcSearch() {
+            document.getElementById('vc-search-modal').classList.remove('visible');
+        }
+
+        async function vcDoSearch() {
+            const q = (document.getElementById('vc-search-q').value || '').trim();
+            const from = document.getElementById('vc-search-from').value;
+            const to = document.getElementById('vc-search-to').value;
+            const box = document.getElementById('vc-search-list');
+            box.innerHTML = 'Поиск…';
+            try {
+                const headers = authHeaders();
+                let rows = [];
+                if (q) {
+                    const url = SUPABASE_URL + '/rest/v1/patients_sync?patient_name=ilike.*' +
+                        encodeURIComponent(q) + '*&select=id,patient_name,doc_date,doc_time,doc_text,record_code&order=record_code.desc&limit=200';
+                    const r = await fetch(url, { headers: headers });
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    rows = await r.json();
+                } else {
+                    const url = SUPABASE_URL + '/rest/v1/patients_sync?select=id,patient_name,doc_date,doc_time,doc_text,record_code&order=record_code.desc&limit=400';
+                    const r = await fetch(url, { headers: headers });
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    rows = await r.json();
+                }
+                if (!Array.isArray(rows)) rows = [];
+                const fromY = toYmd(from);
+                const toY = toYmd(to);
+                if (fromY || toY) {
+                    rows = rows.filter(function (r) {
+                        const y = docDateYmd(r.doc_date);
+                        if (!y) return false;
+                        if (fromY && y < fromY) return false;
+                        if (toY && y > toY) return false;
+                        return true;
+                    });
+                }
+                vcSearchCache = rows;
+                if (!rows.length) {
+                    box.innerHTML = '<span style="color:#666;padding:6px;">Ничего не найдено</span>';
+                    return;
+                }
+                let h = '<table class="table98" style="width:100%;"><thead><tr><th>ID</th><th>ФИО</th><th>Дата</th><th>Время</th></tr></thead><tbody>';
+                rows.forEach(function (r, i) {
+                    h += '<tr style="cursor:pointer;" onclick="vcShowSearchRow(' + i + ')">' +
+                        '<td>' + r.id + '</td><td>' + escapeHtml(r.patient_name || '') + '</td>' +
+                        '<td>' + escapeHtml(r.doc_date || '') + '</td><td>' + escapeHtml(r.doc_time || '') + '</td></tr>';
+                });
+                h += '</tbody></table>';
+                box.innerHTML = h;
+            } catch (e) {
+                box.innerHTML = '<span style="color:#c00000;">' + escapeHtml(e.message) + '</span>';
+            }
+        }
+
+        function vcShowSearchRow(i) {
+            const r = vcSearchCache[i];
+            if (!r) return;
+            vcSearchViewText = r.doc_text || '';
+            const v = document.getElementById('vc-search-view');
+            v.classList.remove('hidden');
+            v.textContent = vcSearchViewText || '(пусто)';
+            document.getElementById('vc-patient').value = (r.patient_name || '').replace(/[0-9]/g, '').trim() || r.patient_name || '';
+            document.getElementById('vc-patient-id').value = r.id || '';
+        }
+
+        function vcSearchToDoc() {
+            if (!vcSearchViewText) {
+                alert('Выберите приём в списке');
+                return;
+            }
+            document.getElementById('vc-preview').value = vcSearchViewText;
+            document.getElementById('vc-body').value = vcSearchViewText;
+            closeVcSearch();
+            const m = document.getElementById('visit-compose-modal');
+            if (m && !m.classList.contains('visible')) openVisitCompose();
+        }
+
+        function vcPrintPdf() {
+            const t = vcBuildPreview();
+            const w = window.open('', '_blank');
+            if (!w) { alert('Разрешите всплывающие окна'); return; }
+            const fio = (document.getElementById('vc-patient').value || '').trim();
+            w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Доктор ЛОР — ' + escapeHtml(fio) + '</title>');
+            w.document.write('<style>');
+            w.document.write('@page{margin:12mm;}');
+            w.document.write('body{font-family:"Times New Roman",Times,serif;font-size:12pt;color:#000;padding:8mm;}');
+            w.document.write('h1{font-family:Tahoma,sans-serif;color:#009ca0;font-size:16pt;margin:0 0 8pt;}');
+            w.document.write('.meta{font-size:11pt;margin-bottom:10pt;}');
+            w.document.write('.block{white-space:pre-wrap;font-family:"Times New Roman",Times,serif;font-size:12pt;line-height:1.35;}');
+            w.document.write('table{border-collapse:collapse;font-size:10pt;margin-top:12pt;}');
+            w.document.write('td,th{border:1px solid #000;padding:3px 5px;vertical-align:top;}');
+            w.document.write('th{background:#eee;}');
+            w.document.write('@media print{.no-print{display:none;}}');
+            w.document.write('</style></head><body>');
+            w.document.write('<h1>Доктор ЛОР</h1>');
+            w.document.write('<div class="block">' + escapeHtml(t) + '</div>');
+            const tbl = (window._vcMedTableHtml || document.getElementById('vc-table-box').innerHTML || '');
+            if (tbl && tbl.indexOf('table') >= 0) {
+                w.document.write('<h1 style="page-break-before:always;">Календарь назначений</h1>');
+                w.document.write(tbl);
+            }
+            w.document.write('<p class="no-print"><button onclick="window.print()">Печать</button></p>');
+            w.document.write('</body></html>');
+            w.document.close();
+            setTimeout(function () { w.print(); }, 400);
+        }
+
+        function vcDictation() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) {
+                alert('Диктовка не поддерживается в этом браузере. Используйте Chrome.');
+                return;
+            }
+            const rec = new SR();
+            rec.lang = 'ru-RU';
+            rec.interimResults = false;
+            rec.maxAlternatives = 1;
+            rec.onresult = function (ev) {
+                const said = ev.results[0][0].transcript;
+                const ta = document.getElementById('vc-body');
+                ta.value = (ta.value ? ta.value + '\n' : '') + said;
+                vcBuildPreview();
+            };
+            rec.onerror = function (e) {
+                alert('Ошибка диктовки: ' + (e.error || ''));
+            };
+            rec.start();
+            alert('Говорите… (распознавание браузера, не Java Kabolda)');
+        }
+
 
         async function pingDaemonStatus() {
             const el = document.getElementById('daemon-status');
@@ -4236,5 +5263,6 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
     </script>
+<script>try{if(typeof applyPublicWebUi==='function')applyPublicWebUi();}catch(e){}</script>
 </body>
 </html>
