@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кабинет врача — Доктор ЛОР (онлайн)</title>
-    <script>window.LOR_DOC_BUILD="2026-08-16-mobileFix3";</script>
+    <script>window.LOR_DOC_BUILD="2026-08-16-mobileFix4";</script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -3056,7 +3056,16 @@
                 st.style.fontWeight = ok ? 'bold' : 'normal';
             }
             if (btn) btn.textContent = 'Календарь Google';
-            if (auth) auth.textContent = ok ? 'Отключить Google' : 'Подключить Google';
+            if (auth) {
+                if (typeof lorIsMobileUi === 'function' && lorIsMobileUi()) {
+                    auth.innerHTML = ok
+                        ? '<span class="gcal-tb-ico">🔓</span><span class="gcal-tb-lab">Google</span>'
+                        : '<span class="gcal-tb-ico">🔗</span><span class="gcal-tb-lab">Google</span>';
+                    auth.title = ok ? 'Отключить Google' : 'Подключить Google';
+                } else {
+                    auth.textContent = ok ? 'Отключить Google' : 'Подключить Google';
+                }
+            }
             const ps = document.getElementById('gcal-panel-status');
             if (ps) ps.textContent = ok ? 'Аккаунт подключён' : 'Нужно подключить Google';
         }
@@ -3468,12 +3477,10 @@
             if (bt) {
                 if (gcalViewMode === 'today') bt.classList.add('primary');
                 else bt.classList.remove('primary');
-                try { if (lorIsMobileUi()) bt.textContent = 'День'; } catch (e1) {}
             }
             if (bw) {
                 if (gcalViewMode === 'week') bw.classList.add('primary');
                 else bw.classList.remove('primary');
-                try { if (lorIsMobileUi()) bw.textContent = 'Список'; } catch (e2) {}
             }
             // всегда на весь экран
             const win = document.getElementById('gcal-modal-win');
@@ -3761,6 +3768,7 @@
 
         function lorShowBuildStamp() {
             try {
+                if (typeof lorIsMobileUi === 'function' && lorIsMobileUi()) return;
                 var b = window.LOR_DOC_BUILD || '';
                 if (!b) return;
                 var ttl = document.querySelector('#gcal-modal .win98-titlebar .title');
@@ -3794,7 +3802,12 @@
                 gcalEventsCache = items || [];
                 gcalRenderEvents();
                 var st = document.getElementById('gcal-panel-status');
-                if (st) st.textContent = 'На экране: ' + gcalEventsCache.length + (window.LOR_DOC_BUILD ? (' · ' + window.LOR_DOC_BUILD) : '');
+                if (st) {
+                    try {
+                        if (typeof lorIsMobileUi === 'function' && lorIsMobileUi()) st.textContent = '';
+                        else st.textContent = 'На экране: ' + gcalEventsCache.length + (window.LOR_DOC_BUILD ? (' · ' + window.LOR_DOC_BUILD) : '');
+                    } catch (eSt) {}
+                }
                 // Лёгкий сканер только видимых Базилик/Шалфей (не тысячи)
                 try {
                     if (typeof gcalScanBasilSageToDb === 'function') {
@@ -17937,9 +17950,9 @@ function vcGenerateTable() {
                     <button class="btn98 gcal-tb gcal-tb-nav" type="button" id="gcal-nav-prev" onclick="gcalNav(-1)" title="Назад"><span class="gcal-tb-ico">◀</span><span class="gcal-tb-lab">◀</span></button>
                     <button class="btn98 gcal-nav-today-btn" type="button" onclick="gcalNavToday()" title="Сбросить на текущий период">◉</button>
                     <button class="btn98 gcal-tb gcal-tb-nav" type="button" id="gcal-nav-next" onclick="gcalNav(1)" title="Вперёд"><span class="gcal-tb-ico">▶</span><span class="gcal-tb-lab">▶</span></button>
-                    <button class="btn98 gcal-tb" type="button" onclick="gcalReload()" title="Обновить"><span class="gcal-tb-ico">🔄</span><span class="gcal-tb-lab">Обновить</span></button>
-                    <button class="btn98 primary gcal-tb" type="button" onclick="gcalOpenNewEventForm()" title="Новое событие"><span class="gcal-tb-ico">➕</span><span class="gcal-tb-lab">+ Событие</span></button>
-                    <button class="btn98 gcal-tb" type="button" id="gcal-auth-btn" onclick="gcalConnect()" title="Google"><span class="gcal-tb-ico">🔗</span><span class="gcal-tb-lab">Подключить Google</span></button>
+                    <button class="btn98 gcal-tb gcal-tb-keep" type="button" onclick="gcalReload()" title="Обновить"><span class="gcal-tb-ico">🔄</span><span class="gcal-tb-lab">Обновить</span></button>
+                    <button class="btn98 primary gcal-tb gcal-tb-keep" type="button" onclick="gcalOpenNewEventForm()" title="Новое событие"><span class="gcal-tb-ico">➕</span><span class="gcal-tb-lab">+ Событие</span></button>
+                    <button class="btn98 gcal-tb gcal-tb-keep" type="button" id="gcal-auth-btn" onclick="gcalConnect()" title="Google"><span class="gcal-tb-ico">🔗</span><span class="gcal-tb-lab">Подключить Google</span></button>
                     <span style="position:relative;display:inline-block;">
                         <button class="btn98 gcal-svc-only" type="button" id="gcal-svc-btn" onclick="gcalToggleSvcMenu(event)" title="Служебные: выручка, Access, синк, оплата, задачи" style="min-width:0;padding:2px 8px;">⚙ Служба ▾</button>
                         <div id="gcal-svc-menu" style="display:none;position:absolute;left:0;top:100%;z-index:1300;min-width:200px;background:#c0c0c0;border-top:2px solid #ffffff;border-left:2px solid #ffffff;border-right:2px solid #808080;border-bottom:2px solid #808080;box-shadow:2px 2px 0 #000;padding:2px 0;margin-top:1px;">
