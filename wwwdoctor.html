@@ -3156,8 +3156,8 @@
             }
             if (btn) btn.textContent = 'Календарь Google';
             if (auth) {
-                // в шапке календаря — всегда компактная иконка
-                auth.textContent = ok ? '🔓' : '🔗';
+                // подключено = молния, отключено = вилка
+                auth.textContent = ok ? '⚡' : '🔌';
                 auth.title = ok ? 'Отключить Google' : 'Подключить Google';
             }
             const ps = document.getElementById('gcal-panel-status');
