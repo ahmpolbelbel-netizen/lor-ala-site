@@ -597,7 +597,7 @@
 
         /* ===== Прочее ===== */
         .hidden { display: none !important; }
-
+.vc-mob-toggle { display: none; }
         a.link98 {
             color: #0000ff;
             text-decoration: underline;
@@ -1109,13 +1109,21 @@
             /* цвет в окне приёма (форма скрыта — показываем только квадраты) */
             #visit-compose-modal .vc-form-col { display: none !important; }
             #visit-compose-modal #vc-mob-color-row {
-                display: flex !important;
-                flex-wrap: nowrap;
-                gap: 6px;
-                padding: 4px 6px 6px;
-                justify-content: center;
-                background: #c0c0c0;
-                border-bottom: 1px solid #808080;
+                display:none;
+                flex-wrap:nowrap;
+                gap:6px;
+                padding:4px 6px 6px;
+                justify-content:center;
+                background:#c0c0c0;
+                border-bottom:1px solid #808080;
+            }
+            #visit-compose-modal #vc-mob-color-row.vc-mob-color-row-on {
+                display:flex !important;
+            }
+            #visit-compose-modal .vc-mob-toggle {
+                display:inline-flex !important; align-items:center; justify-content:center;
+                flex:1 1 0; width:auto; min-width:0; max-width:52px;
+                height:44px; min-height:44px; padding:0 !important; font-size:20px;
             }
             #visit-compose-modal #vc-mob-color-row button {
                 width: 36px !important;
@@ -1613,12 +1621,12 @@
             </div>
             <div style="padding:6px 8px; background:#c0c0c0; border-bottom:1px solid #808080;">
                 <div class="toolbar vc-main-toolbar" style="margin:0; flex-wrap:wrap; gap:4px;">
-                    <button class="btn98 vc-mob" type="button" onclick="vcListPatientVisits()" title="Все приёмы этого ID"><span class="vc-ico">📋</span><span class="vc-lab">Все приёмы</span></button>
-                    <button class="btn98 vc-mob" type="button" onmousedown="vcPlaceRecsMarker(event); event.preventDefault();" onclick="vcOpenRecs()" title="Выбор шаблона рекомендаций"><span class="vc-ico">💊</span><span class="vc-lab">Рекомендации</span></button>
+                   <button class="btn98" type="button" onclick="vcListPatientVisits()" title="Все приёмы этого ID"><span class="vc-ico">📋</span><span class="vc-lab">Все приёмы</span></button>
+                    <button class="btn98" type="button" onmousedown="vcPlaceRecsMarker(event); event.preventDefault();" onclick="vcOpenRecs()" title="Выбор шаблона рекомендаций"><span class="vc-ico">💊</span><span class="vc-lab">Рекомендации</span></button>
                     <button class="btn98" type="button" onclick="vcGenerateTable()" title="Таблица назначений на 2-й стр.">Сгенерировать таблицу</button>
                     <button class="btn98 primary" type="button" onclick="vcPrintOnly()" title="Печать бланка; сохранение в календарь (и базу при Базилик/Шалфей), без дублей">Печать</button>
                     <button class="btn98" type="button" onclick="vcCopyAll()" title="Только текст приёма">Копировать</button>
-                    <button class="btn98 vc-mob" type="button" onclick="vcClearMenu(event)" title="Очистить всё или только превью"><span class="vc-ico">🗑</span><span class="vc-lab">Очистить ▾</span></button>
+                    <button class="btn98" type="button" onclick="vcClearMenu(event)" title="Очистить всё или только превью"><span class="vc-ico">🗑</span><span class="vc-lab">Очистить ▾</span></button>
                     <button class="btn98" type="button" id="vc-kz-btn" onclick="vcToggleKz()" title="Казахский / русский">KZ</button>
                     <button class="btn98" type="button" onclick="vcShareMenu()" title="WhatsApp / Telegram / Email">Отправить</button>
                     <button class="btn98" type="button" onclick="vcCourseToCalendar()" title="Курс в календарь"><span class="vc-lab">Курс→календарь</span></button>
@@ -1630,8 +1638,10 @@
                     <button class="btn98" type="button" onclick="vcSaveDraft(true)" title="Сохранить черновик приёма">Черновик</button>
                     <button class="btn98" type="button" onclick="vcRestoreDraft()" title="Восстановить черновик">↺ Черновик</button>
                     <button class="btn98" type="button" onclick="vcRepeatLastVisit()" title="Подставить текст прошлого приёма этого пациента">Повтор приёма</button>
-                    <button class="btn98 vc-mob" type="button" onclick="vcCourseRemaining()" title="Сколько павлинов (явок курса) осталось вперёд"><span class="vc-ico">❓</span><span class="vc-lab">Курс ?</span></button>
-                    <button class="btn98 vc-mob vc-mob-pay" type="button" onclick="vcOpenPayModule()" title="Оплата"><span class="vc-ico">💰</span><span class="vc-lab">Оплата</span></button>
+                    <button class="btn98" type="button" onclick="vcCourseRemaining()" title="Сколько павлинов (явок курса) осталось вперёд"><span class="vc-ico">❓</span><span class="vc-lab">Курс ?</span></button>
+                    <button class="btn98" type="button" onclick="vcOpenPayModule()" title="Оплата"><span class="vc-ico">💰</span><span class="vc-lab">Оплата</span></button>
+                    <button class="btn98 vc-mob-toggle" type="button" onclick="vcToggleMobServiceMenu(event)" title="Ещё"><span class="vc-ico">⚙</span></button>
+                    <button class="btn98 vc-mob-toggle" type="button" onclick="vcTogglePaletteMob(event)" title="Цвет"><span class="vc-ico">🎨</span></button>
                     <button class="btn98 primary vc-mob vc-mob-save" type="button" onclick="vcSaveSmart()" title="Сохранить"><span class="vc-ico">💾</span><span class="vc-lab">Сохранить</span></button>
                     <button class="btn98" type="button" onclick="vcCreateControlReminder()" title="Событие контроля / перезвона (не цвет «должен прийти»)">Контроль→GCal</button>
                 </div>
@@ -13195,7 +13205,70 @@ async function gcalAutoSaveVisitIfNeeded(ev, opts) {
                 }
             } catch (e) {}
         }
+function vcToggleMobServiceMenu(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            try {
+                var row = document.getElementById('vc-mob-color-row');
+                if (row) row.classList.remove('vc-mob-color-row-on');
+            } catch (e0) {}
+            var old = document.getElementById('vc-mob-svc-menu');
+            if (old) { if (old.parentNode) old.parentNode.removeChild(old); return; }
+            var btn = ev && ev.currentTarget;
+            var menu = document.createElement('div');
+            menu.id = 'vc-mob-svc-menu';
+            menu.style.cssText = 'position:fixed;z-index:6000;background:#c0c0c0;border:2px outset #fff;' +
+                'padding:4px;display:flex;flex-direction:column;gap:4px;box-shadow:2px 2px 6px rgba(0,0,0,0.35);';
+            function mk(icon, title, handler) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'btn98';
+                b.title = title;
+                b.style.cssText = 'width:48px;height:44px;min-width:48px;font-size:20px;padding:0;';
+                b.textContent = icon;
+                b.onclick = function (e2) {
+                    e2.preventDefault(); e2.stopPropagation();
+                    var m = document.getElementById('vc-mob-svc-menu');
+                    if (m && m.parentNode) m.parentNode.removeChild(m);
+                    handler(e2);
+                };
+                menu.appendChild(b);
+            }
+            mk('🗑', 'Очистить всё или только превью', function (e2) { try { vcClearMenu(e2); } catch (e) {} });
+            mk('❓', 'Сколько павлинов (явок курса) осталось вперёд', function () { try { vcCourseRemaining(); } catch (e) {} });
+            mk('💰', 'Оплата', function () { try { vcOpenPayModule(); } catch (e) {} });
+            mk('💊', 'Выбор шаблона рекомендаций', function (e2) {
+                try { vcPlaceRecsMarker(e2); } catch (e) {}
+                try { vcOpenRecs(); } catch (e) {}
+            });
+            mk('📋', 'Все приёмы этого ID', function () { try { vcListPatientVisits(); } catch (e) {} });
+            document.body.appendChild(menu);
+            var r = btn ? btn.getBoundingClientRect() : { left: 20, top: 60, bottom: 60, right: 80 };
+            var left = r.left;
+            if (left + 60 > window.innerWidth) left = window.innerWidth - 64;
+            menu.style.left = Math.max(4, left) + 'px';
+            var top = r.bottom + 4;
+            if (top + 260 > window.innerHeight) top = Math.max(4, r.top - 264);
+            menu.style.top = top + 'px';
+            setTimeout(function () {
+                document.addEventListener('click', function hide(e) {
+                    var m = document.getElementById('vc-mob-svc-menu');
+                    if (!m) { document.removeEventListener('click', hide, true); return; }
+                    if (m.contains(e.target) || e.target === btn) return;
+                    if (m.parentNode) m.parentNode.removeChild(m);
+                    document.removeEventListener('click', hide, true);
+                }, true);
+            }, 0);
+        }
 
+        function vcTogglePaletteMob(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            var old = document.getElementById('vc-mob-svc-menu');
+            if (old && old.parentNode) old.parentNode.removeChild(old);
+            try { if (typeof vcFillMobColorRow === 'function') vcFillMobColorRow(); } catch (e) {}
+            var row = document.getElementById('vc-mob-color-row');
+            if (!row) return;
+            row.classList.toggle('vc-mob-color-row-on');
+        }
         function closeVisitCompose() {
             try { vcClearFrozen(); } catch (eFz) {}
 
