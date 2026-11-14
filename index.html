@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="https://static.tildacdn.com/css/fonts-tildasans.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиника Доктор ЛОР — Астана — Специализированный кабинет</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'TildaSans', Arial, Helvetica, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .max-width-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background-color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        header.lor-site-header,
+        header {
+            /* sticky already establishes containing block for absolute drawer */
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+            position: relative;
+        }
+
+        .logo-block {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-img {
+            height: 56px;
+            width: auto;
+            max-width: 280px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-family: 'TildaSans', Arial, Helvetica, sans-serif;
+            font-size: 26px;
+            font-weight: 600;
+            color: #009999;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            line-height: 1.15;
+            display: inline-block;
+        }
+        .logo-text:hover { color: #007a87; }
+
+        .logo-sub {
+            font-size: 11px;
+            color: #777777;
+            margin-top: 4px;
+            line-height: 1.3;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: #009999;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu a:hover {
+            color: #007377;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007a87;
+            color: #ffffff;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,122,135,0.2);
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+            overflow: visible;
+        }
+
+        .circle-btn:hover {
+            background-color: #006570;
+        }
+
+        .circle-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff !important;
+            color: #ffffff;
+            display: block;
+        }
+        .circle-btn svg path {
+            fill: #ffffff !important;
+        }
+
+        details {
+            position: relative;
+        }
+
+        details summary {
+            list-style: none;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .dropdown-panel {
+            position: absolute;
+            top: 52px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 220px;
+            z-index: 100;
+        }
+
+        .dropdown-panel a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .dropdown-panel a:hover {
+            background-color: #f0fafa;
+        }
+
+        .lor-burger-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #007a87;
+            cursor: pointer;
+            line-height: 1;
+            padding: 5px 10px;
+            z-index: 999;
+        }
+
+        .lor-mobile-drawer {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-top: 1px solid #eaeaea;
+            padding: 24px 16px;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            z-index: 998;
+        }
+
+        .lor-mobile-drawer.is-open {
+            display: flex;
+        }
+
+        .lor-mobile-drawer a {
+            color: #007a87;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mobile-phone {
+            font-size: 18px !important;
+            margin-top: 8px;
+            font-family: 'TildaSans', Arial, Helvetica, sans-serif;
+        }
+
+        
+        .mobile-circle-row {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            padding: 14px 10px 6px;
+            flex-wrap: wrap;
+        }
+        .mobile-circle-row a.circle-btn {
+            width: 48px;
+            height: 48px;
+            text-decoration: none;
+        }
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 240px;
+            margin-top: 10px;
+        }
+
+        .mobile-actions a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #007a87;
+            height: 42px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 13px;
+            border: 1px solid #007a87;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .text-section {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 0 20px 40px 20px;
+        }
+
+        .main-title-center {
+            font-size: 42px;
+            font-weight: 500;
+            color: #009999;
+            text-align: center;
+            margin: 50px 0 35px;
+            border-top: 1px solid #009999;
+            border-bottom: 1px solid #009999;
+            padding: 15px 0;
+        }
+
+        .info-paragraph {
+            font-size: 17px;
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: left;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+        }
+
+        .info-paragraph strong {
+            font-weight: 700;
+        }
+
+        .price-list-original {
+            list-style-type: none;
+            margin: 15px 0 25px 20px;
+        }
+
+        .price-list-original li {
+            font-size: 17px;
+            color: #000000;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .price-list-original li::before {
+            content: "•";
+            color: #000000;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .diseases-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #009999;
+            border-radius: 8px;
+            padding: 24px;
+            margin: 35px 0;
+        }
+
+        .diseases-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 16px;
+        }
+
+        .diseases-list {
+            list-style-type: none;
+        }
+
+        .diseases-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #000000;
+        }
+
+        .diseases-list li::before {
+            content: "•";
+            color: #009999;
+            font-weight: bold;
+            font-size: 20px;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .price-container {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .price-main-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .price-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            margin-top: 20px;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .price-table th {
+            background-color: #009999;
+            color: #ffffff;
+            padding: 16px 20px;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .price-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #000000;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        .price-value {
+            font-weight: bold;
+            color: #000000;
+            white-space: nowrap;
+            text-align: right;
+            width: 130px;
+        }
+
+        .price-discount {
+            display: block;
+            font-size: 13px;
+            color: #009999;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+            margin: 50px 0 25px;
+        }
+
+        .branch-card-single {
+            background-color: #f9f9f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+
+        .branch-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .branch-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 6px;
+        }
+
+        .branch-address {
+            font-size: 18px;
+            color: #009999;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .route-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-route {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+            height: 44px;
+            padding: 0 18px;
+            background-color: #009999;
+            color: #ffffff !important;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 156, 160, 0.25);
+            transition: background-color 0.2s;
+        }
+
+        .btn-route:hover {
+            background-color: #007a87;
+        }
+
+        .branch-hours {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .bold-text {
+            font-weight: bold;
+            color: #000000;
+        }
+
+        footer {
+            background-color: #009999;
+            color: #ffffff;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+
+        footer p {
+            margin-bottom: 8px;
+        }
+
+        /* ========== MOBILE ========== */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .max-width-container,
+            .text-section {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                padding: 16px 0;
+            }
+
+            .logo-block {
+                align-items: center;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-img {
+                max-height: 50px;
+                height: auto;
+            }
+
+            .nav-menu,
+            .header-actions {
+                display: none !important;
+            }
+
+            .lor-burger-button {
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 20px;
+            }
+
+            .main-title-center {
+                font-size: 24px;
+                margin: 25px 0 20px;
+                padding: 12px 0;
+                line-height: 1.3;
+            }
+
+            .section-title,
+            .price-main-title {
+                font-size: 22px;
+                margin: 30px 0 15px;
+            }
+
+            .info-paragraph {
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+            .price-list-original {
+                margin-left: 5px;
+            }
+
+            .price-list-original li {
+                font-size: 16px;
+            }
+
+            .diseases-card {
+                padding: 16px;
+                margin: 20px 0;
+            }
+
+            .branch-card-single {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            .route-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-route {
+                width: 100%;
+                max-width: 260px;
+            }
+
+            .price-table th,
+            .price-table td {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+
+            .price-value {
+                width: 100px;
+                font-size: 15px;
+            }
+
+            .price-discount {
+                font-size: 12px;
+            }
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .header-content {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 0 12px;
+            min-height: 72px;
+        }
+        .logo-block { flex: 0 0 auto; display: flex; align-items: center; }
+        .logo-block a { display: block; line-height: 0; }
+        .logo-img {
+            height: 48px;
+            width: auto;
+            max-width: 220px;
+            display: block;
+            object-fit: contain;
+        }
+        .nav-menu {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 8px 22px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex: 1 1 auto;
+            justify-content: center;
+            min-width: 0;
+        }
+        .nav-menu li { flex: 0 0 auto; }
+        .nav-menu a {
+            color: #009999;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+        }
+        .nav-menu a:hover { color: #007377; }
+        .header-actions {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
+        }
+        .header-underline {
+            height: 3px;
+            background: #009999;
+            width: 100%;
+            margin: 0;
+        }
+        .lor-burger-button {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: #009999;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+        }
+        @media (max-width: 900px) {
+            .nav-menu { display: none; }
+            .header-actions { display: none; }
+            .lor-burger-button { display: block; margin-left: auto; }
+            .header-content { min-height: 60px; padding: 10px 0; }
+            .logo-img { height: 40px; }
+        }
+
+
+        /* ========== HEADER LAYOUT (финал, как lor-nsk) ========== */
+        .header-inner {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 24px !important;
+        }
+        .header-content {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 12px 18px !important;
+            padding: 12px 0 10px !important;
+            min-height: 70px !important;
+            position: relative !important;
+        }
+        .logo-block {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            text-align: left !important;
+        }
+        .logo-img {
+            height: 46px !important;
+            width: auto !important;
+            max-width: 200px !important;
+            display: block !important;
+            object-fit: contain !important;
+        }
+        .nav-menu {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px 20px !important;
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        .nav-menu a {
+            white-space: nowrap !important;
+            font-size: 13px !important;
+            color: #009999 !important;
+            text-transform: uppercase !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.3px !important;
+        }
+        .header-actions {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex: 0 0 auto !important;
+        }
+        .header-underline {
+            height: 3px !important;
+            background: #009999 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            max-width: none !important;
+            border-radius: 0 !important;
+        }
+        .lor-burger-button {
+            display: none !important;
+        }
+        @media (max-width: 900px) {
+            .nav-menu { display: none !important; }
+            .header-actions { display: none !important; }
+            .lor-burger-button {
+                display: block !important;
+                margin-left: auto !important;
+                position: static !important;
+                top: auto !important;
+                right: auto !important;
+            }
+            .header-content {
+                flex-wrap: nowrap !important;
+                min-height: 56px !important;
+                padding: 8px 0 !important;
+            }
+            .logo-block { width: auto !important; }
+            .logo-img { height: 38px !important; max-width: 160px !important; }
+            .header-inner { padding: 0 16px !important; }
+        }
+
+        .booking-header-cta{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 16px;border-radius:9px;background:#009999;color:#fff;text-decoration:none;font-size:15px;font-weight:700;line-height:1.2;white-space:nowrap;box-shadow:0 4px 12px rgba(0,153,153,.2);transition:background .2s,transform .2s}
+        .booking-header-cta:hover{background:#007a87;transform:translateY(-1px)}
+        .booking-header-cta:focus-visible{outline:3px solid #143b3d;outline-offset:3px}
+        @media(max-width:900px){.booking-header-cta{order:2;margin-left:auto;margin-right:8px;min-height:38px;padding:8px 11px;font-size:13px}.lor-burger-button{order:3;margin-left:0!important}}
+        @media(max-width:420px){.booking-header-cta{margin-right:6px;padding:6px 7px;font-size:11px}.logo-block .logo-img{max-width:115px!important}.header-content{gap:8px!important}}
+    </style>
+
+<style id="lor-nsk-visual-tune">
+/* Visual tuning toward lor-nsk.ru; layout, content, anchors and behavior stay as-is. */
+:root{--lor-teal:#009999;--lor-teal-hover:#868686;--lor-text:#000000;--lor-rule:#e8e8e8}
+body{font-family:'TildaSans',Arial,sans-serif!important;font-weight:300;line-height:1.55;color:var(--lor-text)}
+.max-width-container,.header-inner{max-width:1200px!important}
+.text-section{max-width:960px!important}
+.logo-img{height:48px!important;max-width:220px!important}
+.header-content{min-height:78px!important;padding:12px 0 10px!important;gap:16px!important}
+.header-underline{height:3px!important;background:var(--lor-teal)!important}
+.nav-menu a{font-family:'TildaSans',Arial,sans-serif!important;font-size:16px!important;font-weight:600!important;letter-spacing:0!important;color:var(--lor-teal)!important;text-transform:uppercase!important}
+.nav-menu a:hover,.nav-menu a:focus-visible{color:var(--lor-teal-hover)!important}
+.circle-btn{width:30px!important;height:30px!important;min-width:30px!important;background:transparent!important;color:var(--lor-teal)!important;border:0!important;box-shadow:none!important}
+.circle-btn svg,.circle-btn svg path{fill:var(--lor-teal)!important;color:var(--lor-teal)!important}
+.circle-btn:hover{background:transparent!important;color:var(--lor-teal-hover)!important}
+.circle-btn:hover svg,.circle-btn:hover svg path{fill:var(--lor-teal-hover)!important}
+.booking-header-cta{font-family:'TildaSans',Arial,sans-serif!important;font-weight:600!important;background:var(--lor-teal)!important;box-shadow:none!important;border-radius:5px!important}
+.booking-header-cta:hover{background:#007f7f!important}
+.main-title-center{font-family:'TildaSans',Arial,sans-serif!important;font-size:45px!important;line-height:1.17!important;font-weight:600!important;color:var(--lor-teal)!important;border:0!important;padding:0!important;margin:18px 0 28px!important}
+.main-title-center::before,.main-title-center::after{content:"";display:block;width:100%;height:2px;background:linear-gradient(90deg,transparent 0%,var(--lor-teal) 18%,var(--lor-teal) 82%,transparent 100%);opacity:.8}
+.main-title-center::before{margin:0 auto 18px}
+.main-title-center::after{margin:18px auto 0}
+.info-paragraph{font-family:'TildaSans',Arial,sans-serif!important;font-size:20px!important;font-weight:300!important;line-height:1.55!important;letter-spacing:0!important;color:#000!important;margin-bottom:20px!important;text-align:left!important}
+.info-paragraph strong{font-weight:600!important}
+.price-list-original{margin:14px 0 26px 20px!important}
+.price-list-original li{font-family:'TildaSans',Arial,sans-serif!important;font-size:20px!important;font-weight:300!important;line-height:1.55!important;margin-bottom:5px!important;color:#000!important}
+.price-list-original li::before{color:var(--lor-teal)!important;font-weight:600!important}
+.price-container{max-width:960px;margin:34px auto!important}
+.price-main-title,.section-title{font-family:'TildaSans',Arial,sans-serif!important;font-size:32px!important;font-weight:600!important;line-height:1.25!important;color:#111!important;margin:38px 0 22px!important}
+.price-table-wrapper{border:0!important;border-top:1px solid var(--lor-rule)!important;background:#fff!important}
+.price-table th{background:var(--lor-teal)!important;font-family:'TildaSans',Arial,sans-serif!important;font-size:14px!important;font-weight:600!important;letter-spacing:.03em!important}
+.price-table td{border-bottom:1px solid var(--lor-rule)!important;font-family:'TildaSans',Arial,sans-serif!important;font-size:17px!important;font-weight:300!important;line-height:1.55!important}
+.price-value{font-weight:600!important}
+.price-discount{color:var(--lor-teal)!important;font-weight:400!important}
+.branch-card-single{background:#fff!important;border:0!important;border-top:1px solid var(--lor-rule)!important;border-radius:0!important;padding:24px 18px!important;box-shadow:none!important}
+.branch-name,.branch-address{font-family:'TildaSans',Arial,sans-serif!important;font-weight:600!important}
+.branch-address{color:var(--lor-teal)!important}
+.dropdown-panel{border:1px solid #e8e8e8!important;border-radius:5px!important;box-shadow:0 3px 12px rgba(0,0,0,.08)!important}
+.dropdown-panel a{font-family:'TildaSans',Arial,sans-serif!important;font-weight:400!important}
+.dropdown-panel svg,.dropdown-panel svg path{fill:var(--lor-teal)!important}
+@media(max-width:900px){.nav-menu a{font-size:14px!important}.header-content{min-height:62px!important}.logo-img{height:40px!important}}
+@media(max-width:768px){
+ .text-section{max-width:100%!important}
+ .main-title-center{font-size:30px!important;line-height:1.25!important;margin:16px 0 22px!important}
+ .main-title-center::before{margin-bottom:14px}.main-title-center::after{margin-top:14px}
+ .info-paragraph,.price-list-original li{font-size:16px!important;line-height:1.55!important}
+ .price-main-title,.section-title{font-size:24px!important;margin:28px 0 16px!important}
+ .price-container{margin:26px auto!important}
+ .branch-card-single{padding:18px 10px!important}
+}
+@media(max-width:420px){.logo-img{max-width:150px!important}.booking-header-cta{font-size:12px!important}.header-underline{height:3px!important}}
+
+.lor-mobile-drawer{background:#111!important;border-top:3px solid var(--lor-teal)!important;box-shadow:0 8px 18px rgba(0,0,0,.12)!important}
+.lor-mobile-drawer a{font-family:'TildaSans',Arial,sans-serif!important;color:#fff!important;font-size:15px!important;font-weight:600!important;letter-spacing:0!important}
+.lor-mobile-drawer a:hover,.lor-mobile-drawer a:focus-visible{color:#bdbdbd!important}
+.lor-mobile-drawer .circle-btn,.lor-mobile-drawer .circle-btn svg,.lor-mobile-drawer .circle-btn svg path{color:#fff!important;fill:#fff!important}
+
+/* Price area: keep the existing table and anchor, but echo the reference page's turquoise divider/title treatment. */
+.price-main-title{position:relative;color:var(--lor-teal)!important;font-size:32px!important;font-weight:600!important;margin:32px 0 22px!important}
+.price-main-title::before,.price-main-title::after{content:"";display:block;width:100%;height:2px;background:linear-gradient(90deg,transparent 0%,var(--lor-teal) 18%,var(--lor-teal) 82%,transparent 100%);opacity:.8}
+.price-main-title::before{margin:0 auto 16px}.price-main-title::after{margin:16px auto 0}
+.price-table th{background:var(--lor-teal)!important;font-weight:600!important}
+.price-table td{background:transparent!important}
+.price-table tbody tr{display:table-row!important}
+/* Restore the original filled dark-turquoise contact and route buttons. */
+.circle-btn{width:42px!important;height:42px!important;min-width:42px!important;background-color:#007a87!important;color:#fff!important;border:0!important;box-shadow:0 2px 5px rgba(0,122,135,.2)!important}
+.circle-btn svg,.circle-btn svg path{fill:#fff!important;color:#fff!important}
+.circle-btn:hover{background-color:#006570!important;color:#fff!important}
+.circle-btn:hover svg,.circle-btn:hover svg path{fill:#fff!important}
+.mobile-circle-row a.circle-btn{width:48px!important;height:48px!important;min-width:48px!important}
+/* Booking CTA uses the darker turquoise used by the original contact controls. */
+.booking-header-cta{background:#007a87!important;box-shadow:0 2px 5px rgba(0,122,135,.2)!important}
+.booking-header-cta:hover{background:#006570!important}
+
+.diseases-title{font-family:'TildaSans',Arial,sans-serif!important;font-size:20px!important;font-weight:300!important;line-height:1.55!important;color:#000!important;margin:0 0 12px!important}
+@media(max-width:600px){.diseases-title{font-size:16px!important;line-height:1.55!important}}
+
+/* Consistent branded header and responsive controls */
+.header-content{gap:16px!important}
+.header-underline{height:3px!important;background:#009999!important}
+.nav-menu a{font-family:'TildaSans',Arial,sans-serif!important;font-weight:600!important;letter-spacing:0!important;color:#009999!important;text-transform:uppercase!important}
+.circle-btn{background:#007a87!important;color:#fff!important;border:0!important;box-shadow:0 2px 5px rgba(0,122,135,.2)!important}
+.circle-btn svg,.circle-btn svg path{fill:#fff!important;color:#fff!important}
+.circle-btn:hover{background:#006570!important}
+.booking-header-cta{background:#007a87!important;box-shadow:0 2px 5px rgba(0,122,135,.2)!important}
+.booking-header-cta:hover{background:#006570!important}
+.lor-mobile-drawer{border-top:3px solid #009999!important}
+@media(max-width:900px){.header-content{gap:8px!important}.booking-header-cta{order:2;margin-left:auto;margin-right:8px!important;min-height:38px;padding:8px 11px!important;font-size:13px!important}.lor-burger-button{order:3;margin-left:0!important}}
+@media(max-width:420px){.booking-header-cta{margin-right:6px!important;padding:6px 7px!important;font-size:11px!important}.logo-block .logo-img{max-width:115px!important}.header-content{gap:8px!important}}
+
+/* Reference-style service list: black, regular text and simple alternating full-width rows. */
+body{font-weight:400!important;color:#000!important}
+.info-paragraph{font-weight:400!important;color:#000!important}
+.diseases-card{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;margin:28px 0!important;box-shadow:none!important}
+.diseases-title{font-family:'TildaSans',Arial,sans-serif!important;font-size:20px!important;font-weight:400!important;line-height:1.55!important;color:#000!important;margin:0 0 12px!important}
+.diseases-list li{font-family:'TildaSans',Arial,sans-serif!important;font-size:20px!important;font-weight:400!important;line-height:1.55!important;color:#000!important;margin:0 0 7px!important}
+.price-table{border-collapse:collapse!important;border-spacing:0!important;width:100%!important}
+.price-table thead th{background:#009999!important;color:#fff!important;text-align:left!important;font-weight:600!important}
+.price-table tbody tr{background:#fff!important;border-bottom:1px solid #009999!important}
+.price-table tbody tr:nth-child(even){background:#91cfcd!important}
+.price-table tbody td{background:transparent!important;color:#000!important;border:0!important;padding:16px 18px!important;font-size:16px!important;font-weight:400!important;line-height:1.55!important;border-radius:0!important}
+.price-table-wrapper{border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;box-shadow:none!important;overflow:hidden!important}
+.price-discount{color:#009999!important;font-weight:400!important}
+@media(max-width:700px){.diseases-title,.diseases-list li{font-size:17px!important;line-height:1.5!important}.diseases-card{margin:22px 0!important}.price-table tbody td{padding:12px 9px!important;font-size:14px!important;overflow-wrap:anywhere}.price-table th{padding:10px 9px!important;font-size:14px!important}.price-table td:last-child{white-space:normal!important}}
+
+/* Final typography pass: match lor-nsk.ru light body weight and keep discount notes consistently black. */
+body{font-weight:300!important;color:#000!important}
+.info-paragraph{font-weight:300!important;color:#000!important}
+.diseases-title,.diseases-list li{font-weight:300!important;color:#000!important}
+.price-table tbody td{font-weight:300!important;color:#000!important}
+.price-discount{color:#000!important;font-weight:400!important;font-size:14px!important;line-height:1.45!important}
+@media(max-width:700px){.price-discount{font-size:13px!important}.diseases-title,.diseases-list li{font-weight:300!important}}
+
+/* Spacious rows without horizontal scrollbars: price column stays intact; service text wraps only if needed. */
+.price-table{width:100%!important;table-layout:fixed!important}
+.price-table td:first-child,.price-table th:first-child{width:auto!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important}
+.price-table td:last-child,.price-table th:last-child{width:120px!important;min-width:120px!important;white-space:nowrap!important;text-align:right!important}
+.price-table-wrapper{overflow-x:visible!important;max-width:100%!important}
+@media(max-width:700px){.price-table td:first-child,.price-table th:first-child{width:auto!important}.price-table td:last-child,.price-table th:last-child{width:100px!important;min-width:100px!important}.price-table tbody td{padding-left:10px!important;padding-right:10px!important}.price-table-wrapper{overflow-x:visible!important}}
+
+/* On phones, short prepaid-course discount notes can use the full row width below the service name. */
+@media(max-width:700px){
+ .price-table tbody td{font-size:16px!important;line-height:1.5!important}
+ .price-table .price-discount{display:block!important;width:calc(100% + 120px)!important;max-width:calc(100vw - 50px)!important;font-size:12px!important;line-height:1.45!important;margin-top:5px!important}
+ .price-table .price-discount-one-line{white-space:nowrap!important}
+}
+
+/* User-requested corrections only: white mobile menu and reference-sized logo. */
+.lor-mobile-drawer{background:#fff!important;color:#000!important}
+.lor-mobile-drawer a{color:#009999!important}
+.lor-mobile-drawer a:hover,.lor-mobile-drawer a:focus-visible{color:#007a87!important}
+.logo-img{width:auto!important;height:auto!important;max-width:220px!important;max-height:48px!important}
+@media(max-width:900px){.logo-img{max-width:160px!important;max-height:44px!important;height:auto!important}}
+@media(max-width:420px){.logo-img,.logo-block .logo-img{max-width:160px!important;max-height:44px!important;height:auto!important}}
+
+/* Requested only: remove the thick bar under the header and match the reference logo's 200px width. */
+.header-underline{display:none!important;height:0!important;background:transparent!important}
+.logo-img,.logo-block .logo-img{width:200px!important;min-width:200px!important;max-width:200px!important;height:auto!important;max-height:none!important;flex:0 0 200px!important}
+
+/* Mobile menu stays in normal document flow, so it pushes page content down instead of covering it. */
+@media(max-width:900px){.lor-mobile-drawer{position:static!important;top:auto!important;left:auto!important;width:100%!important;box-sizing:border-box!important}}
+
+/* Match reference: no horizontal border at the mobile menu edge. */
+.lor-mobile-drawer{border-top:0!important}
+
+/* Requested only: remove the mobile drawer's bottom edge/shadow. */
+.lor-mobile-drawer{box-shadow:none!important;border-bottom:0!important}
+
+/* Footer requested by the user: reference-style teal field sized by its contents. */
+.site-footer{background:#009999!important;color:#fff!important;text-align:center!important;padding:28px 20px 24px!important;font-family:'TildaSans',Arial,sans-serif!important;box-sizing:border-box!important}
+.site-footer-content{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.site-footer-logo{display:block;width:100%;max-width:300px;height:auto;object-fit:contain;margin:0 auto 24px}
+.site-footer-phone-label{margin:0 0 2px!important;color:#fff!important;font-size:16px!important;line-height:1.4!important;font-weight:300!important}
+.site-footer-phone{display:inline-block;color:#fff!important;text-decoration:none!important;font-size:20px!important;font-weight:700!important;line-height:1.4!important}
+.site-footer-actions{display:flex;justify-content:center;align-items:center;gap:12px;margin:24px 0 0}
+.site-footer-action{width:48px;height:48px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#fff;color:#009999!important;text-decoration:none!important;flex:0 0 48px}
+.site-footer-action svg{width:24px;height:24px;display:block;fill:#009999}
+.site-footer-copy{margin:24px 0 0!important;color:#fff!important;font-size:13px!important;line-height:1.5!important}
+@media(max-width:480px){.site-footer{padding:24px 16px 22px!important}.site-footer-logo{max-width:min(300px,80vw);margin-bottom:20px}.site-footer-actions{margin-top:20px}.site-footer-copy{margin-top:22px!important}}
+</style>
+
+</head>
+<body>
+        <header>
+        <div class="header-inner">
+            <div class="header-content">
+                <div class="logo-block">
+                    <a href="index.html" title="Доктор ЛОР">
+                        <img src="logo.png" alt="Доктор ЛОР" class="logo-img">
+                    </a>
+                </div>
+
+                <button class="lor-burger-button" id="lorMenuBtn" aria-label="Меню">☰</button>
+
+                <ul class="nav-menu">
+                    <li><a href="#prices">Услуги и цены</a></li>
+                    <li><a href="#address">Адрес</a></li>
+                    <li><a href="diseases.html">О болезнях</a></li>
+                    <li><a href="lk.html">Личный кабинет</a></li>
+                </ul>
+
+                <div class="header-actions">
+                    <details>
+                        <summary class="circle-btn" title="Связаться">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path fill="#ffffff" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        </summary>
+                        <div class="dropdown-panel" style="left: auto; right: 0;">
+                            <a href="tel:+77072131010">
+                                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#007a87;flex-shrink:0;"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/></svg>
+                                Позвонить в клинику
+                            </a>
+                            <a href="https://wa.me/77072131010" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#007a87;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                Написать в WhatsApp
+                            </a>
+                        </div>
+                    </details>
+                    <details>
+                        <summary class="circle-btn" title="Маршрут">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path fill="#ffffff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        </summary>
+                        <div class="dropdown-panel" style="right: 0;">
+                            <a href="https://2gis.kz/astana/directions/points/%7C71.428597%2C51.11335%3B70000001089287921" target="_blank" rel="noopener">
+                                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#007a87;flex-shrink:0;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                                Маршрут 2ГИС
+                            </a>
+                        </div>
+                    </details>
+                </div>
+                <a class="booking-header-cta" href="https://zapis-lor.vercel.app/">Записаться онлайн</a>
+            </div>
+            <div class="header-underline"></div>
+        </div>
+
+        <div class="lor-mobile-drawer" id="lorMobileMenu">
+            <a href="index.html#prices">Услуги и цены</a>
+            <a href="index.html#address">Адрес</a>
+            <a href="diseases.html">О болезнях</a>
+            <a href="lk.html">Личный кабинет</a>
+            <a href="tel:+77072131010" class="mobile-phone">+7 (707) 213-10-10</a>
+            <div class="mobile-circle-row">
+                <a class="circle-btn" href="tel:+77072131010" title="Позвонить"><svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path fill="#ffffff" d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1A11.36 11.36 0 018.7 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.62c0-.55-.45-1-1-1z"/></svg></a>
+                <a class="circle-btn" href="https://wa.me/77072131010" target="_blank" rel="noopener" title="WhatsApp"><svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path fill="#ffffff" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.334.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.455 5.71 1.456h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+                <a class="circle-btn" href="https://2gis.kz/astana/directions/points/%7C71.428597%2C51.11335%3B70000001089287921" target="_blank" rel="noopener" title="2ГИС"><svg viewBox="0 0 24 24" width="18" height="18" fill="#ffffff"><path fill="#ffffff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></a>
+                
+            </div>
+        </div>
+    </header>
+
+
+            <div class="text-section">
+        <h1 class="main-title-center">Клиника Доктор ЛОР</h1>
+
+        <p class="info-paragraph">Данный сайт посвящен официальному представительству сети «Доктор ЛОР» в городе Астане. Основанная в 1996 году в г. Новосибирске, на сегодняшний день сеть включает в себя четыре кабинета специализированной амбулаторной помощи, один из которых открыт для жителей и гостей столицы Казахстана. <strong>Приём ведётся без обязательной предварительной записи. Если Вам важно прийти к определённому времени, запишитесь онлайн.</strong></p>
+
+        <p class="info-paragraph">Цены на услуги в сети Доктор ЛОР значительно ниже, чем у большинства частных клиник нашего профиля. Проиллюстрировать это можно выдержкой из прейскуранта:</p>
+
+        <ul class="price-list-original">
+            <li>Первичная консультация — 4000 ₸</li>
+            <li>Повторная консультация по поводу данного случая заболевания — 3000 ₸</li>
+            <li>Лечение на аппарате «Тонзиллор» (фонофорез включён в стоимость) — 4500 ₸ (1 сеанс)</li>
+            <li>Промывание придаточных пазух носа («кукушка») — 3000 ₸ (1 сеанс)</li>
+            <li>Фонофорез — 2000 ₸ (1 сеанс)</li>
+        </ul>
+
+        <p class="info-paragraph">Все остальные цены примерно такого же порядка, с минимальной рентабельностью. В стоимость процедур включены практически все медикаментозные препараты (за исключением редко используемых и дорогостоящих).</p>
+        <p class="info-paragraph">Несмотря на подорожание медикаментов, расходных материалов, оборудования, инструментария, мы удерживаем цены на приемлемом для большинства населения уровне.</p>
+
+        <div class="diseases-card">
+            <p class="diseases-title">Мы осуществляем прием и лечение пациентов, страдающих следующими заболеваниями:</p>
+            <ul class="diseases-list">
+                <li>Нарушение носового дыхания любой этиологии (за исключением выраженного искривления перегородки носа), гаймориты, риниты;</li>
+                <li>Заболевания лимфаденоидного глоточного кольца у детей, аденоидиты;</li>
+                <li>Тонзиллит, фарингит;</li>
+                <li>Негнойные и гнойные заболевания среднего уха.</li>
+            </ul>
+        </div>
+
+        <!-- Price list -->
+        <div class="price-container">
+            <a id="prices" style="display:block; position:absolute; top:-90px; visibility:hidden;"></a>
+            <h2 class="price-main-title">Прайс-лист на услуги</h2>
+
+            <div class="price-table-wrapper">
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Наименование услуги</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Первичный приём</td>
+                            <td class="price-value">4 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Повторный приём</td>
+                            <td class="price-value">3 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Промывание носа («кукушка»)
+                                <span class="price-discount price-discount-one-line">* при единоразовой оплате 10 процедур — 20 000 ₸</span>
+                            </td>
+                            <td class="price-value">3 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация/Фонофорез + промывание носа
+                                <span class="price-discount price-discount-one-line">* при единоразовой оплате 10 процедур — 24 000 ₸</span>
+                            </td>
+                            <td class="price-value">3 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация + промывание носа + фонофорез эндоназально
+                                <span class="price-discount price-discount-one-line">* при единоразовой оплате 10 процедур — 28 000 ₸</span>
+                            </td>
+                            <td class="price-value">4 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Анемизация + промывание носа + фонофорез эндоназально и эндаурально / на заднюю стенку глотки
+                                <span class="price-discount price-discount-one-line">* при единоразовой оплате 10 процедур — 32 000 ₸</span>
+                            </td>
+                            <td class="price-value">4 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Тонзиллор + фонофорез
+                                <span class="price-discount price-discount-one-line">* при единоразовой оплате 10 процедур — 35 000 ₸</span>
+                                <span class="price-discount">* при необходимости продления курса до 15 процедур — доплата 10 000 ₸ за 5 процедур</span>
+                                <span class="price-discount">* при необходимости бесплатно проводится инструментальное промывание / вскрытие гнойных кист миндалин / рассечение спаек</span>
+                            </td>
+                            <td class="price-value">4 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Удаление серной пробки под видеоконтролем (одно ухо)</td>
+                            <td class="price-value">3 500 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Туалет уха / введение лекарств на турунде</td>
+                            <td class="price-value">2 000 ₸</td>
+                        </tr>
+                        <tr>
+                            <td>Видеоэндоскопия уха</td>
+                            <td class="price-value">2 000 ₸</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="address">Наш адрес в Астане</h2>
+        <div class="branch-card-single">
+            <div class="branch-icon">📍</div>
+            <h3 class="branch-name">Кабинет в Астане</h3>
+
+            <div class="route-buttons">
+                <a href="https://2gis.kz/astana/firm/70000001089287921?m=71.443405%2C51.129815%2F11" target="_blank" rel="noopener" class="btn-route">Страница клиники в 2ГИС</a>
+                <a href="https://2gis.kz/astana/directions/points/%7C71.428597%2C51.11335%3B70000001089287921"
+                   target="_blank" rel="noopener" class="btn-route">
+                    Маршрут в 2ГИС
+                </a>
+            </div>
+
+            <div class="branch-hours">
+                <p style="margin-bottom: 6px;"><span class="bold-text">График работы:</span> <strong>Предварительная запись не обязательна.</strong></p>
+                <p><span class="bold-text">Для взрослых и детей</span></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer"><div class="site-footer-content">
+ <img class="site-footer-logo" src="footer-logo-white.png" alt="Доктор ЛОР">
+ <p class="site-footer-phone-label">Телефон</p>
+ <a class="site-footer-phone" href="tel:+77072131010">+7 (707) 213-10-10</a>
+ <div class="site-footer-actions">
+  <a class="site-footer-action" href="tel:+77072131010" aria-label="Позвонить"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.11.36 2.3.56 3.53.56a1 1 0 011 1V20a1 1 0 01-1 1C10.61 21 3 13.39 3 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.23.2 2.42.56 3.53a1 1 0 01-.25 1.01l-2.19 2.25z"/></svg></a>
+  <a class="site-footer-action" href="https://wa.me/77072131010" target="_blank" rel="noopener" aria-label="Написать в WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48A11.81 11.81 0 0012.04 0C5.42 0 .04 5.38.04 12c0 2.11.55 4.17 1.6 5.99L0 24l6.18-1.62A11.94 11.94 0 0012.03 24h.01c6.62 0 12-5.38 12-12 0-3.2-1.25-6.22-3.52-8.52zM12.04 22a9.94 9.94 0 01-5.07-1.39l-.36-.21-3.67.96.98-3.58-.24-.37A9.92 9.92 0 012.04 12c0-5.52 4.49-10 10-10 2.67 0 5.18 1.04 7.07 2.93A9.94 9.94 0 0122.04 12c0 5.51-4.49 10-10 10zm5.49-7.49c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.41-1.49-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37s-1.04 1.02-1.04 2.49 1.07 2.89 1.22 3.09c.15.2 2.1 3.21 5.09 4.5.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35z"/></svg></a>
+ </div>
+ <p>&copy; 2026 Доктор ЛОР — Астана. Все права защищены.</p>
+</div></footer>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const menuBtn = document.getElementById('lorMenuBtn');
+    const mobileMenu = document.getElementById('lorMobileMenu');
+
+    if (menuBtn && mobileMenu) {
+        // Открытие / закрытие по кнопке
+        menuBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('is-open');
+            menuBtn.innerHTML = mobileMenu.classList.contains('is-open') ? '✕' : '☰';
+        });
+
+        // Закрытие при клике вне меню
+        document.addEventListener('click', function (e) {
+            if (!mobileMenu.contains(e.target) && e.target !== menuBtn) {
+                mobileMenu.classList.remove('is-open');
+                menuBtn.innerHTML = '☰';
+            }
+        });
+
+        // Закрытие при клике на любую ссылку внутри меню
+        const menuLinks = mobileMenu.querySelectorAll('a');
+        menuLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('is-open');
+                menuBtn.innerHTML = '☰';
+            });
+        });
+    }
+});
+</script>
+
+<script id="lor-outside-details-close">
+(function(){
+  document.addEventListener('click', function(e){
+    document.querySelectorAll('header details[open]').forEach(function(d){
+      if(!d.contains(e.target)){ d.open=false; }
+    });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') document.querySelectorAll('header details[open]').forEach(function(d){d.open=false;});
+  });
+})();
+</script>
+
+</body>
+                    </html>
