@@ -3,7 +3,7 @@
   "short_name": "ЛК врача",
   "description": "Личный кабинет врача ЛОР: онлайн-записи, уведомления, напоминания.",
   "lang": "ru",
-  "start_url": "/wwwdoctor.html",
+  "start_url": "/vrach.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",

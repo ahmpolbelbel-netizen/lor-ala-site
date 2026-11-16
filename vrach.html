@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Установка приложения «ЛК врача»</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#007a87">
+<link rel="manifest" href="/manifest-doctor.webmanifest">
+<style>
+ body{margin:0;background:#f4f8f8;font:16px/1.5 Tahoma,Arial,sans-serif;color:#123;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+ .card{max-width:420px;width:100%;background:#fff;border:1px solid #91cfcd;border-radius:10px;padding:22px;text-align:center;box-shadow:0 2px 10px rgba(0,60,60,.08)}
+ img{width:72px;height:72px;border-radius:14px}
+ h1{font-size:19px;margin:12px 0 6px}
+ p{margin:8px 0;font-size:14px;color:#456}
+ .btn{display:block;width:100%;box-sizing:border-box;margin:14px 0 6px;padding:13px;background:#007a87;color:#fff;border:0;border-radius:8px;font:bold 16px Tahoma,Arial,sans-serif;text-decoration:none}
+ .btn.gray{background:#e8f4f3;color:#00555e}
+ b.hl{color:#00555e}
+</style>
+</head>
+<body>
+<div class="card">
+ <img src="/icon-192.png" alt="ЛОР">
+ <h1>ЛК врача</h1>
+ <p id="vrach-note">Это служебная страница установки приложения кабинета врача.</p>
+ <p>Чтобы поставить приложение: откройте меню браузера <b class="hl">⋮</b> и выберите <b class="hl">«Установить приложение»</b>. На iPhone: <b class="hl">«Поделиться» → «На экран „Домой”»</b>.</p>
+ <a class="btn" href="/wwwdoctor.html">Открыть кабинет врача</a>
+ <a class="btn gray" href="/lk_with_online_booking.html">Страница записи пациентов</a>
+</div>
+<script>
+ /* в установленном приложении (standalone) сразу уходим в кабинет */
+ try {
+  if (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true) {
+    document.getElementById('vrach-note').textContent = 'Открываю кабинет врача…';
+    location.replace('/wwwdoctor.html');
+  }
+ } catch (e) {}
+</script>
+</body>
+</html>
