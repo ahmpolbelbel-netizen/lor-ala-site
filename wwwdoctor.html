@@ -3104,6 +3104,14 @@ self.addEventListener('notificationclick', event => {
         }
         function doctorInstallInit() {
             doctorInstallRender();
+            if (/[?&]nosw=1/.test(location.search)) {
+                try {
+                    navigator.serviceWorker.getRegistrations().then(function (regs) {
+                        regs.forEach(function (r) { try { r.unregister(); } catch (e) {} });
+                    });
+                } catch (e) {}
+                return;
+            }
             if (lorDoctorStandalone()) return;
             if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
             try { navigator.serviceWorker.register('/doctor-sw.js', { scope: '/wwwdoctor.html' }).catch(function () {}); } catch (e) {}
