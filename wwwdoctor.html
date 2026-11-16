@@ -3063,17 +3063,41 @@ self.addEventListener('notificationclick', event => {
             if (lorDoctorStandalone()) { row.style.display = 'none'; return; }
             row.style.display = 'flex';
             var st = document.getElementById('doctor-install-status');
-            if (st && !st.textContent && doctorInstallEvt) st.textContent = 'Браузер готов поставить приложение на телефон.';
+            if (st && doctorInstallEvt && (!st.textContent || st.textContent.indexOf('готовится') !== -1)) st.textContent = 'Браузер готов поставить приложение на телефон.';
+        }
+        var doctorInstallTried = false;
+        function lorDoctorWebview() {
+            try { return /; wv\)|Instagram|FBAN|FBAV|Telegram|WhatsApp/i.test(navigator.userAgent); } catch (e) { return false; }
         }
         function doctorInstallClick() {
             var st = document.getElementById('doctor-install-status');
+            if (lorDoctorStandalone()) { if (st) st.textContent = 'Кабинет уже открыт как приложение.'; return; }
             if (doctorInstallEvt) {
                 var evt = doctorInstallEvt; doctorInstallEvt = null;
-                try { evt.prompt(); } catch (e) {}
-                try { evt.userChoice.then(function (r) {
-                    if (!st) return;
-                    st.textContent = (r && r.outcome === 'accepted') ? 'Устанавливаю…' : 'Установка отменена; можно повторить позже.';
-                }); } catch (e) {}
+                var done = false;
+                try {
+                    evt.prompt();
+                    evt.userChoice.then(function (r) {
+                        done = true;
+                        if (!st) return;
+                        st.textContent = (r && r.outcome === 'accepted') ? 'Устанавливаю…' : 'Установка отменена; можно повторить позже.';
+                    }).catch(function () {
+                        done = true;
+                        if (st) st.textContent = 'Браузер не дал установить приложение. Повторите кнопку или поставьте через меню браузера.';
+                    });
+                } catch (e) {}
+                setTimeout(function () {
+                    if (!done && st && !st.textContent) st.textContent = 'Если окно установки не появилось — поставьте через меню браузера (⋮).';
+                }, 4000);
+                return;
+            }
+            if (lorDoctorWebview()) {
+                if (st) st.textContent = 'Откройте кабинет в обычном браузере (Chrome или Safari): во встроенном просмотрщике установка недоступна.';
+                return;
+            }
+            if (!doctorInstallTried) {
+                doctorInstallTried = true;
+                if (st) st.textContent = 'Браузер ещё готовится: нажмите кнопку ещё раз через 10–20 секунд.';
                 return;
             }
             var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
