@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /wwwdoctor.html
+Disallow: /lk.html
+Disallow: /go.html
+
+Sitemap: https://lor-astana.vercel.app/sitemap.xml

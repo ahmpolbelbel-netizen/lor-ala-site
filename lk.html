@@ -6,6 +6,30 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Узнаваемость: иконка сайта, карточка в мессенджерах, установка на главный экран -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Доктор ЛОР">
+    <meta name="application-name" content="Доктор ЛОР">
+    <meta name="msapplication-TileColor" content="#007a87">
+    <meta name="theme-color" content="#007a87">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="robots" content="noindex, nofollow">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Доктор ЛОР — Астана">
+    <meta property="og:title" content="Личный кабинет пациента — Доктор ЛОР, Астана">
+    <meta property="og:description" content="Записи и документы пациента ЛОР-кабинета «Доктор ЛОР» (Астана).">
+    <meta property="og:image" content="https://lor-astana.vercel.app/icon-512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Доктор ЛОР — Астана">
+    <meta property="og:locale" content="ru_RU">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Личный кабинет пациента — Доктор ЛОР, Астана">
+    <meta name="twitter:description" content="Записи и документы пациента ЛОР-кабинета «Доктор ЛОР» (Астана).">
+    <meta name="twitter:image" content="https://lor-astana.vercel.app/icon-512.png">
     <title>Личный кабинет пациента | Доктор ЛОР</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1662,6 +1686,9 @@ header{background:#fff!important;position:sticky!important;top:0!important;z-ind
 
 /* Requested: on mobile, the entire header scrolls with the page instead of sticking over content. */
 @media(max-width:900px){header{position:static!important;top:auto!important}}
+
+/* Requested: mobile header in LK identical to the other pages (no desktop menu / round buttons in the header row). */
+@media(max-width:900px){.nav-menu{display:none!important}.header-actions{display:none!important}.header-inner{padding:0 16px!important}.logo-block{align-items:center!important}.lor-burger-button{color:#009999!important}.booking-header-cta{font-weight:600!important;border-radius:5px!important}header{line-height:1.55!important}.mobile-circle-row a.circle-btn{width:48px!important;height:48px!important;min-width:48px!important}}
 </style>
 </head>
 <body>
@@ -2870,18 +2897,7 @@ header{background:#fff!important;position:sticky!important;top:0!important;z-ind
             });
         })();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d783901d5eeb49',t:'MTc4NzEyNTI2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dfdbf12b364af9',t:'MTc4NzIxMjc3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>
-(function(){
-  document.querySelectorAll('a.booking-header-cta').forEach(function(a){
-    a.addEventListener('click',function(e){
-      e.preventDefault();
-      var w=window.open(a.href,'zapisLorBooking','popup=yes,width=720,height=820,resizable=yes,scrollbars=yes');
-      if(!w) window.location.href=a.href;
-      else { try{w.focus()}catch(_){} }
-    });
-  });
-})();
-</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d783901d5eeb49',t:'MTc4NzEyNTI2NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2dfdbf12b364af9',t:'MTc4NzIxMjc3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 <script id="lor-outside-details-close">document.addEventListener('click',function(e){document.querySelectorAll('header details[open]').forEach(function(d){if(!d.contains(e.target))d.open=false})});document.addEventListener('keydown',function(e){if(e.key==='Escape')document.querySelectorAll('header details[open]').forEach(function(d){d.open=false})});</script>
 </body>
 </html>

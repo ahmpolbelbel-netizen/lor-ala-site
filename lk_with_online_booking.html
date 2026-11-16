@@ -5,7 +5,31 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Онлайн-запись | Доктор ЛОР — Астана</title>
+    <!-- Узнаваемость: иконка сайта, карточка в мессенджерах, установка на главный экран -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Доктор ЛОР">
+    <meta name="application-name" content="Доктор ЛОР">
+    <meta name="msapplication-TileColor" content="#007a87">
+    <meta name="theme-color" content="#007a87">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="canonical" href="https://lor-astana.vercel.app/lk_with_online_booking.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Доктор ЛОР — Астана">
+    <meta property="og:title" content="Онлайн-запись — Доктор ЛОР, Астана">
+    <meta property="og:description" content="Выберите дату и время приёма в ЛОР-кабинет и оставьте телефон — запись подтвердится автоматически.">
+    <meta property="og:image" content="https://lor-astana.vercel.app/icon-512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Доктор ЛОР — Астана">
+    <meta property="og:locale" content="ru_RU">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Онлайн-запись — Доктор ЛОР, Астана">
+    <meta name="twitter:description" content="Выберите дату и время приёма в ЛОР-кабинет и оставьте телефон — запись подтвердится автоматически.">
+    <meta name="twitter:image" content="https://lor-astana.vercel.app/icon-512.png">
+    <title>Запись ЛОР</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -1027,6 +1051,11 @@ const SUPABASE_KEY = RAW_KEY.trim();
     <button id="lob-patient-push-toggle" type="button">Включить напоминания</button>
     <div id="lob-patient-push-status" role="status" aria-live="polite"></div>
    </section>
+   <section id="lob-install-hint" aria-label="Установка на главный экран" style="display:none;margin-top:14px;padding:12px;background:#f2fbfa;border:1px solid #91cfcd;gap:10px;align-items:center;">
+    <img src="/icon-96.png" alt="" width="40" height="40" style="flex:0 0 auto;border-radius:8px;">
+    <div id="lob-install-hint-text" style="flex:1 1 auto;min-width:0;font-size:14px;line-height:1.4;"></div>
+    <div style="flex:0 0 auto;display:flex;flex-direction:column;gap:6px;"><button id="lob-install-hint-add" type="button" hidden>Добавить</button><button id="lob-install-hint-close" type="button">Позже</button></div>
+   </section>
   </div>
  </div>
  <div id="lob-duplicate" hidden role="dialog" aria-modal="true" aria-labelledby="lob-duplicate-title">
@@ -1208,6 +1237,50 @@ const SUPABASE_KEY = RAW_KEY.trim();
   finally{patientPushBusy=false;patientPushPaint();}
  }
  patientPushButton.addEventListener('click',patientPushToggle);
+ let lorInstallDeferred = null;
+ window.addEventListener('beforeinstallprompt', function (e) { try { e.preventDefault(); } catch (_) {} lorInstallDeferred = e; });
+ window.addEventListener('appinstalled', function () { lorInstallDeferred = null; var p = document.getElementById('lob-install-hint'); if (p) p.style.display = 'none'; });
+ function lorInstallStandalone() {
+  try { if (window.matchMedia && matchMedia('(display-mode: standalone)').matches) return true; } catch (_) {}
+  try { if (navigator.standalone) return true; } catch (_) {}
+  return false;
+ }
+ function lorShowInstallHint() {
+  var panel = document.getElementById('lob-install-hint');
+  if (!panel || lorInstallStandalone()) return;
+  try { if (localStorage.getItem('lor-install-hint-dismissed') === '1') return; } catch (_) {}
+  var text = document.getElementById('lob-install-hint-text');
+  var add = document.getElementById('lob-install-hint-add');
+  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (lorInstallDeferred) {
+   add.hidden = false;
+   text.textContent = 'Добавьте «Доктор ЛОР» на главный экран: записи, напоминания и связь с клиникой — всегда под рукой.';
+  } else if (ios) {
+   add.hidden = true;
+   text.textContent = 'Чтобы записи были под рукой: нажмите «Поделиться» и выберите «На экран „Домой“» — сайт встанет на главный экран как приложение.';
+  } else {
+   add.hidden = true;
+   text.textContent = 'Чтобы записи были под рукой: меню браузера (⋮) → «Установить приложение» или «Добавить на главный экран».';
+  }
+  panel.style.display = 'flex';
+ }
+ try { window.lorShowInstallHint = lorShowInstallHint; } catch (_) {}
+ (function () {
+  var add = document.getElementById('lob-install-hint-add');
+  if (add) add.addEventListener('click', async function () {
+   var p = lorInstallDeferred; if (!p) return;
+   add.disabled = true;
+   try { p.prompt(); await p.userChoice; } catch (_) {}
+   lorInstallDeferred = null; add.hidden = true;
+   var t = document.getElementById('lob-install-hint-text');
+   if (t) t.textContent = 'Готово: ищите «Доктор ЛОР» на главном экране. Если значок не появился — меню браузера (⋮) → «Установить приложение».';
+  });
+  var cl = document.getElementById('lob-install-hint-close');
+  if (cl) cl.addEventListener('click', function () {
+   var p = document.getElementById('lob-install-hint'); if (p) p.style.display = 'none';
+   try { localStorage.setItem('lor-install-hint-dismissed', '1'); } catch (_) {}
+  });
+ })();
  async function finalizeBooking(when,bookingId,pushSubscription,pushMessage){
   bookingSaved=true;pendingBooking.startsAt=when||pendingBooking.startsAt;duplicateBox.hidden=true;confirmBox.hidden=false;confirmBox.classList.add('lob-has-patient-push');
   patientPushBookingId=String(bookingId||pendingBooking.bookingId||'');patientPushPhone=String(pendingBooking.phone||'');patientPushBox.hidden=false;
@@ -1219,7 +1292,7 @@ const SUPABASE_KEY = RAW_KEY.trim();
   patientPushPaint();
   confirmTitle.querySelector('span').textContent='Вы успешно записаны';confirmIntro.textContent='Запись подтверждена. Сохраните скриншот записи или добавьте её в Google Календарь.';
   confirmSummary.replaceChildren();confirmSummary.classList.add('lob-saved-ticket');confirmSummary.appendChild(makeSavedTicket(pendingBooking.startsAt,pendingBooking.phone));
-  confirmEdit.hidden=true;confirmCalendar.hidden=false;confirmScreenshot.hidden=false;confirmIcs.hidden=false;saveStatus.textContent='';confirmOk.disabled=false;confirmOk.hidden=true;setBookingStatus('Запись сохранена.','Запись сохранена',false);loadSlots({keepStatus:true});confirmClose.focus();
+  confirmEdit.hidden=true;confirmCalendar.hidden=false;confirmScreenshot.hidden=false;confirmIcs.hidden=false;saveStatus.textContent='';confirmOk.disabled=false;confirmOk.hidden=true;setBookingStatus('Запись сохранена.','Запись сохранена',false);loadSlots({keepStatus:true});confirmClose.focus();try{lorShowInstallHint();}catch(e){}
  }
  function showDuplicate(out){
   const list=Array.isArray(out.existing)?out.existing:[];const times=list.map(x=>fmt(x.starts_at)).filter(Boolean);const t=times.join(', ')||'время не определено';
@@ -1273,6 +1346,6 @@ const SUPABASE_KEY = RAW_KEY.trim();
 <script>
 document.addEventListener('DOMContentLoaded',function(){const b=document.getElementById('lorMenuBtn'),m=document.getElementById('lorMobileMenu');if(!b||!m)return;b.addEventListener('click',function(e){e.stopPropagation();m.classList.toggle('is-open');b.innerHTML=m.classList.contains('is-open')?'✕':'☰'});document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b){m.classList.remove('is-open');b.innerHTML='☰'}});m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){m.classList.remove('is-open');b.innerHTML='☰'})})});
 </script>
-<div id="lob-push-success" hidden style="position:fixed;inset:0;z-index:2147483600;box-sizing:border-box;padding:24px;display:none;place-items:center;background:#c0c0c0;font:16px Tahoma,'MS Sans Serif',Arial,sans-serif;color:#111"><div style="width:min(520px,92vw);box-sizing:border-box;background:#c0c0c0;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #404040;border-bottom:3px solid #404040;box-shadow:3px 3px 0 #000"><div style="padding:12px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-size:20px;font-weight:bold">Онлайн-запись ЛОР</div><div style="padding:24px;text-align:center"><div style="font-size:26px;font-weight:bold;color:#000080;margin-bottom:12px">Вы успешно записаны</div><div>Запись подтверждена. Ждём вас на приёме.</div><a href="https://lor-ala.vercel.app/lk_with_online_booking.html" style="display:block;margin-top:20px;color:#000080">Открыть онлайн-запись</a></div></div></div>
+<div id="lob-push-success" hidden style="position:fixed;inset:0;z-index:2147483600;box-sizing:border-box;padding:24px;display:none;place-items:center;background:#c0c0c0;font:16px Tahoma,'MS Sans Serif',Arial,sans-serif;color:#111"><div style="width:min(520px,92vw);box-sizing:border-box;background:#c0c0c0;border-top:3px solid #fff;border-left:3px solid #fff;border-right:3px solid #404040;border-bottom:3px solid #404040;box-shadow:3px 3px 0 #000"><div style="padding:12px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-size:20px;font-weight:bold">Онлайн-запись ЛОР</div><div style="padding:24px;text-align:center"><div style="font-size:26px;font-weight:bold;color:#000080;margin-bottom:12px">Вы успешно записаны</div><div>Запись подтверждена. Ждём вас на приёме.</div><a href="https://lor-astana.vercel.app/lk_with_online_booking.html" style="display:block;margin-top:20px;color:#000080">Открыть онлайн-запись</a></div></div></div>
 </body>
 </html>

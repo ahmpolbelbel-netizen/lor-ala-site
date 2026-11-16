@@ -12,13 +12,15 @@ self.addEventListener('push', event => {
     ? data.body.trim()
     : (isPatientReminder ? 'Напоминаем о вашей записи.' : 'Проверьте список онлайн-записей.');
   const fallbackUrl = isPatientReminder
-    ? 'https://lor-ala.vercel.app/lk_with_online_booking.html?push=booking-confirmed'
-    : 'https://lor-ala.vercel.app/wwwdoctor.html';
-  const url = typeof data.url === 'string' && data.url.startsWith('https://lor-ala.vercel.app/')
+    ? 'https://lor-astana.vercel.app/lk_with_online_booking.html?push=booking-confirmed'
+    : 'https://lor-astana.vercel.app/wwwdoctor.html';
+  const url = typeof data.url === 'string' && data.url.startsWith('https://lor-astana.vercel.app/')
     ? data.url
     : fallbackUrl;
   event.waitUntil(self.registration.showNotification(title, {
     body,
+    icon: '/icon-192.png',
+    badge: '/favicon-32.png',
     tag: String(data && data.tag || (isPatientReminder ? 'lor-patient-reminder' : 'lor-online-booking')),
     renotify: false,
     data: { url }
@@ -27,10 +29,10 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil((async () => {
-    const url = event.notification.data && event.notification.data.url || 'https://lor-ala.vercel.app/wwwdoctor.html';
+    const url = event.notification.data && event.notification.data.url || 'https://lor-astana.vercel.app/wwwdoctor.html';
     const clientsList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     for (const client of clientsList) {
-      if (client.url.startsWith('https://lor-ala.vercel.app/')) {
+      if (client.url.startsWith('https://lor-astana.vercel.app/')) {
         await client.focus();
         if ('navigate' in client && client.url !== url) await client.navigate(url);
         return;

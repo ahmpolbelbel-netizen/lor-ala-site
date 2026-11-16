@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Доктор ЛОР — Астана</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#007a87">
+</head>
+<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;font:16px Tahoma,Arial,sans-serif;color:#111;text-align:center;padding:24px;box-sizing:border-box;">
+<div>
+    <img src="/icon-192.png" alt="Доктор ЛОР" width="72" height="72" style="border-radius:14px;">
+    <div id="go-msg" style="margin:14px 0 6px;font-weight:bold;">Секунду…</div>
+    <div style="font-size:14px;color:#555;">Если ничего не произошло — используйте ссылки ниже.</div>
+    <div style="margin-top:14px;line-height:2;">
+        <a href="tel:+77072131010" style="color:#007a87;">Позвонить</a> ·
+        <a href="https://wa.me/77072131010" style="color:#007a87;">WhatsApp</a> ·
+        <a href="https://2gis.kz/astana/firm/70000001089287921?m=71.443405%2C51.129815%2F11" style="color:#007a87;">Адрес в 2ГИС</a> ·
+        <a href="/lk_with_online_booking.html" style="color:#007a87;">Записаться</a>
+    </div>
+</div>
+<script>
+(function () {
+    var a = (new URLSearchParams(location.search).get('a') || '').toLowerCase();
+    var targets = { call: 'tel:+77072131010', wa: 'https://wa.me/77072131010', map: 'https://2gis.kz/astana/firm/70000001089287921?m=71.443405%2C51.129815%2F11' };
+    var msgs = { call: 'Открываю телефон…', wa: 'Открываю WhatsApp…', map: 'Открываю адрес в 2ГИС…' };
+    var t = targets[a] || '/lk_with_online_booking.html';
+    document.getElementById('go-msg').textContent = msgs[a] || 'Открываю запись…';
+    setTimeout(function () { location.replace(t); }, 150);
+})();
+</script>
+</body>
+</html>
