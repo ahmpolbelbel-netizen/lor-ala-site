@@ -24,6 +24,29 @@ self.addEventListener('notificationclick', event => {
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Узнаваемость: иконка сайта, карточка в мессенджерах, установка на главный экран -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ЛК врача">
+    <meta name="application-name" content="ЛК врача">
+    <meta name="msapplication-TileColor" content="#007a87">
+    <meta name="theme-color" content="#007a87">
+    <link rel="manifest" href="/manifest-doctor.webmanifest">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Доктор ЛОР — Астана">
+    <meta property="og:title" content="Кабинет врача — Доктор ЛОР">
+    <meta property="og:description" content="Рабочий экран врача ЛОР-кабинета (Астана).">
+    <meta property="og:image" content="https://lor-astana.vercel.app/icon-512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Доктор ЛОР — Астана">
+    <meta property="og:locale" content="ru_RU">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Кабинет врача — Доктор ЛОР">
+    <meta name="twitter:description" content="Рабочий экран врача ЛОР-кабинета (Астана).">
+    <meta name="twitter:image" content="https://lor-astana.vercel.app/icon-512.png">
     <title>Кабинет врача — Доктор ЛОР (онлайн)</title>
     <script>window.LOR_DOC_BUILD="2026-08-16-mobileFix14";</script>
     <style>
@@ -2635,6 +2658,22 @@ self.addEventListener('notificationclick', event => {
       };
     },
 
+    /* ---------- push-уведомления (17.11.2026) ---------- */
+    /**
+     * Самолечение push-подписки при открытии приложения.
+     * ЗАКОН: серверная строка подписки может исчезнуть (dispatch удаляет её на FCM
+     * 404/410, переустановка PWA меняет endpoint). Init обязан восстанавливать её сам,
+     * иначе push'и умирают с no_subscriptions навсегда.
+     *  - подписка есть в браузере → 'resave' (пересохранить на сервер, upsert);
+     *  - подписки нет, разрешение уже дано → 'create' (создать новую и сохранить);
+     *  - разрешения нет → 'none' (ничего не делать, кнопка попросит нажать).
+     */
+    pushResubscribeAction: function (hasSub, permission) {
+      if (hasSub) return 'resave';
+      if (permission === 'granted') return 'create';
+      return 'none';
+    },
+
     /* ---------- UI календаря (v1.2.2) ---------- */
     /**
      * Тулбар gcal-modal:
@@ -2789,24 +2828,329 @@ self.addEventListener('notificationclick', event => {
         const MOBILE_PUSH_SW_URL = '/mobile-online-push-sw.js';
         let mobilePushState = { supported: false, subscribed: false, busy: false };
 
-        // [17.11.2026 push-fix] Самолечение подписки.
-        // Раньше init только ЧИТАЛ подписку (getSubscription) и никогда не сохранял её
-        // на сервере. После переустановки PWA endpoint меняется, dispatch удаляет
-        // старую строку (FCM 404/410) — и push'и умирают с no_subscriptions навсегда,
-        // пока врач вручную не нажмёт «Включить уведомления».
-        // Теперь при каждом открытии: есть подписка → пересохраняем на сервер (upsert);
-        // нет подписки, а разрешение уже дано → создаём новую и сохраняем.
+
+        // ========== СЕССИЯ ВРАЧА: ТИХОЕ ПРОДЛЕНИЕ И КЛЮЧ УСТРОЙСТВА ==========
+        // Цель: не выкидывать из кабинета (особенно из блока онлайн-записей) на личном телефоне врача.
+        // 1) Сохраняем refresh_token и тихо продлеваем access_token.
+        // 2) Привязываем это устройство долгосрочным ключом (таблица doctor_devices на сервере,
+        //    срок 10 лет, отзываемый). Сервер онлайн-записей принимает и токен, и ключ устройства.
+        const LOR_SESSION_KEY = 'lor_doctor_session_v1';
+        const LOR_DEVICE_ID_KEY = 'lor_doctor_device_id_v1';
+        const LOR_DEVICE_KEY_KEY = 'lor_doctor_device_key_v1';
+        const LOR_DEVICE_INFO_KEY = 'lor_doctor_device_info_v1';
+        const LOR_SESSION_REFRESH_AHEAD_MS = 12 * 60 * 60 * 1000;
+        let lorSessionInFlight = null;
+        let lorDeviceKeyPromise = null;
+        let lorSessionTimer = null;
+
+        function lorSessionRead() {
+            try { return JSON.parse(localStorage.getItem(LOR_SESSION_KEY) || '{}') || {}; } catch (e) { return {}; }
+        }
+        function lorSessionWrite(data) {
+            try { localStorage.setItem(LOR_SESSION_KEY, JSON.stringify(data || {})); } catch (e) {}
+        }
+        // Единая точка сохранения сессии после входа и после каждого продления.
+        function lorDoctorSaveSession(data) {
+            if (!data || !data.access_token) return false;
+            accessToken = data.access_token;
+            try { localStorage.setItem('lor_doctor_token', accessToken); } catch (e) {}
+            var expiresIn = parseInt(data.expires_in, 10);
+            if (!isFinite(expiresIn) || expiresIn <= 0) expiresIn = 3600;
+            lorSessionWrite({
+                refreshToken: String(data.refresh_token || ''),
+                expiresAt: Date.now() + expiresIn * 1000,
+                savedAt: Date.now()
+            });
+            return true;
+        }
+        function lorDoctorSessionInfo() {
+            var s = lorSessionRead();
+            var exp = parseInt(s.expiresAt, 10);
+            return { refreshToken: String(s.refreshToken || ''), expiresAt: isFinite(exp) ? exp : 0 };
+        }
+        function lorDoctorSessionExpired() {
+            if (!accessToken) return true;
+            var raw = lorSessionRead();
+            // Пустая запись означает, что продление уже не удалось: токен больше не действующий.
+            if (!raw || (!raw.refreshToken && !raw.expiresAt)) return true;
+            var exp = parseInt(raw.expiresAt, 10);
+            // Сессия, сохранённая старой версией страницы: срока нет, полагаемся на ответ сервера.
+            if (!isFinite(exp) || exp <= 0) return false;
+            return Date.now() >= exp - 60000;
+        }
+        function lorDoctorRandomToken(prefix, bytes) {
+            try {
+                if (window.crypto && crypto.getRandomValues) {
+                    var arr = new Uint8Array(bytes || 16);
+                    crypto.getRandomValues(arr);
+                    var alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    var out = '';
+                    for (var i = 0; i < arr.length; i++) out += alphabet.charAt(arr[i] % alphabet.length);
+                    return prefix + out;
+                }
+            } catch (e) {}
+            return prefix + String(Date.now()) + Math.random().toString(36).slice(2, 10);
+        }
+        // Идентификатор этого устройства: создаётся один раз и переживает перевходы.
+        function lorDoctorDeviceId() {
+            var id = '';
+            try { id = String(localStorage.getItem(LOR_DEVICE_ID_KEY) || ''); } catch (e) {}
+            if (!/^[A-Za-z0-9_-]{6,80}$/.test(id)) {
+                id = lorDoctorRandomToken('dev-', 12);
+                try { localStorage.setItem(LOR_DEVICE_ID_KEY, id); } catch (e) {}
+            }
+            return id;
+        }
+        function lorDoctorDeviceKey() {
+            try { return String(localStorage.getItem(LOR_DEVICE_KEY_KEY) || ''); } catch (e) { return ''; }
+        }
+        function lorDoctorDeviceLabel() {
+            var ua = String(navigator.userAgent || '');
+            var device = /iPhone/i.test(ua) ? 'iPhone'
+                : /iPad/i.test(ua) ? 'iPad'
+                : /Android/i.test(ua) ? 'Android'
+                : /Windows/i.test(ua) ? 'Windows'
+                : /Mac OS X/i.test(ua) ? 'Mac'
+                : /Linux/i.test(ua) ? 'Linux' : 'Устройство';
+            var browser = /Edg\//i.test(ua) ? 'Edge'
+                : /OPR\//i.test(ua) ? 'Opera'
+                : /Chrome\//i.test(ua) ? 'Chrome'
+                : /Safari\//i.test(ua) ? 'Safari'
+                : /Firefox\//i.test(ua) ? 'Firefox' : 'Браузер';
+            return (device + ' · ' + browser + ' · ' + location.hostname).slice(0, 120);
+        }
+        function lorDoctorAuthFetch(url, options) {
+            return fetch(SUPABASE_URL + url, options);
+        }
+        // Тихое продление access_token по refresh_token. Один одновременный запрос на всё окно.
+        async function lorDoctorRefreshSession(force) {
+            if (lorSessionInFlight) return lorSessionInFlight;
+            lorSessionInFlight = (async function () {
+                var info = lorDoctorSessionInfo();
+                if (!info.refreshToken) return false;
+                if (!force && !lorDoctorSessionExpired()) return true;
+                try {
+                    var response = await lorDoctorAuthFetch('/auth/v1/token?grant_type=refresh_token', {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refresh_token: info.refreshToken })
+                    });
+                    var data = null;
+                    try { data = await response.json(); } catch (e) {}
+                    if (response.ok && data && data.access_token) {
+                        lorDoctorSaveSession(data);
+                        return true;
+                    }
+                } catch (e) { return false; }
+                // Refresh-токен больше не принят: сессию придётся восстановить входом.
+                lorSessionWrite({});
+                return false;
+            })();
+            try { return await lorSessionInFlight; } finally { lorSessionInFlight = null; }
+        }
+        // Долгосрочный ключ этого устройства: выдаётся сервером один раз и хранится на телефоне.
+        async function lorDoctorEnsureDeviceKey() {
+            if (!accessToken) return '';
+            if (lorDeviceKeyPromise) return lorDeviceKeyPromise;
+            lorDeviceKeyPromise = (async function () {
+                try {
+                    var response = await fetch(MOBILE_ONLINE_BOOKINGS_API, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'device_ensure',
+                            deviceId: lorDoctorDeviceId(),
+                            label: lorDoctorDeviceLabel(),
+                            deviceKey: lorDoctorDeviceKey()
+                        })
+                    });
+                    var data = null;
+                    try { data = await response.json(); } catch (e) {}
+                    if (!response.ok || !data || data.ok !== true || !data.device_key) return '';
+                    var key = String(data.device_key);
+                    try {
+                        localStorage.setItem(LOR_DEVICE_KEY_KEY, key);
+                        localStorage.setItem(LOR_DEVICE_INFO_KEY, JSON.stringify({
+                            deviceId: String(data.device_id || ''),
+                            label: lorDoctorDeviceLabel(),
+                            expiresAt: String(data.expires_at || ''),
+                            boundAt: new Date().toISOString()
+                        }));
+                    } catch (e) {}
+                    try { lorDoctorRenderDeviceRow(); } catch (e) {}
+                    return key;
+                } catch (e) { return ''; }
+            })();
+            try { return await lorDeviceKeyPromise; } finally { lorDeviceKeyPromise = null; }
+        }
+        // Токен для серверных функций онлайн-записей: свежий access_token или ключ устройства.
+        async function mobileOnlineBearer() {
+            if (accessToken && !lorDoctorSessionExpired()) return accessToken;
+            if (accessToken) {
+                var renewed = await lorDoctorRefreshSession(false);
+                if (renewed && accessToken) return accessToken;
+            }
+            var deviceKey = lorDoctorDeviceKey();
+            if (!deviceKey) deviceKey = await lorDoctorEnsureDeviceKey();
+            if (deviceKey) return deviceKey;
+            return accessToken || '';
+        }
+        async function mobileOnlineAuthHeaders(json) {
+            var token = await mobileOnlineBearer();
+            if (!token) throw new Error('Сессия истекла — войдите в кабинет врача заново.');
+            var headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
+            if (json) headers['Content-Type'] = 'application/json';
+            return headers;
+        }
+        // Проверка/продление сессии при открытии кабинета и дальше по расписанию.
+        function lorDoctorSessionHeartbeat() {
+            if (lorSessionTimer) { try { clearInterval(lorSessionTimer); } catch (e) {} }
+            var tick = function () {
+                if (!accessToken) return;
+                if (lorDoctorSessionExpired()) {
+                    lorDoctorRefreshSession(true).then(function (ok) {
+                        if (ok) lorDoctorEnsureDeviceKey();
+                    });
+                } else {
+                    lorDoctorEnsureDeviceKey();
+                }
+            };
+            tick();
+            try { lorSessionTimer = setInterval(tick, 10 * 60 * 1000); } catch (e) {}
+        }
+        function lorDoctorRenderDeviceRow() {
+            var row = document.getElementById('gcal-device-bind-row');
+            if (!row) return;
+            var text = document.getElementById('gcal-device-bind-text');
+            var button = document.getElementById('gcal-device-unbind-btn');
+            var key = lorDoctorDeviceKey();
+            if (!text || !button) return;
+            if (key) {
+                var info = {};
+                try { info = JSON.parse(localStorage.getItem(LOR_DEVICE_INFO_KEY) || '{}') || {}; } catch (e) {}
+                var until = '';
+                try {
+                    if (info.expiresAt) until = new Date(info.expiresAt).toLocaleDateString('ru-RU');
+                } catch (e) {}
+                text.textContent = 'Устройство привязано' + (until ? ' (ключ действует до ' + until + ')' : '') + ' — вход не потребуется.';
+                button.style.display = '';
+            } else {
+                text.textContent = 'Устройство не привязано: при просрочке входа блок онлайн-записей попросит войти заново.';
+                button.style.display = 'none';
+            }
+        }
+        // Отзыв ключа: например, если телефон потерян. После этого нужен обычный вход.
+        async function lorDoctorRevokeDeviceKey() {
+            if (!confirm('Отвязать это устройство? Потребуется обычный вход по почте и паролю.')) return;
+            var key = lorDoctorDeviceKey();
+            try {
+                if (accessToken) {
+                    await fetch(MOBILE_ONLINE_BOOKINGS_API, {
+                        method: 'POST',
+                        cache: 'no-store',
+                        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'device_revoke', deviceId: '*' })
+                    });
+                }
+            } catch (e) {}
+            try {
+                localStorage.removeItem(LOR_DEVICE_KEY_KEY);
+                localStorage.removeItem(LOR_DEVICE_INFO_KEY);
+            } catch (e) {}
+            if (key) { try { alert('Устройство отвязано.'); } catch (e) {} }
+            lorDoctorRenderDeviceRow();
+        }
+        function lorDoctorStandalone() {
+            try { return matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches || navigator.standalone === true; } catch (e) { return false; }
+        }
+        var doctorInstallEvt = null;
+        window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); doctorInstallEvt = e; doctorInstallRender(); });
+        window.addEventListener('appinstalled', function () {
+            doctorInstallEvt = null;
+            try { localStorage.setItem('lor-doctor-app-installed', '1'); } catch (e) {}
+            doctorInstallRender();
+        });
+        function doctorInstallRender() {
+            var row = document.getElementById('doctor-install-row');
+            if (!row) return;
+            if (lorDoctorStandalone()) { row.style.display = 'none'; return; }
+            row.style.display = 'flex';
+            var st = document.getElementById('doctor-install-status');
+            if (st && doctorInstallEvt && (!st.textContent || st.textContent.indexOf('готовится') !== -1)) st.textContent = 'Браузер готов поставить приложение на телефон.';
+        }
+        var doctorInstallTried = false;
+        function lorDoctorWebview() {
+            try { return /; wv\)|Instagram|FBAN|FBAV|Telegram|WhatsApp/i.test(navigator.userAgent); } catch (e) { return false; }
+        }
+        function doctorInstallClick() {
+            var st = document.getElementById('doctor-install-status');
+            if (lorDoctorStandalone()) { if (st) st.textContent = 'Кабинет уже открыт как приложение.'; return; }
+            if (doctorInstallEvt) {
+                var evt = doctorInstallEvt; doctorInstallEvt = null;
+                var done = false;
+                try {
+                    evt.prompt();
+                    evt.userChoice.then(function (r) {
+                        done = true;
+                        if (!st) return;
+                        st.textContent = (r && r.outcome === 'accepted') ? 'Устанавливаю…' : 'Установка отменена; можно повторить позже.';
+                    }).catch(function () {
+                        done = true;
+                        if (st) st.textContent = 'Браузер не дал установить приложение. Повторите кнопку или поставьте через меню браузера.';
+                    });
+                } catch (e) {}
+                setTimeout(function () {
+                    if (!done && st && !st.textContent) st.textContent = 'Если окно установки не появилось — поставьте через меню браузера (⋮).';
+                }, 4000);
+                return;
+            }
+            if (lorDoctorWebview()) {
+                if (st) st.textContent = 'Откройте кабинет в обычном браузере (Chrome или Safari): во встроенном просмотрщике установка недоступна.';
+                return;
+            }
+            if (!doctorInstallTried) {
+                doctorInstallTried = true;
+                if (st) st.textContent = 'Браузер ещё готовится: нажмите кнопку ещё раз через 10–20 секунд.';
+                return;
+            }
+            var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (st) st.textContent = ios ? 'iPhone: кнопка «Поделиться» → «На экран „Домой”».' : 'Меню браузера (⋮) → «Установить приложение».';
+        }
+        function doctorInstallInit() {
+            doctorInstallRender();
+            if (/[?&]nosw=1/.test(location.search)) {
+                try {
+                    navigator.serviceWorker.getRegistrations().then(function (regs) {
+                        regs.forEach(function (r) { try { r.unregister(); } catch (e) {} });
+                    });
+                } catch (e) {}
+                return;
+            }
+            if (lorDoctorStandalone()) return;
+            if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
+            try { navigator.serviceWorker.register('/doctor-sw.js', { scope: '/wwwdoctor.html' }).catch(function () {}); } catch (e) {}
+        }
+        // [17.11.2026 push-fix] Самолечение подписки (закон LOR_RULES.pushResubscribeAction).
+        // Раньше init только ЧИТАЛ подписку и никогда не сохранял её на сервере. После
+        // переустановки PWA endpoint меняется, dispatch удаляет старую строку (FCM 404/410) —
+        // и push'и умирают с no_subscriptions навсегда. Теперь при каждом открытии подписка
+        // восстанавливается сама: есть → пересохранить; нет + разрешение дано → создать.
         async function mobileOnlinePushInit() {
             mobilePushState.supported = !!(window.isSecureContext && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window);
             var host = location.hostname;
             var allowedHost = host === 'lor-astana.vercel.app' || host.endsWith('.vercel.app');
-            if (!mobilePushState.supported || !allowedHost || !accessToken) { mobileOnlinePushRender(); return; }
+            if (!mobilePushState.supported || !allowedHost || (!accessToken && !lorDoctorDeviceKey())) { mobileOnlinePushRender(); return; }
             try {
                 var reg = await navigator.serviceWorker.register(MOBILE_PUSH_SW_URL, { scope: '/' });
                 var sub = await reg.pushManager.getSubscription();
-                if (!sub && Notification.permission === 'granted') {
+                var act = (typeof LOR_RULES !== 'undefined' && LOR_RULES && typeof LOR_RULES.pushResubscribeAction === 'function')
+                    ? LOR_RULES.pushResubscribeAction(!!sub, Notification.permission)
+                    : (!sub && Notification.permission === 'granted' ? 'create' : (sub ? 'resave' : 'none'));
+                if (act === 'create') {
                     try {
-                        var keyResponse = await fetch(MOBILE_ONLINE_PUSH_API, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }, cache: 'no-store' });
+                        var keyResponse = await fetch(MOBILE_ONLINE_PUSH_API, { headers: await mobileOnlineAuthHeaders(false), cache: 'no-store' });
                         if (keyResponse.ok) {
                             var config = await keyResponse.json();
                             var b64 = config.publicKey.replace(/-/g, '+').replace(/_/g, '/');
@@ -2817,7 +3161,7 @@ self.addEventListener('notificationclick', event => {
                 }
                 if (sub) {
                     try {
-                        await fetch(MOBILE_ONLINE_PUSH_API, { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }, body: JSON.stringify({ action: 'subscribe', subscription: sub.toJSON() }) });
+                        await fetch(MOBILE_ONLINE_PUSH_API, { method: 'POST', headers: await mobileOnlineAuthHeaders(true), body: JSON.stringify({ action: 'subscribe', subscription: sub.toJSON() }) });
                     } catch (eSave) { /* серверная строка не критична для показа кнопки */ }
                 }
                 mobilePushState.subscribed = !!sub;
@@ -2828,13 +3172,13 @@ self.addEventListener('notificationclick', event => {
             var button = document.getElementById('mobile-online-push-toggle');
             if (!button) return;
             if (!mobilePushState.supported) { button.textContent = 'Уведомления недоступны'; button.title = 'Фоновые уведомления не поддерживаются здесь; список проверяется при открытии.'; button.disabled = true; return; }
-            if (!accessToken) { button.textContent = 'Включить уведомления'; button.title = 'Войдите в кабинет врача, чтобы включить уведомления.'; button.disabled = true; return; }
+            if (!accessToken && !lorDoctorDeviceKey()) { button.textContent = 'Включить уведомления'; button.title = 'Войдите в кабинет врача, чтобы включить уведомления.'; button.disabled = true; return; }
             button.title = 'Уведомления о новых онлайн-записях';
             button.textContent = mobilePushState.subscribed ? 'Выключить уведомления' : 'Включить уведомления';
             button.disabled = mobilePushState.busy;
         }
         async function mobileOnlinePushToggle() {
-            if (mobilePushState.busy || !mobilePushState.supported || !accessToken) return;
+            if (mobilePushState.busy || !mobilePushState.supported || (!accessToken && !lorDoctorDeviceKey())) return;
             mobilePushState.busy = true; mobileOnlinePushRender();
             var message = document.getElementById('mobile-online-push-status');
             if (message) { message.textContent = ''; message.style.display = 'none'; }
@@ -2842,19 +3186,19 @@ self.addEventListener('notificationclick', event => {
                 var reg = await navigator.serviceWorker.ready;
                 var existing = await reg.pushManager.getSubscription();
                 if (existing) {
-                    await fetch(MOBILE_ONLINE_PUSH_API, {method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+accessToken},body:JSON.stringify({action:'unsubscribe',endpoint:existing.endpoint})});
+                    await fetch(MOBILE_ONLINE_PUSH_API, {method:'POST',headers:await mobileOnlineAuthHeaders(true),body:JSON.stringify({action:'unsubscribe',endpoint:existing.endpoint})});
                     await existing.unsubscribe(); mobilePushState.subscribed = false;
                 } else {
                     var permission = Notification.permission;
                     if (permission === 'default') permission = await Notification.requestPermission();
                     if (permission !== 'granted') throw new Error('Разрешение на уведомления не выдано.');
-                    var keyResponse = await fetch(MOBILE_ONLINE_PUSH_API,{headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+accessToken},cache:'no-store'});
+                    var keyResponse = await fetch(MOBILE_ONLINE_PUSH_API,{headers:await mobileOnlineAuthHeaders(false),cache:'no-store'});
                     if (!keyResponse.ok) throw new Error('Не удалось получить ключ push.');
                     var config = await keyResponse.json();
                     var b64=config.publicKey.replace(/-/g,'+').replace(/_/g,'/');
                     var raw=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));
                     var sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:raw});
-                    var save=await fetch(MOBILE_ONLINE_PUSH_API,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+accessToken},body:JSON.stringify({action:'subscribe',subscription:sub.toJSON()})});
+                    var save=await fetch(MOBILE_ONLINE_PUSH_API,{method:'POST',headers:await mobileOnlineAuthHeaders(true),body:JSON.stringify({action:'subscribe',subscription:sub.toJSON()})});
                     if(!save.ok){await sub.unsubscribe();throw new Error('Не удалось сохранить подписку.');}
                     mobilePushState.subscribed=true;
                 }
@@ -2919,7 +3263,7 @@ self.addEventListener('notificationclick', event => {
             return words.length ? words.slice(0, 2).join(' ') : 'Имя не указано';
         }
         async function gcalMobileOnlineMatchRequest(phone, force) {
-            if (!accessToken) throw new Error('Сначала войдите в кабинет врача.');
+            if (!accessToken && !lorDoctorDeviceKey()) throw new Error('Сначала войдите в кабинет врача.');
             var key = String(phone || '').replace(/\D/g, '');
             var cache = window._mobileOnlineMatchCache || (window._mobileOnlineMatchCache = {});
             if (force) delete cache[key];
@@ -2929,14 +3273,14 @@ self.addEventListener('notificationclick', event => {
                 response = await fetch(MOBILE_ONLINE_PATIENT_MATCH_API, {
                     method: 'POST',
                     cache: 'no-store',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    headers: await mobileOnlineAuthHeaders(true),
                     body: JSON.stringify({ phone: String(phone || '') })
                 });
             } catch (eNet) { throw new Error('сервер недоступен'); }
             var data = null;
             try { data = await response.json(); } catch (eJson) {}
             if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) {
-                if (response.status === 401) throw new Error('Сессия истекла. Войдите в кабинет снова.');
+                if (response.status === 401) throw new Error('Доступ не подтверждён. Обновите список; если не поможет — войдите заново.');
                 if (response.status === 403) throw new Error('Доступ для этого аккаунта не разрешён.');
                 if (response.status === 400) throw new Error('Номер телефона не распознан.');
                 throw new Error('Не удалось выполнить сверку (HTTP ' + response.status + ').');
@@ -2946,13 +3290,13 @@ self.addEventListener('notificationclick', event => {
         }
         // Действия врача с одной онлайн-записью: комментарий, удаление, перенос, список свободного времени.
         async function gcalMobileOnlineBookingAction(payload) {
-            if (!accessToken) throw new Error('Сначала войдите в кабинет врача.');
+            if (!accessToken && !lorDoctorDeviceKey()) throw new Error('Сначала войдите в кабинет врача.');
             var response;
             try {
                 response = await fetch(MOBILE_ONLINE_BOOKINGS_API, {
                     method: 'POST',
                     cache: 'no-store',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                    headers: await mobileOnlineAuthHeaders(true),
                     body: JSON.stringify(payload)
                 });
             } catch (eNet) { throw new Error('Нет связи с сервером.'); }
@@ -2961,7 +3305,7 @@ self.addEventListener('notificationclick', event => {
             if (response.ok && data && data.ok === true) return data;
             var code = String(data && data.error || '');
             var messages = {
-                unauthorized: 'Сессия истекла. Войдите в кабинет снова.',
+                unauthorized: 'Доступ не подтверждён. Нажмите «Обновить»; если не поможет — войдите заново.',
                 forbidden: 'Для этого аккаунта действие не разрешено.',
                 booking_not_found: 'Запись не найдена — возможно, она уже удалена. Обновите список.',
                 slot_taken: 'Это время уже занято. Выберите другое.',
@@ -3515,7 +3859,7 @@ self.addEventListener('notificationclick', event => {
             var status = document.getElementById('mobile-online-bookings-status');
             var list = document.getElementById('mobile-online-bookings-list');
             if (!status || !list) return;
-            if (!accessToken) {
+            if (!accessToken && !lorDoctorDeviceKey()) {
                 status.textContent = 'Сначала войдите в кабинет врача.';
                 list.textContent = '';
                 return;
@@ -3525,12 +3869,12 @@ self.addEventListener('notificationclick', event => {
                 var response = await fetch(MOBILE_ONLINE_BOOKINGS_API, {
                     method: 'GET',
                     cache: 'no-store',
-                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+                    headers: await mobileOnlineAuthHeaders(false)
                 });
                 var data = null;
                 try { data = await response.json(); } catch (eJson) {}
                 if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) {
-                    if (response.status === 401) throw new Error('Сессия истекла. Выйдите и войдите в кабинет снова.');
+                    if (response.status === 401) throw new Error('Доступ не подтверждён. Нажмите «Обновить»; если не поможет — войдите в кабинет заново.');
                     if (response.status === 403) throw new Error('Для этого аккаунта доступ к онлайн-записям не разрешён.');
                     throw new Error('Не удалось загрузить список (HTTP ' + response.status + ').');
                 }
@@ -3620,6 +3964,8 @@ self.addEventListener('notificationclick', event => {
         function handleAuthFailure(status, where) {
             if (status !== 401 && status !== 403) return false;
             console.warn('Auth fail', status, where);
+            // Сначала пробуем тихо продлить сессию: следующий запрос пройдёт без выхода из кабинета.
+            try { lorDoctorRefreshSession(true); } catch (e) {}
             accessToken = null;
             try {
                 localStorage.removeItem('lor_doctor_token');
@@ -3848,6 +4194,8 @@ self.addEventListener('notificationclick', event => {
                 showMainScreen();
                 loadFiles();
                 startPolling();
+                // Тихо продлеваем токен и проверяем привязку устройства — без выхода из кабинета.
+                lorDoctorSessionHeartbeat();
             } else {
                 showLoginScreen();
             }
@@ -6957,7 +7305,15 @@ self.addEventListener('notificationclick', event => {
             var push=document.createElement('button');push.type='button';push.className='btn98';push.id='mobile-online-push-toggle';push.textContent='Включить уведомления';push.disabled=true;push.style.marginRight='auto';push.onclick=function(){mobileOnlinePushToggle()};
             var pushStatus=document.createElement('div');pushStatus.id='mobile-online-push-status';pushStatus.setAttribute('role','status');pushStatus.style.cssText='display:none;padding:0 6px 6px;font-size:12px;color:#800000;';
             footer.style.flexWrap='wrap';
-            footer.append(push,mark,clear);panel.append(title,list,footer,pushStatus);document.body.appendChild(panel);try{mobileOnlinePushRender()}catch(ePush){}return panel;
+            var deviceRow=document.createElement('div');deviceRow.id='gcal-device-bind-row';deviceRow.style.cssText='display:flex;align-items:center;gap:6px;padding:0 6px 6px;font-size:11px;color:#222;';
+            var deviceText=document.createElement('span');deviceText.id='gcal-device-bind-text';deviceText.style.cssText='flex:1 1 auto;min-width:0;';
+            var deviceOff=document.createElement('button');deviceOff.type='button';deviceOff.className='btn98';deviceOff.id='gcal-device-unbind-btn';deviceOff.textContent='Отвязать устройство';deviceOff.style.cssText='flex:0 0 auto;min-height:24px;';deviceOff.onclick=function(){lorDoctorRevokeDeviceKey()};
+            deviceRow.append(deviceText,deviceOff);
+                        var installRow=document.createElement('div');installRow.id='doctor-install-row';installRow.style.cssText='display:flex;align-items:center;gap:6px;padding:0 6px 6px;font-size:11px;color:#222;';
+            var installBtn=document.createElement('button');installBtn.type='button';installBtn.className='btn98';installBtn.id='doctor-install-btn';installBtn.textContent='Установить приложение';installBtn.style.cssText='flex:0 0 auto;min-height:24px;';installBtn.onclick=function(){doctorInstallClick()};
+            var installStatus=document.createElement('span');installStatus.id='doctor-install-status';installStatus.setAttribute('role','status');installStatus.style.cssText='flex:1 1 auto;min-width:0;';
+            installRow.append(installBtn,installStatus);
+            footer.append(push,mark,clear);panel.append(title,list,deviceRow,installRow,footer,pushStatus);document.body.appendChild(panel);try{mobileOnlinePushRender()}catch(ePush){}try{lorDoctorRenderDeviceRow()}catch(eDev){}try{doctorInstallRender()}catch(eInst){}return panel;
         }
 
         function gcalRenderNotificationCenter() {
@@ -10925,6 +11281,7 @@ async function gcalAutoSaveVisitIfNeeded(ev, opts) {
             document.getElementById('notify-banner').classList.add('visible');
             updateNotifyUi();
             mobileOnlinePushInit();
+            doctorInstallInit();
             updateOnlineStatus();
             renderRecentPatients();
             loadTodayPatients();
@@ -10970,10 +11327,11 @@ async function gcalAutoSaveVisitIfNeeded(ev, opts) {
                     errorDiv.textContent = 'Сервер не вернул токен. Проверьте ключ Supabase в doctor.html';
                     return;
                 }
-                accessToken = data.access_token;
                 doctorEmail = email;
-                localStorage.setItem('lor_doctor_token', accessToken);
                 localStorage.setItem('lor_doctor_email', doctorEmail);
+                lorDoctorSaveSession(data);
+                // Привязка устройства и продление сессии идут фоном и не задерживают вход.
+                lorDoctorSessionHeartbeat();
 
                 const remember = document.getElementById('doc-remember') && document.getElementById('doc-remember').checked;
                 if (remember) {
@@ -10998,6 +11356,9 @@ async function gcalAutoSaveVisitIfNeeded(ev, opts) {
             accessToken = null;
             doctorEmail = null;
             localStorage.removeItem('lor_doctor_token');
+            // Refresh-токен убираем; ключ устройства остаётся привязанным к этому телефону.
+            lorSessionWrite({});
+            if (lorSessionTimer) { try { clearInterval(lorSessionTimer); } catch (e) {} lorSessionTimer = null; }
             // email оставляем для подсказки; пароль — только если «Запомнить»
             allFiles = [];
             stopPolling();
